@@ -1,8 +1,9 @@
 import app from "./app.js";
 
 /**
- * The application entry point.
+ * Application entry point.
+ * Owns the HTTP server lifecycle.
  */
-
-const port = 3000;
-app.listen(port);
+app.listen(process.env.PORT, () => {
+  console.log("Server running");
+});
