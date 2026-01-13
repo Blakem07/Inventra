@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import { connectDB } from "./db.js";
+import "./models/index.js";
 
 /**
  * Builds and configures the Express application.
