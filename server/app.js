@@ -4,6 +4,7 @@ import { connectDB } from "./db.js";
 import "./models/index.js";
 import stockRoutes from "./routes/stockRoutes.js";
 import saleRoutes from "./routes/saleRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 /**
@@ -32,6 +33,7 @@ app.get("/health", (req, res) => {
  */
 app.use("/stock", stockRoutes);
 app.use("/sales", saleRoutes);
+app.use("/categories", categoryRoutes);
 
 /**
  * Global error handler.
