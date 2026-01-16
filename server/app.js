@@ -2,6 +2,8 @@ import "dotenv/config";
 import express from "express";
 import { connectDB } from "./db.js";
 import "./models/index.js";
+import stockRoutes from "./routes/stockRoutes.js";
+import saleRoutes from "./routes/saleRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 /**
@@ -23,6 +25,13 @@ await connectDB();
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
+
+/**
+ * HTTP routes.
+ * Must be registered before the global error handler.
+ */
+app.use("/stock", stockRoutes);
+app.use("/sales", saleRoutes);
 
 /**
  * Global error handler.
