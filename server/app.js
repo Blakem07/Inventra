@@ -5,6 +5,7 @@ import "./models/index.js";
 import stockRoutes from "./routes/stockRoutes.js";
 import saleRoutes from "./routes/saleRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 /**
@@ -34,6 +35,7 @@ app.get("/health", (req, res) => {
 app.use("/stock", stockRoutes);
 app.use("/sales", saleRoutes);
 app.use("/categories", categoryRoutes);
+app.use("/products", productRoutes);
 
 /**
  * Global error handler.

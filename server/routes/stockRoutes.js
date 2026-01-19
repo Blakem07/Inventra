@@ -5,6 +5,14 @@ import { validateStockMovement } from "../validators/stockValidators.js";
 
 const router = Router();
 
+/**
+ * POST /stock/movements
+ *
+ * Records a stock movement event.
+ *
+ * Validates request body and delegates inventory
+ * mutation logic to the StockService.
+ */
 router.post("/movements", validateBody(validateStockMovement), async (req, res, next) => {
   try {
     const movement = await StockService.createMovement(req.body);

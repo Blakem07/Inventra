@@ -5,6 +5,14 @@ import { validateSale } from "../validators/saleValidators.js";
 
 const router = Router();
 
+/**
+ * POST /sales
+ *
+ * Records a sale transaction.
+ *
+ * Validates request body and delegates business logic
+ * to the SaleService.
+ */
 router.post("/", validateBody(validateSale), async (req, res, next) => {
   try {
     const result = await SaleService.recordSale(req.body);
