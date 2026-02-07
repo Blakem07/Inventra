@@ -28,7 +28,7 @@ router.get("/", async (req, res, next) => {
     const categoryId = req.query.categoryId;
     const activeOnly = req.query.activeOnly;
 
-    if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+    if (categoryId && !mongoose.Types.ObjectId.isValid(categoryId)) {
       return res
         .status(400)
         .json({ error: { status: 400, message: "The ID category provided is invalid." } });
