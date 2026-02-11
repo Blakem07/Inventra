@@ -6,8 +6,10 @@ import stockRoutes from "./routes/stockRoutes.js";
 import saleRoutes from "./routes/saleRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
-import { errorHandler } from "./middlewares/errorHandler.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
+
 
 /**
  * Builds and configures the Express application.
@@ -38,6 +40,7 @@ app.use("/sales", saleRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/products", productRoutes);
 app.use("/dashboard", dashboardRoutes);
+app.use("/reports", reportRoutes);
 
 /**
  * Global error handler.
