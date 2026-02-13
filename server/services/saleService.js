@@ -1,5 +1,7 @@
+import { BUSINESS_TIMEZONE } from "../config/appConfig.js";
 import mongoose from "mongoose";
 import { StockService } from "./stockService.js";
+import { toBusinessDayKey } from "../utils/dayBucket.js";
 
 /**
  * SaleService records sales and applies stock changes atomically.
@@ -70,18 +72,21 @@ export class SaleService {
               performed_by: input.performed_by,
             },
           ],
-          { session }
+          { session },
         );
 
         // Build SaleItems; apply stock via StockService (only mutator)
         const saleItems = [];
         let total = 0;
+        let itemsSold = 0;
 
         for (const item of input.items) {
           const product = byId.get(String(item.product_id));
           const unit_price = product.price;
           const line_total = unit_price * item.quantity;
+
           total += line_total;
+          itemsSold += item.quantity;
 
           saleItems.push({
             sale_id: sale._id,
@@ -107,6 +112,8 @@ export class SaleService {
 
         await Sale.updateOne({ _id: sale._id }, { $set: { total_amount: total } }, { session });
 
+        await this.#upsertDailySummary({ session, occurredAt, total, itemsSold });
+
         return { sale_id: String(sale._id), total_amount: total };
       });
 
@@ -114,5 +121,31 @@ export class SaleService {
     } finally {
       session.endSession();
     }
+  }
+
+  /**
+   * Updates the daily sales summary for this sale.
+   *
+   * Converts the sale time to the correct business date, then adds
+   * the sale amount, sale count, and items sold to that day's totals.
+   *
+   * Must run inside the same transaction as the sale so the summary
+   * always matches the actual sales data.
+   */
+  static async #upsertDailySummary({ session, occurredAt, total, itemsSold }) {
+    const DailySummary = mongoose.model("DailySummary");
+    const summaryDate = toBusinessDayKey(occurredAt, BUSINESS_TIMEZONE);
+
+    await DailySummary.updateOne(
+      { summary_date: summaryDate },
+      {
+        $inc: {
+          total_sales_amount: total,
+          total_sales_count: 1,
+          total_items_sold: itemsSold,
+        },
+      },
+      { upsert: true, session },
+    );
   }
 }

@@ -1,106 +1,64 @@
 import { Router } from "express";
 import Product from "../models/Product.js";
 import Sale from "../models/Sale.js";
+import DailySummary from "../models/DailySummary.js";
 import StockMovement from "../models/StockMovement.js";
+import { toBusinessDayKey } from "../utils/dayBucket.js";
+import { BUSINESS_TIMEZONE } from "../config/appConfig.js";
 
 const router = Router();
 
 /**
  * GET /dashboard/summary
  *
- * Returns a real-time dashboard summary computed directly from source models.
- * All metrics are calculated live without relying on cached summaries.
+ * Returns a dashboard summary using the DailySummary projection
+ * for sales metrics and live inventory data for stock metrics.
+ *
+ * Sales totals are incrementally maintained at write-time
+ * (during SaleService.recordSale) and read directly here,
+ * avoiding runtime aggregation over raw sales data.
  *
  * Metrics included:
+ * - summaryDate: the YYYY-MM-DD business date represented
  * - lowStockCount: number of active products with stock > 0 and <= reorder level
  * - outOfStockCount: number of active products with stock <= 0
- * - salesCountToday: number of sales that occurred today
- * - totalSalesAmountToday: sum of total_amount for today’s sales
- * - itemsSoldToday: sum of quantities across all sale items from today’s sales
+ * - salesCountToday: total sales count for the business day (from DailySummary)
+ * - totalSalesAmountToday: total sales amount for the business day (from DailySummary)
+ * - itemsSoldToday: total quantity of items sold for the business day (from DailySummary)
  * - recentActivity: latest stock movements, newest first (fixed window)
  */
 router.get("/summary", async (req, res, next) => {
   try {
+    const now = new Date();
+    const summaryDate = toBusinessDayKey(now, BUSINESS_TIMEZONE);
+
+    const summary = await DailySummary.findOne({
+      summary_date: summaryDate,
+    }).lean();
+
     const lowStockCount = await Product.countDocuments({
+      is_active: true,
       on_hand: { $gt: 0 },
       $expr: { $lte: ["$on_hand", "$reorder_level"] },
-      is_active: true,
     });
 
     const outOfStockCount = await Product.countDocuments({
-      on_hand: { $lte: 0 },
       is_active: true,
+      on_hand: 0,
     });
 
-    let startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
+    const recentActivity = await StockMovement.find()
+      .sort({ occurred_at: -1, createdAt: -1 })
+      .limit(15)
+      .lean();
 
-    let startOfNextDay = new Date(startOfToday);
-    startOfNextDay.setDate(startOfNextDay.getDate() + 1);
-
-    const salesCountToday = await Sale.countDocuments({
-      occurred_at: {
-        $gte: startOfToday,
-        $lt: startOfNextDay,
-      },
-    });
-
-    const totalSalesAmountTodayAgg = await Sale.aggregate([
-      {
-        $match: {
-          occurred_at: {
-            $gte: startOfToday,
-            $lt: startOfNextDay,
-          },
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          totalSalesAmountToday: { $sum: "$total_amount" },
-        },
-      },
-    ]);
-    const totalSalesAmountToday = totalSalesAmountTodayAgg[0]?.totalSalesAmountToday ?? 0;
-
-    const itemsSoldTodayAgg = await Sale.aggregate([
-      {
-        $match: {
-          occurred_at: {
-            $gte: startOfToday,
-            $lt: startOfNextDay,
-          },
-        },
-      },
-      {
-        $lookup: {
-          from: "saleitems",
-          localField: "_id",
-          foreignField: "sale_id",
-          as: "items",
-        },
-      },
-      {
-        $unwind: "$items",
-      },
-      {
-        $group: {
-          _id: null,
-          itemsSoldToday: { $sum: "$items.quantity" },
-        },
-      },
-    ]);
-
-    const itemsSoldToday = itemsSoldTodayAgg[0]?.itemsSoldToday ?? 0;
-
-    const recentActivity = await StockMovement.find().sort({ createdAt: -1 }).limit(15);
-
-    return res.status(200).json({
+    res.status(200).json({
+      summaryDate,
       lowStockCount,
       outOfStockCount,
-      salesCountToday,
-      totalSalesAmountToday,
-      itemsSoldToday,
+      salesCountToday: summary?.total_sales_count ?? 0,
+      totalSalesAmountToday: summary?.total_sales_amount ?? 0,
+      itemsSoldToday: summary?.total_items_sold ?? 0,
       recentActivity,
     });
   } catch (err) {
