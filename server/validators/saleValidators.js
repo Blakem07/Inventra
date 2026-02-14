@@ -1,3 +1,21 @@
+/**
+ * Validates the request body for POST /sales.
+ *
+ * This function enforces the public API contract before any
+ * sale processing or inventory deduction logic is executed.
+ *
+ * Validation guarantees:
+ * - Body must exist and be an object.
+ * - payment_method must be one of: Cash, GCash, Other.
+ * - performed_by must be a non-empty string.
+ * - items must be a non-empty array.
+ * - Each item must include:
+ *   - product_id as a non-empty string.
+ *   - quantity as a positive number (>= 1).
+ *
+ * On failure, throws an Error with status 400.
+ * The validateBody middleware catches and forwards the error.
+ */
 export function validateSale(body) {
   const allowedPay = ["Cash", "GCash", "Other"];
   if (!body || typeof body !== "object") {

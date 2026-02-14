@@ -1,3 +1,19 @@
+/**
+ * Validates the request body for POST /stock/movements.
+ *
+ * This function enforces the public API contract before any
+ * inventory mutation logic is executed.
+ *
+ * Validation guarantees:
+ * - Body must exist and be an object.
+ * - product_id must be a non-empty string.
+ * - movement_type must be one of: IN, OUT, ADJUST.
+ * - quantity must be a positive number (> 0).
+ * - performed_by must be a non-empty string.
+ *
+ * On failure, throws an Error with status 400.
+ * The validateBody middleware catches and forwards the error.
+ */
 export function validateStockMovement(body) {
   const allowed = ["IN", "OUT", "ADJUST"];
   if (!body || typeof body !== "object") {
