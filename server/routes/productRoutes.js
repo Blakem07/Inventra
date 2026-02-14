@@ -1,11 +1,113 @@
 import { Router } from "express";
 import mongoose from "mongoose";
 import Product from "../models/Product.js";
+import Category from "../models/Category.js";
 
 // Defines a whitelist of fields the endpoint will accept
 const ALLOWED_CLIENT_KEYS = ["name", "skuOrBarcode", "categoryId", "unit", "price", "reorderLevel"];
 
 const router = Router();
+
+/**
+ * POST /products
+ *
+ * Creates a new product definition.
+ *
+ * Responsibilities:
+ * - Validates required fields: name, categoryId, unit, price.
+ * - Validates optional fields: skuOrBarcode, reorderLevel.
+ * - Ensures categoryId is a valid ObjectId and references an existing Category.
+ * - Normalizes input (trimming strings, parsing numeric values).
+ * - Maps API camelCase fields to schema snake_case fields.
+ *
+ * Does NOT modify stock levels.
+ * `on_hand` defaults to 0 and may only change via stock movement logic.
+ *
+ * Returns:
+ * - 201 Created with the persisted product document.
+ * - 400 for validation failures.
+ * - 404 if referenced category does not exist.
+ */
+router.post("/", async (req, res, next) => {
+  try {
+    const { name, skuOrBarcode, categoryId, unit, price, reorderLevel } = req.body;
+
+    if (typeof name !== "string" || name.trim() === "") {
+      return res.status(400).json({
+        error: { status: 400, message: "The name provided is invalid." },
+      });
+    }
+
+    if (
+      skuOrBarcode !== undefined &&
+      (typeof skuOrBarcode !== "string" || skuOrBarcode.trim() === "")
+    ) {
+      return res.status(400).json({
+        error: { status: 400, message: "The sku or barcode provided is invalid." },
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+      return res.status(400).json({
+        error: { status: 400, message: "Invalid category id." },
+      });
+    }
+
+    const categoryExists = await Category.exists({ _id: categoryId });
+
+    if (!categoryExists) {
+      return res.status(404).json({
+        error: { status: 404, message: "Category not found." },
+      });
+    }
+
+    if (typeof unit !== "string" || unit.trim() === "") {
+      return res.status(400).json({
+        error: { status: 400, message: "The unit provided is invalid." },
+      });
+    }
+
+    const parsedPrice = Number(price);
+
+    if (!Number.isFinite(parsedPrice) || parsedPrice < 0) {
+      return res.status(400).json({
+        error: { status: 400, message: "The price provided is invalid" },
+      });
+    }
+
+    const parsedReorderLevel = reorderLevel === undefined ? undefined : Number(reorderLevel);
+
+    if (
+      parsedReorderLevel !== undefined &&
+      (!Number.isFinite(parsedReorderLevel) || parsedReorderLevel < 0)
+    ) {
+      return res.status(400).json({
+        error: { status: 400, message: "The reorder level provided is invalid" },
+      });
+    }
+
+    const productData = {
+      name: name.trim(),
+      category_id: categoryId,
+      unit: unit.trim(),
+      price: parsedPrice,
+    };
+
+    if (skuOrBarcode !== undefined) {
+      productData.sku_or_barcode = skuOrBarcode.trim();
+    }
+
+    if (parsedReorderLevel !== undefined) {
+      productData.reorder_level = parsedReorderLevel;
+    }
+
+    const newProduct = await Product.create(productData);
+
+    res.status(201).json(newProduct);
+  } catch (err) {
+    next(err);
+  }
+});
 
 /**
  * GET /products
@@ -295,18 +397,10 @@ router.patch("/:id/archive", async (req, res, next) => {
         .json({ error: { status: 400, message: "The ID provided is invalid." } });
     }
 
-    if (Object.keys(req.body).length > 0) {
-      return res
-        .status(400)
-        .json({ error: { status: 400, message: "Request body must be empty." } });
-    }
-
-    const updatedResult = await Product.findByIdAndUpdate(
-      id,
+    const updatedResult = await Product.findOneAndUpdate(
+      { _id: id },
       { $set: { is_active: false } },
-      {
-        new: true,
-      },
+      { new: true },
     );
 
     if (updatedResult === null) {
