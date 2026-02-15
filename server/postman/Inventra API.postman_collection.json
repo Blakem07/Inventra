@@ -1,0 +1,988 @@
+{
+  "info": {
+    "_postman_id": "c8961373-22bc-4241-9619-be64301d400b",
+    "name": "Inventra API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "41779768"
+  },
+  "item": [
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "GET /health (200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "GET /categories (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /categories (201)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"testingPostCategories\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "POST /products (201)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"testProductCreatedWithPost\",\r\n\"categoryId\": \"{{generalCategory}}\",\r\n\"skuOrBarcode\": \"noSkuOrBarcode\",\r\n\"unit\": \"kg\",\r\n\"price\": 100,\r\n\"reorderLevel\": 5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /products invalid category (404)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"testProductCreatedWithPost\",\r\n\"categoryId\": \"{{invalidCategory}}\",\r\n\"skuOrBarcode\": \"noSkuOrBarcode\",\r\n\"unit\": \"kg\",\r\n\"price\": 100,\r\n\"reorderLevel\": 5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /products duplicate SKU (409)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"testProductCreatedWithPost\",\r\n\"categoryId\": \"{{generalCategory}}\",\r\n\"skuOrBarcode\": \"{{duplicateSkuOrBarcode}}\",\r\n\"unit\": \"kg\",\r\n\"price\": 100,\r\n\"reorderLevel\": 5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /products invalid body (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"invalidBody\": true\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /products (200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /products/:id (200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{validProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{validProductId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /products/:id invalid (400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{invalidProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{invalidProductId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /products/:id not found (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{notFoundProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{notFoundProductId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /products/:id not found (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{notFoundProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{notFoundProductId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /products/:id (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{{putProductStateB}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/{{putProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{putProductId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /products/:id invalid field (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"randomField\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/{{putProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{putProductId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /products/:id invalid onHand (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"onHand\": 100\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/{{putProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{putProductId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /products/:id empty body (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/{{putProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{putProductId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /products/:id/archive (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "conten",
+                "value": "",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{putProductId}}/archive",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{putProductId}}",
+                "archive"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /products/:id/archive invalid id(400)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{invalidProductId}}/archive",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{invalidProductId}}",
+                "archive"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Stock",
+      "item": [
+        {
+          "name": "POST /stock/movements IN (201)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"product_id\": \"{{testMovementProductId}}\",\r\n  \"movement_type\": \"IN\",\r\n  \"quantity\": 25,\r\n  \"performed_by\": \"Blake\",\r\n  \"reason\": \"Testing IN stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/stock/movements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "stock",
+                "movements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /stock/movements OUT (201)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"product_id\": \"{{testMovementProductId}}\",\r\n  \"movement_type\": \"OUT\",\r\n  \"quantity\": 25,\r\n  \"performed_by\": \"Blake\",\r\n  \"reason\": \"Testing OUT stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/stock/movements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "stock",
+                "movements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /stock/movements ADJUST (201)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"product_id\": \"{{testMovementProductId}}\",\r\n  \"movement_type\": \"ADJUST\",\r\n  \"quantity\": 100,\r\n  \"performed_by\": \"Blake\",\r\n  \"reason\": \"Testing ADJUST stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/stock/movements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "stock",
+                "movements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /stock/movements insufficient stock (422)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"product_id\": \"{{testMovementProductId}}\",\r\n  \"movement_type\": \"OUT\",\r\n  \"quantity\": 100000,\r\n  \"performed_by\": \"Blake\",\r\n  \"reason\": \"Testing IN stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/stock/movements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "stock",
+                "movements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /stock/movements invalid product (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"product_id\": \"{{invalidProductId}}\",\r\n  \"movement_type\": \"OUT\",\r\n  \"quantity\": 100000,\r\n  \"performed_by\": \"Blake\",\r\n  \"reason\": \"Testing IN stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/stock/movements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "stock",
+                "movements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /stock/movements invalid payload (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"product_id\": \"{{validProductId}}\",\r\n  \"movement_type\": \"BAD\",\r\n  \"quantity\": 10,\r\n  \"performed_by\": \"Blake\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/stock/movements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "stock",
+                "movements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /stock/movements (200)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"product_id\": \"{{invalidProductId}}\",\r\n  \"movement_type\": \"OUT\",\r\n  \"quantity\": 100000,\r\n  \"performed_by\": \"Blake\",\r\n  \"reason\": \"Testing IN stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/stock/movements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "stock",
+                "movements"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sales",
+      "item": [
+        {
+          "name": "POST /sales (201)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"payment_method\": \"Cash\",\r\n  \"performed_by\": \"Blake\",\r\n  \"note\": \"Test Sale Made on a testProductForSalesFlow\",\r\n  \"items\": [\r\n    { \"product_id\": \"{{testSalesProductId}}\", \"quantity\": 3 }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sales",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /sales oversell (422)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"payment_method\": \"Cash\",\r\n  \"performed_by\": \"Blake\",\r\n  \"note\": \"Test Sale oversell on a testProductForSalesFlow\",\r\n  \"items\": [\r\n    { \"product_id\": \"{{testSalesProductId}}\", \"quantity\": 100000 }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sales",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /sales non-existent product (404)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"payment_method\": \"Cash\",\r\n  \"performed_by\": \"Blake\",\r\n  \"note\": \"Test Sale Made on a testProductForSalesFlow\",\r\n  \"items\": [\r\n    { \"product_id\": \"{{nonExistientProductId}}\", \"quantity\": 3 }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sales",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /sales malformed productId (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"payment_method\": \"Cash\",\r\n  \"performed_by\": \"Blake\",\r\n  \"note\": \"Test Sale Made on a testProductForSalesFlow\",\r\n  \"items\": [\r\n    { \"product_id\": \"{{invalidProductId}}\", \"quantity\": 3 }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sales",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /sales (200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sales",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "GET /dashboard/summary (200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "summary"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "GET /reports/stock-levels (200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/stock-levels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reports",
+                "stock-levels"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /reports/sales?from&to (200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/sales?from=2026-01-01&to=2027-01-21",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reports",
+                "sales"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-01-01"
+                },
+                {
+                  "key": "to",
+                  "value": "2027-01-21"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /reports/movements?from&to (200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/movements?from=2026-01-01&to=2027-01-21",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reports",
+                "movements"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-01-01"
+                },
+                {
+                  "key": "to",
+                  "value": "2027-01-21"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "generalCategory",
+      "value": "696a1c7eb14dd0a32a725710"
+    },
+    {
+      "key": "invalidCategory",
+      "value": "000000000000000000000000"
+    },
+    {
+      "key": "duplicateSkuOrBarcode",
+      "value": "noSkuOrBarcode"
+    },
+    {
+      "key": "validProductId",
+      "value": "6990a334009155724b5d699a"
+    },
+    {
+      "key": "invalidProductId",
+      "value": "notValidProductId"
+    },
+    {
+      "key": "notFoundProductId",
+      "value": "000000000000000000000000"
+    },
+    {
+      "key": "putProductId",
+      "value": "6990adb02557559c77c97e23"
+    },
+    {
+      "key": "putProductStateA",
+      "value": "{\n  \"name\": \"productStateA\",\n  \"unit\": \"kg\",\n  \"price\": 100,\n  \"reorderLevel\": 5\n}"
+    },
+    {
+      "key": "putProductStateB",
+      "value": "{\n  \"name\": \"productStateB\",\n  \"unit\": \"pcs\",\n  \"price\": 150,\n  \"reorderLevel\": 10\n}"
+    },
+    {
+      "key": "testMovementProductId",
+      "value": "6991a1cde534a97e330f4cb7"
+    },
+    {
+      "key": "testSalesProductId",
+      "value": "6991b887404ed8cf6c6d0499"
+    },
+    {
+      "key": "nonExistientProductId",
+      "value": "000000000000000000000000"
+    },
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ]
+}
