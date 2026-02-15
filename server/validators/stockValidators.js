@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 /**
  * Validates the request body for POST /stock/movements.
  *
@@ -23,6 +24,11 @@ export function validateStockMovement(body) {
   }
   if (typeof body.product_id !== "string" || body.product_id.length === 0) {
     const e = new Error("product_id is required");
+    e.status = 400;
+    throw e;
+  }
+  if (!mongoose.Types.ObjectId.isValid(body.product_id)) {
+    const e = new Error("The product id provided is invalid.");
     e.status = 400;
     throw e;
   }
