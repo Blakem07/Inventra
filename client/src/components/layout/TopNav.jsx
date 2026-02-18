@@ -1,3 +1,9 @@
+import { NavLink } from "react-router-dom";
+
 export default function TopNav() {
-  return <h1>I'm a nav bar</h1>;
+  return (
+    <nav>
+      <NavLink to="/">Dashboard</NavLink>
+    </nav>
+  );
 }
