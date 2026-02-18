@@ -16,4 +16,30 @@ describe("Top Nav Tests", () => {
     expect(dashboardLink).toBeInTheDocument();
     expect(dashboardLink).toHaveAttribute("href", "/");
   });
+
+  it("renders Inventory link with correct href", () => {
+    render(
+      <MemoryRouter>
+        <TopNav />
+      </MemoryRouter>,
+    );
+
+    const inventoryLink = screen.getByRole("link", { name: /inventory/i });
+
+    expect(inventoryLink).toBeInTheDocument();
+    expect(inventoryLink).toHaveAttribute("href", "/inventory");
+  });
+
+  it("renders Reports link with correct href", () => {
+    render(
+      <MemoryRouter>
+        <TopNav />
+      </MemoryRouter>,
+    );
+
+    const reportsLink = screen.getByRole("link", { name: /reports/i });
+
+    expect(reportsLink).toBeInTheDocument();
+    expect(reportsLink).toHaveAttribute("href", "/reports");
+  });
 });
