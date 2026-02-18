@@ -17,6 +17,20 @@ describe("Top Nav Tests", () => {
     expect(dashboardLink).toHaveAttribute("href", "/");
   });
 
+  it("sets dashboardLink to active when route is: /", () => {
+    render(
+      <MemoryRouter>
+        <TopNav></TopNav>
+      </MemoryRouter>,
+    );
+
+    const dashboardLink = screen.getByRole("link", { name: /dashboard/i });
+    const inventoryLink = screen.getByRole("link", { name: /inventory/i });
+
+    expect(dashboardLink).toHaveAttribute("aria-current", "page");
+    expect(inventoryLink).not.toHaveAttribute("aria-current");
+  });
+
   it("renders Inventory link with correct href", () => {
     render(
       <MemoryRouter>
