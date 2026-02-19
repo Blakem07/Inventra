@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
 import QuickActions from "./QuickActions";
+import DashboardPage from "../pages/DashboardPage";
 
 describe("Quick Actions Tests", () => {
   let actions;
@@ -26,5 +28,20 @@ describe("Quick Actions Tests", () => {
     });
   });
 
-  it("");
+  it("Add Stock action button navigates to /stock/new", async () => {
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/stock/new" element={<h1>Create Stock Movement Page</h1>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await userEvent.click(screen.getByRole("link", { name: /add stock/i }));
+
+    expect(
+      screen.getByRole("heading", { name: /create stock movement page/i }),
+    ).toBeInTheDocument();
+  });
 });
