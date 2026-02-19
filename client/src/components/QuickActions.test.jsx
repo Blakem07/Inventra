@@ -44,4 +44,34 @@ describe("Quick Actions Tests", () => {
       screen.getByRole("heading", { name: /create stock movement page/i }),
     ).toBeInTheDocument();
   });
+
+  it("Record Sale action button navigates to sale/new", async () => {
+    render(
+      <MemoryRouter>
+        <Routes>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="sale/new" element={<h1>Create Sale Page</h1>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await userEvent.click(screen.getByRole("link", { name: /record sale/i }));
+
+    expect(screen.getByRole("heading", { name: /create sale page/i })).toBeInTheDocument();
+  });
+
+  it("View All Action button navigates to /reports", async () => {
+    render(
+      <MemoryRouter>
+        <Routes>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/reports" element={<h1>Reports Page</h1>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await userEvent.click(screen.getByRole("link", { name: /View All/i }));
+
+    expect(screen.getByRole("heading", { name: /reports page/i })).toBeInTheDocument();
+  });
 });
