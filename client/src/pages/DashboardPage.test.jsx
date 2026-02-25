@@ -18,7 +18,6 @@ describe("Dashboard Page Tests", () => {
     await userEvent.click(addStock);
 
     expect(screen.getByTestId("stock-movement-create-page")).toBeInTheDocument();
-    screen.debug();
   });
 
   it("navigates to Sale Create Page when Record Sale is clicked", async () => {
