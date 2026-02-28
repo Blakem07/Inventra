@@ -23,7 +23,7 @@ export default function InventoryPage() {
   }
 
   return (
-    <div data-testid="inventory-page">
+    <div data-testid="inventory-page" style={{ display: "flex", flexDirection: "column" }}>
       <h1>Inventory Page</h1>
       <QuickActions actions={[{ label: "Add Item", path: "new" }]} />
       <InventoryToolbar

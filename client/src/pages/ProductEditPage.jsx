@@ -7,7 +7,7 @@ export default function ProductEditPage() {
     <div data-testid="product-edit-page">
       <h1>Product Edit Page</h1>
       <h3>
-        Currently Editing: <span>{id}</span>
+        ID: <span>{id}</span>
       </h3>
     </div>
   );
