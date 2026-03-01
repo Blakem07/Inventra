@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider, MemoryRouter, Routes, Route } from "react-router-dom";
 import { userEvent } from "@testing-library/user-event";
@@ -16,6 +16,8 @@ describe("Inventory Page Tests", () => {
   beforeEach(() => {
     products = testProducts;
     categories = testCategories;
+
+    global.fetch = vi.fn();
   });
 
   it("navigates to product create when Add Item is clicked", async () => {
@@ -139,5 +141,39 @@ describe("Inventory Page Tests", () => {
 
     expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
     expect(screen.getByText(products[0].id)).toBeInTheDocument();
+  });
+
+  it("loads products and categories on mount", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [{ id: 1, name: "Test", category: "General", categoryId: 1 }],
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [{ id: 1, name: "General" }],
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
+    render(<RouterProvider router={router} />);
+
+    // Pre load
+
+    expect(screen.getByTestId("loading")).toBeInTheDocument();
+    expect(screen.queryByText("Test")).not.toBeInTheDocument();
+
+    // Post load
+
+    expect(await screen.findByText("Test")).toBeInTheDocument();
+
+    const dropbox = screen.getByRole("combobox");
+    const options = within(dropbox).getAllByRole("option");
+
+    expect(options.map((option) => option.textContent)).toContain("General");
+
+    expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch.mock.calls[0][0]).toContain("/products");
+    expect(fetch.mock.calls[1][0]).toContain("/categories");
   });
 });
