@@ -257,4 +257,24 @@ describe("Inventory Page Tests", () => {
     expect(fetch.mock.calls[0][0]).toContain("/products");
     expect(fetch.mock.calls[1][0]).toContain("/categories");
   });
+
+  it("shows error banner on fetch failure", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({ message: "Server Error" }),
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [{ id: 1, name: "General" }],
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
+    render(<RouterProvider router={router} />);
+
+    expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
+
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+  });
 });

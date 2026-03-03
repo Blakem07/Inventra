@@ -11,30 +11,50 @@ export default function InventoryPage() {
   const [searchFilter, setSearchFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(true);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     async function load() {
-      const productsData = await listProducts();
-      const categoriesData = await listCategories();
+      setError(false);
+      setLoading(true);
 
-      setProducts(productsData);
-      setCategories(categoriesData);
-      setLoading(false);
+      try {
+        const productsData = await listProducts();
+        const categoriesData = await listCategories();
+
+        if (!Array.isArray(productsData) || !Array.isArray(categoriesData)) {
+          throw new Error("Invalid data shape");
+        }
+
+        setProducts(productsData);
+        setCategories(categoriesData);
+      } catch {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
     }
+
     load();
   }, []);
 
-  let filteredProducts = products.filter(
-    (product) =>
-      searchFilter === "" ||
-      product.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
-      (product.skuOrBarcode || "").toLowerCase().includes(searchFilter.toLowerCase()),
-  );
+  let filteredProducts = [];
 
-  if (categoryFilter != "all") {
-    filteredProducts = filteredProducts.filter((product) => product.categoryId === categoryFilter);
+  if (error === false) {
+    filteredProducts = products.filter(
+      (product) =>
+        searchFilter === "" ||
+        product.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        (product.skuOrBarcode || "").toLowerCase().includes(searchFilter.toLowerCase()),
+    );
+
+    if (categoryFilter != "all") {
+      filteredProducts = filteredProducts.filter(
+        (product) => product.categoryId === categoryFilter,
+      );
+    }
   }
 
   return (
@@ -48,6 +68,7 @@ export default function InventoryPage() {
       />
       <InventoryTable products={filteredProducts} />
       {loading && <div data-testid="loading">Loading...</div>}
+      {error && <div role="alert">Error: Whilst Attempting To Load...</div>}
     </div>
   );
 }
