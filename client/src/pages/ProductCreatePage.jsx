@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { listCategories } from "../api/categories";
 
 /**
  * Validate required fields for product creation.
@@ -33,8 +35,9 @@ function validate(values) {
 }
 
 export default function ProductCreatePage() {
-  const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [errors, setErrors] = useState({});
   const [values, setValues] = useState({
     name: "",
     category: "",
@@ -43,7 +46,22 @@ export default function ProductCreatePage() {
     reorderLevel: "",
   });
 
-  const [errors, setErrors] = useState({});
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      try {
+        const categoriesData = await listCategories();
+        setCategories(categoriesData);
+      } catch {
+        // Implement error stuff later
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const navigate = useNavigate();
 
   function onChange(e) {
     const { name, value } = e.target;
@@ -86,13 +104,17 @@ export default function ProductCreatePage() {
           Category
           <select name="category" onChange={onChange}>
             <option value="">--Select a category --</option>
-            <option value={"cat-fruit"}>Fruit</option>
+            {categories.map((category) => (
+              <option value={category.id} key={category.id}>
+                {category.name}
+              </option>
+            ))}
           </select>
         </label>
         {errors.category ? <span role="alert">{errors.category}</span> : null}
         <label>
           SKU or Barcode
-          <input name="skuOrBarcode" />
+          <input name="skuOrBarcode" value={values.skuOrBarcode} onChange={onChange} />
         </label>
         <label>
           Price

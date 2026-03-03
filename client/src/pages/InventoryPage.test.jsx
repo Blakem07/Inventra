@@ -31,6 +31,13 @@ describe("Inventory Page Tests", () => {
       json: async () => categories,
     });
 
+    // ProductCreatePage loads categories on mount
+    // So a mock is required
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
     render(
       <MemoryRouter initialEntries={["/inventory"]}>
         <Routes>
@@ -44,6 +51,11 @@ describe("Inventory Page Tests", () => {
     expect(addItem).toBeInTheDocument();
 
     await userEvent.click(addItem);
+
+    const dropbox = screen.getByRole("combobox");
+    expect(
+      await within(dropbox).findByRole("option", { name: categories[0].name }),
+    ).toBeInTheDocument();
 
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
   });

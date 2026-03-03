@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, within, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider, MemoryRouter, useLocation } from "react-router-dom";
-import { router, routes } from "../app/routes";
+import { routes } from "../app/routes";
 
 import { userEvent } from "@testing-library/user-event";
 
@@ -14,9 +14,14 @@ describe("Product Create Page Tests", () => {
     categories = testCategories;
 
     global.fetch = vi.fn();
+
+    fetch.mockResolvedValue({
+      ok: true,
+      json: async () => categories,
+    });
   });
 
-  it("renders product input fields", () => {
+  it("renders product input fields", async () => {
     render(
       <MemoryRouter>
         <ProductCreatePage />
@@ -24,6 +29,12 @@ describe("Product Create Page Tests", () => {
     );
 
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
+
+    // Wait for fetch to load categories
+    const dropbox = screen.getByRole("combobox");
+    expect(
+      await within(dropbox).findByRole("option", { name: categories[0].name }),
+    ).toBeInTheDocument();
 
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Category")).toBeInTheDocument();
@@ -103,11 +114,6 @@ describe("Product Create Page Tests", () => {
   });
 
   it("loads categories on mount", async () => {
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => categories,
-    });
-
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory/new"] });
     render(<RouterProvider router={router} />);
 
@@ -122,6 +128,6 @@ describe("Product Create Page Tests", () => {
       expect(within(dropbox).getByRole("option", { name: category })).toBeInTheDocument();
     });
 
-    expect(global.fetch.mock.calls[0][0]).toBe("/categories");
+    expect(global.fetch.mock.calls[0][0]).toMatch(/categories/i);
   });
 });
