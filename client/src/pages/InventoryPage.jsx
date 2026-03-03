@@ -2,14 +2,29 @@ import QuickActions from "../components/QuickActions";
 import InventoryToolbar from "../components/InventoryToolbar";
 import InventoryTable from "../components/InventoryTable";
 
-import { testProducts } from "../tests/testProducts";
-import { testCategories } from "../tests/testCategories";
+import { listProducts } from "../api/products";
+import { listCategories } from "../api/categories";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function InventoryPage() {
   const [searchFilter, setSearchFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    async function load() {
+      const productsData = await listProducts();
+      const categoriesData = await listCategories();
+
+      setProducts(productsData);
+      setCategories(categoriesData);
+      setLoading(false);
+    }
+    load();
+  }, []);
 
   let filteredProducts = products.filter(
     (product) =>
@@ -29,11 +44,10 @@ export default function InventoryPage() {
       <InventoryToolbar
         setSearchFilter={setSearchFilter}
         setCategoryFilter={setCategoryFilter}
-        categories={testCategories}
+        categories={categories}
       />
       <InventoryTable products={filteredProducts} />
+      {loading && <div data-testid="loading">Loading...</div>}
     </div>
   );
 }
-
-const products = testProducts;

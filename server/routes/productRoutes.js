@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 import Product from "../models/Product.js";
 import Category from "../models/Category.js";
 
+// 
+import { formatProduct } from "./productFormatter.js";
+
 // Defines a whitelist of fields the endpoint will accept
 const ALLOWED_CLIENT_KEYS = ["name", "skuOrBarcode", "categoryId", "unit", "price", "reorderLevel"];
 
@@ -103,7 +106,7 @@ router.post("/", async (req, res, next) => {
 
     const newProduct = await Product.create(productData);
 
-    res.status(201).json(newProduct);
+    res.status(201).json(formatProduct(newProduct));
   } catch (err) {
     next(err);
   }
@@ -161,7 +164,7 @@ router.get("/", async (req, res, next) => {
       }
     });
 
-    res.status(200).json(result);
+    res.status(200).json(result.map(formatProduct));
   } catch (err) {
     next(err);
   }
@@ -207,7 +210,7 @@ router.get("/:id", async (req, res, next) => {
       result.status = "OK";
     }
 
-    res.status(200).json(result);
+    res.status(200).json(formatProduct(result));
   } catch (err) {
     next(err);
   }
@@ -286,7 +289,7 @@ router.put("/:id", async (req, res, next) => {
       return;
     }
 
-    res.status(200).json(updatedResult);
+    res.status(200).json(formatProduct(updatedResult));
   } catch (err) {
     next(err);
   }
