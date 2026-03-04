@@ -130,4 +130,19 @@ describe("Product Create Page Tests", () => {
 
     expect(global.fetch.mock.calls[0][0]).toMatch(/categories/i);
   });
+
+  it("shows an error banner on fetch failure", async () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({ message: "Server Error" }),
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/inventory/new"] });
+    render(<RouterProvider router={router} />);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Error: Fetching Categories");
+  });
 });
