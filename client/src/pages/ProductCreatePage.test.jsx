@@ -10,8 +10,17 @@ import { testCategories } from "../tests/testCategories";
 
 describe("Product Create Page Tests", () => {
   let categories;
+  let validPayload;
+
   beforeEach(() => {
     categories = testCategories;
+    validPayload = {
+      name: "validName",
+      category: testCategories[0].name,
+      skuOrBarcode: "validSkuOrBarcode",
+      price: "10",
+      reorderLevel: "5",
+    };
 
     global.fetch = vi.fn();
 
@@ -145,5 +154,50 @@ describe("Product Create Page Tests", () => {
     render(<RouterProvider router={router} />);
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Error: Fetching Categories");
+  });
+
+  it("sends correct payload and navigates on success", async () => {
+    const router = createMemoryRouter(routes, { initialEntries: ["/inventory/new"] });
+    render(<RouterProvider router={router} />);
+
+    const dropbox = screen.getByRole("combobox");
+    expect(
+      await within(dropbox).findByRole("option", { name: categories[0].name }),
+    ).toBeInTheDocument();
+
+    expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
+
+    const name = screen.getByRole("textbox", { name: /name/i });
+    const category = screen.getByRole("combobox", { name: /category/i });
+    const skuOrBarcode = screen.getByRole("textbox", { name: /sku or barcode/i });
+    const price = screen.getByRole("textbox", { name: /price/i });
+    const reorderLevel = screen.getByRole("textbox", { name: /reorder level/i });
+
+    await userEvent.type(name, validPayload.name);
+    await userEvent.selectOptions(category, validPayload.category);
+    await userEvent.type(skuOrBarcode, validPayload.skuOrBarcode);
+    await userEvent.type(price, validPayload.price);
+    await userEvent.type(reorderLevel, validPayload.reorderLevel);
+
+    const save = screen.getByRole("button", { name: /save/i });
+    await userEvent.click(save);
+
+    const calls = global.fetch.mock.calls;
+    await waitFor(() => {
+      let found = false;
+
+      calls.forEach((call) => {
+        if (call[0].includes("/products") && call[1].method && call[1].method === "POST") {
+          found = true;
+
+          const parsedPayload = JSON.parse(call[1].body);
+          expect(parsedPayload).toEqual(validPayload);
+        }
+      });
+
+      expect(found).toBe(true);
+    });
+
+    await screen.findByTestId("inventory-page");
   });
 });
