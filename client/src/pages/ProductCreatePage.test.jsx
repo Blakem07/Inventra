@@ -132,8 +132,9 @@ describe("Product Create Page Tests", () => {
   });
 
   it("shows an error banner on fetch failure", async () => {
+    // Prevents stderr caused by client console.log() on error
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
-    
+
     fetch.mockResolvedValueOnce({
       ok: false,
       status: 500,

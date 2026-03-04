@@ -11,7 +11,7 @@ export default function InventoryPage() {
   const [searchFilter, setSearchFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(true);
+  const [error, setError] = useState(false);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
 

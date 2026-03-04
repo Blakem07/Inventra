@@ -36,6 +36,7 @@ function validate(values) {
 
 export default function ProductCreatePage() {
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
   const [categories, setCategories] = useState([]);
   const [errors, setErrors] = useState({});
   const [values, setValues] = useState({
@@ -48,12 +49,17 @@ export default function ProductCreatePage() {
 
   useEffect(() => {
     async function load() {
+      setFetchError(false);
       setLoading(true);
       try {
         const categoriesData = await listCategories();
+
+        if (!Array.isArray(categoriesData)) {
+          throw new Error("Invalid Data Shape");
+        }
         setCategories(categoriesData);
       } catch {
-        // Implement error stuff later
+        setFetchError(true);
       } finally {
         setLoading(false);
       }
@@ -100,6 +106,7 @@ export default function ProductCreatePage() {
           <input name="name" value={values.name} onChange={onChange} />
         </label>
         {errors.name ? <span role="alert">{errors.name}</span> : null}
+        {fetchError && <span role="alert">Error: Fetching Categories</span>}
         <label>
           Category
           <select name="category" onChange={onChange}>
