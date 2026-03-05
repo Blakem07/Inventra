@@ -6,6 +6,7 @@ import { routes } from "../app/routes";
 
 import { testProducts } from "../tests/testProducts";
 import { testCategories } from "../tests/testCategories";
+import { wait } from "@testing-library/user-event/dist/cjs/utils/index.js";
 
 describe("Product Edit Page Tests", () => {
   let products;
@@ -106,5 +107,56 @@ describe("Product Edit Page Tests", () => {
     render(<RouterProvider router={router} />);
 
     expect(await screen.findByRole("alert")).toBeInTheDocument();
+  });
+
+  it("edit form triggers PUT request on submit", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ id: 123 }),
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/inventory/123/edit"] });
+    render(<RouterProvider router={router} />);
+
+    const name = screen.getByRole("textbox", { name: /name/i });
+    const categoryId = screen.getByRole("combobox", { name: /category/i });
+    const skuOrBarcode = screen.getByRole("textbox", { name: /sku or barcode/i });
+    const unit = screen.getByRole("textbox", { name: /unit/i });
+    const price = screen.getByRole("textbox", { name: /price/i });
+    const reorderLevel = screen.getByRole("textbox", { name: /reorder level/i });
+
+    const updated = {
+      name: "Updated Name",
+      categoryId: categories[1].id,
+      skuOrBarcode: "Updated SKU",
+      unit: "Updated Unit",
+      price: "Updated Price",
+      reorderLevel: "Updated Reorder Level",
+    };
+
+    await userEvent.type(name, updated.name);
+    await userEvent.selectOptions(categoryId, updated.categoryId);
+    await userEvent.type(skuOrBarcode, updated.skuOrBarcode);
+    await userEvent.type(unit, updated.unit);
+    await userEvent.type(price, updated.price);
+    await userEvent.type(reorderLevel, updated.reorderLevel);
+
+    const save = screen.getByRole("button", { name: /save/i });
+    await userEvent.click(save);
+
+    await waitFor(() => {
+      let found = false;
+      global.fetch.mock.calls.forEach((call) => {
+        if (call[0].includes("/products/123") && call[1]?.method === "PUT") {
+          found = true;
+        }
+      });
+      expect(found).toBe(true);
+    });
   });
 });
