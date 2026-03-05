@@ -16,10 +16,11 @@ describe("Product Create Page Tests", () => {
     categories = testCategories;
     validPayload = {
       name: "validName",
-      category: testCategories[0].name,
+      categoryId: testCategories[0].id,
       skuOrBarcode: "validSkuOrBarcode",
-      price: "10",
-      reorderLevel: "5",
+      unit: "kg",
+      price: 10,
+      reorderLevel: 5,
     };
 
     global.fetch = vi.fn();
@@ -168,16 +169,19 @@ describe("Product Create Page Tests", () => {
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
 
     const name = screen.getByRole("textbox", { name: /name/i });
-    const category = screen.getByRole("combobox", { name: /category/i });
+    const categoryId = screen.getByRole("combobox", { name: /category/i });
     const skuOrBarcode = screen.getByRole("textbox", { name: /sku or barcode/i });
+    const unit = screen.getByRole("textbox", { name: /unit/i });
     const price = screen.getByRole("textbox", { name: /price/i });
     const reorderLevel = screen.getByRole("textbox", { name: /reorder level/i });
 
     await userEvent.type(name, validPayload.name);
-    await userEvent.selectOptions(category, validPayload.category);
+    await userEvent.selectOptions(categoryId, validPayload.categoryId);
     await userEvent.type(skuOrBarcode, validPayload.skuOrBarcode);
-    await userEvent.type(price, validPayload.price);
-    await userEvent.type(reorderLevel, validPayload.reorderLevel);
+    await userEvent.type(unit, validPayload.unit);
+
+    await userEvent.type(price, validPayload.price.toString());
+    await userEvent.type(reorderLevel, validPayload.reorderLevel.toString());
 
     const save = screen.getByRole("button", { name: /save/i });
     await userEvent.click(save);
@@ -187,7 +191,8 @@ describe("Product Create Page Tests", () => {
       let found = false;
 
       calls.forEach((call) => {
-        if (call[0].includes("/products") && call[1].method && call[1].method === "POST") {
+        // Optional chaining to prevent crashed caused by call on inventory page
+        if (call[0].includes("/products") && call[1]?.method === "POST") {
           found = true;
 
           const parsedPayload = JSON.parse(call[1].body);

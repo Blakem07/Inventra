@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { listCategories } from "../api/categories";
+import { createProduct } from "../api/products";
 
 /**
  * Validate required fields for product creation.
@@ -43,6 +44,7 @@ export default function ProductCreatePage() {
     name: "",
     category: "",
     skuOrBarcode: "",
+    unit: "",
     price: "",
     reorderLevel: "",
   });
@@ -78,7 +80,7 @@ export default function ProductCreatePage() {
     }));
   }
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
 
     const nextErrors = validate(values);
@@ -90,6 +92,19 @@ export default function ProductCreatePage() {
       setErrors({});
     }
 
+    const priceNum = Number(values.price);
+    const reorderNum = Number(values.reorderLevel);
+
+    const payload = {
+      name: values.name,
+      categoryId: values.category,
+      skuOrBarcode: values.skuOrBarcode.trim(),
+      unit: values.unit,
+      price: priceNum,
+      reorderLevel: reorderNum,
+    };
+
+    await createProduct(payload);
     navigate("/inventory");
   }
 
@@ -122,6 +137,10 @@ export default function ProductCreatePage() {
         <label>
           SKU or Barcode
           <input name="skuOrBarcode" value={values.skuOrBarcode} onChange={onChange} />
+        </label>
+        <label>
+          Unit
+          <input name="unit" value={values.unit} onChange={onChange} />
         </label>
         <label>
           Price
