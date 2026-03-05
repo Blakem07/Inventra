@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { listCategories } from "../api/categories";
+import { updateProduct } from "../api/products";
 
 export default function ProductEditPage() {
   const { id } = useParams();
@@ -37,6 +38,10 @@ export default function ProductEditPage() {
 
   function onChange() {}
 
+  async function onSubmit() {
+    await updateProduct(id, values);
+  }
+
   return (
     <div data-testid="product-edit-page">
       <h1>Product Edit Page</h1>
@@ -45,6 +50,7 @@ export default function ProductEditPage() {
       </h3>
       <form
         method="PATCH"
+        onSubmit={onSubmit}
         style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "5px" }}
       >
         <label>
