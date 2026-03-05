@@ -51,6 +51,7 @@ export default function ProductEditPage() {
           Name
           <input></input>
         </label>
+        {fetchError && <span role="alert">Error: Fetching Categories</span>}
         <label>
           Category
           <select name="category" onChange={onChange}>

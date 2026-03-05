@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, waitFor, within } from "@testing-library/react";
-import { createMemoryRouter, RouterProvider, MemoryRouter, useLocation } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
+import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routes } from "../app/routes";
 
 import { testProducts } from "../tests/testProducts";
@@ -89,5 +90,21 @@ describe("Product Edit Page Tests", () => {
     });
 
     expect(found).toBe(true);
+  });
+
+  it("shows error banner when failing to fetch categories", async () => {
+    // Prevents stderr caused by client console.log() on error
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({ message: "Server Error" }),
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/inventory/123/edit"] });
+    render(<RouterProvider router={router} />);
+
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
   });
 });
