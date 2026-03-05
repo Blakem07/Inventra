@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider, MemoryRouter, useLocation } from "react-router-dom";
 import { routes } from "../app/routes";
 
@@ -15,14 +15,14 @@ describe("Product Edit Page Tests", () => {
     categories = testCategories.map((category) => ({ ...category }));
 
     global.fetch = vi.fn();
-
-    fetch.mockResolvedValue({
-      ok: true,
-      json: async () => categories,
-    });
   });
 
   it("loads route param and shows edit mode with id", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory/123/edit"] });
     render(<RouterProvider router={router} />);
 
@@ -38,6 +38,11 @@ describe("Product Edit Page Tests", () => {
   });
 
   it("renders product update input fields", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory/123/edit"] });
     render(<RouterProvider router={router} />);
 
@@ -56,5 +61,33 @@ describe("Product Edit Page Tests", () => {
     expect(screen.getByLabelText("Reorder Level")).toBeInTheDocument();
 
     expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
+  });
+
+  it("loads categories on mount", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/inventory/123/edit"] });
+    render(<RouterProvider router={router} />);
+
+    expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
+
+    // Wait for fetch to load categories
+    const dropbox = screen.getByRole("combobox");
+    expect(
+      await within(dropbox).findByRole("option", { name: categories[0].name }),
+    ).toBeInTheDocument();
+
+    let found = false;
+
+    global.fetch.mock.calls.forEach((call) => {
+      if (call[0].includes("/categories")) {
+        found = true;
+      }
+    });
+
+    expect(found).toBe(true);
   });
 });

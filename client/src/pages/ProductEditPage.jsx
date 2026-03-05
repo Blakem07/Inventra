@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
-import { listCategories } from "../api/categories";
 import { useEffect, useState } from "react";
+
+import { listCategories } from "../api/categories";
 
 export default function ProductEditPage() {
   const { id } = useParams();
