@@ -173,7 +173,6 @@ describe("Inventory Page Tests", () => {
     const table = screen.getByRole("table");
     const tbody = table.querySelector("tbody");
 
-    screen.debug();
     const allRows = within(tbody).getAllByRole("row");
     expect(allRows).toHaveLength(2);
   });
@@ -210,6 +209,10 @@ describe("Inventory Page Tests", () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => products,
+    });
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
     });
     fetch.mockResolvedValueOnce({
       ok: true,
@@ -271,6 +274,8 @@ describe("Inventory Page Tests", () => {
   });
 
   it("shows error banner on fetch failure", async () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+
     fetch.mockResolvedValueOnce({
       ok: false,
       status: 500,

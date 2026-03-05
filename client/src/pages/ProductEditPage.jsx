@@ -38,7 +38,9 @@ export default function ProductEditPage() {
 
   function onChange() {}
 
-  async function onSubmit() {
+  async function onSubmit(e) {
+    e.preventDefault();
+
     await updateProduct(id, values);
   }
 
