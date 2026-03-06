@@ -325,6 +325,34 @@ describe("Product Edit Page Tests", () => {
     expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
   });
 
+  it("requires name and category to submit", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products[0],
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
+    const router = createMemoryRouter(routes, {
+      initialEntries: [`/inventory/${products[0].id}/edit`],
+    });
+
+    render(<RouterProvider router={router} />);
+
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+
+    await userEvent.clear(screen.getByRole("textbox", { name: /name/i }));
+    await userEvent.selectOptions(screen.getByRole("combobox", { name: /category/i }), "");
+
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    expect(screen.getByText(/name is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/category is required/i)).toBeInTheDocument();
+  });
+
   it("requires price and reorder level to be positive to submit", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
