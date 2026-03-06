@@ -21,11 +21,12 @@ export default function ProductEditPage() {
   useEffect(() => {
     async function load() {
       setFetchError(false);
+
       try {
         const categoryData = await listCategories();
 
         if (!Array.isArray(categoryData)) {
-          throw new Error("Error: Invalid Data Shape");
+          throw new Error("Invalid category data shape");
         }
 
         setCategories(categoryData);
@@ -33,14 +34,21 @@ export default function ProductEditPage() {
         setFetchError(true);
       }
     }
+
     load();
   }, []);
 
-  function onChange() {}
+  function onChange(e) {
+    const { name, value } = e.target;
+
+    setValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
 
   async function onSubmit(e) {
     e.preventDefault();
-
     await updateProduct(id, values);
   }
 
@@ -50,19 +58,21 @@ export default function ProductEditPage() {
       <h3>
         ID: <span>{id}</span>
       </h3>
+
       <form
-        method="PATCH"
         onSubmit={onSubmit}
         style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "5px" }}
       >
         <label>
           Name
-          <input></input>
+          <input name="name" value={values.name} onChange={onChange} />
         </label>
+
         {fetchError && <span role="alert">Error: Fetching Categories</span>}
+
         <label>
           Category
-          <select name="category" onChange={onChange}>
+          <select name="categoryId" value={values.categoryId} onChange={onChange}>
             <option value="">--Select a category --</option>
             {categories.map((category) => (
               <option value={category.id} key={category.id}>
@@ -71,18 +81,27 @@ export default function ProductEditPage() {
             ))}
           </select>
         </label>
+
         <label>
-          SKU or Barcode<input></input>
+          SKU or Barcode
+          <input name="skuOrBarcode" value={values.skuOrBarcode} onChange={onChange} />
         </label>
+
         <label>
-          Unit <input></input>
+          Unit
+          <input name="unit" value={values.unit} onChange={onChange} />
         </label>
+
         <label>
-          Price <input></input>
+          Price
+          <input name="price" value={values.price} onChange={onChange} />
         </label>
+
         <label>
-          Reorder Level <input></input>
+          Reorder Level
+          <input name="reorderLevel" value={values.reorderLevel} onChange={onChange} />
         </label>
+
         <button type="submit" style={{ alignSelf: "flex-start", placeSelf: "center" }}>
           Save
         </button>
