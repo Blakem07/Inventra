@@ -327,4 +327,35 @@ describe("Product Edit Page Tests", () => {
 
     expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
   });
+
+  it("requires price and reorder level to be positive to submit", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products[0],
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
+    const router = createMemoryRouter(routes, {
+      initialEntries: [`/inventory/${products[0].id}/edit`],
+    });
+
+    render(<RouterProvider router={router} />);
+
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+
+    await userEvent.type(screen.getByRole("textbox", { name: /name/i }), "-1");
+    await userEvent.type(screen.getByRole("textbox", { name: /reorder level/i }), "-1");
+
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    expect(screen.getByText(/price must be 0 or more if provided/i)).toBeInTheDocument();
+    expect(screen.getByText(/reorder level must be 0 or more if provided/i)).toBeInTheDocument();
+
+    expect(screen.queryByTestId("inventory-page")).not.toBeInTheDocument();
+    expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
+  });
 });
