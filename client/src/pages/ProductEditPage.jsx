@@ -86,6 +86,7 @@ export default function ProductEditPage() {
   return (
     <div data-testid="product-edit-page">
       <h1>Product Edit Page</h1>
+
       <h3>
         ID: <span>{id}</span>
         <button
@@ -112,6 +113,8 @@ export default function ProductEditPage() {
           <input name="name" value={values.name} onChange={onChange} />
         </label>
 
+        {errors.name ? <span role="alert">{errors.name}</span> : null}
+
         {fetchError && <span role="alert">Error: Fetching Categories</span>}
 
         <label>
@@ -125,6 +128,8 @@ export default function ProductEditPage() {
             ))}
           </select>
         </label>
+
+        {errors.categoryId ? <span role="alert">{errors.categoryId}</span> : null}
 
         <label>
           SKU or Barcode
