@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import { listCategories } from "../api/categories";
 import { updateProduct } from "../api/products";
 
+import validateProductPayload from "../validation/validateProductPayload";
+
 export default function ProductEditPage() {
   const { id } = useParams();
 
   const [categories, setCategories] = useState([]);
   const [fetchError, setFetchError] = useState(false);
+  const [error, setErrors] = useState({});
   const [values, setValues] = useState({
     name: "",
     categoryId: "",
@@ -52,7 +55,16 @@ export default function ProductEditPage() {
   async function onSubmit(e) {
     e.preventDefault();
 
-    await updateProduct(id, values);
+    const validatedPayload = validateProductPayload(values);
+
+    if (validatedPayload.error) {
+      setErrors(validatedPayload.error);
+      return;
+    }
+
+    setErrors({});
+
+    await updateProduct(id, validatedPayload.data);
     navigate("/inventory");
   }
 

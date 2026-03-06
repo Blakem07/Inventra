@@ -12,9 +12,20 @@ describe("Product Edit Page Tests", () => {
   let products;
   let categories;
 
+  let validPayload;
+
   beforeEach(() => {
     products = testProducts.map((product) => ({ ...product })); // For mutation in archive test
     categories = testCategories.map((category) => ({ ...category }));
+
+    validPayload = {
+      name: "validName",
+      categoryId: testCategories[0].id,
+      skuOrBarcode: "validSkuOrBarcode",
+      unit: "kg",
+      price: 10,
+      reorderLevel: 5,
+    };
 
     global.fetch = vi.fn();
   });
@@ -130,21 +141,12 @@ describe("Product Edit Page Tests", () => {
     const price = screen.getByRole("textbox", { name: /price/i });
     const reorderLevel = screen.getByRole("textbox", { name: /reorder level/i });
 
-    const updated = {
-      name: "Updated Name",
-      categoryId: categories[1].id,
-      skuOrBarcode: "Updated SKU",
-      unit: "Updated Unit",
-      price: "Updated Price",
-      reorderLevel: "Updated Reorder Level",
-    };
-
-    await userEvent.type(name, updated.name);
-    await userEvent.selectOptions(categoryId, updated.categoryId);
-    await userEvent.type(skuOrBarcode, updated.skuOrBarcode);
-    await userEvent.type(unit, updated.unit);
-    await userEvent.type(price, updated.price);
-    await userEvent.type(reorderLevel, updated.reorderLevel);
+    await userEvent.type(name, validPayload.name);
+    await userEvent.selectOptions(categoryId, validPayload.categoryId);
+    await userEvent.type(skuOrBarcode, validPayload.skuOrBarcode);
+    await userEvent.type(unit, validPayload.unit);
+    await userEvent.type(price, validPayload.price.toString());
+    await userEvent.type(reorderLevel, validPayload.reorderLevel.toString());
 
     const save = screen.getByRole("button", { name: /save/i });
     await userEvent.click(save);
@@ -156,7 +158,7 @@ describe("Product Edit Page Tests", () => {
           found = true;
 
           const parsedPayload = JSON.parse(call[1].body);
-          expect(parsedPayload).toEqual(updated);
+          expect(parsedPayload).toEqual(validPayload);
         }
       });
       expect(found).toBe(true);
@@ -189,9 +191,9 @@ describe("Product Edit Page Tests", () => {
 
     await userEvent.type(screen.getByRole("textbox", { name: /sku or barcode/i }), "Updated SKU");
 
-    await userEvent.type(screen.getByRole("textbox", { name: /unit/i }), "Updated Unit");
+    await userEvent.type(screen.getByRole("textbox", { name: /unit/i }), "10");
 
-    await userEvent.type(screen.getByRole("textbox", { name: /price/i }), "Updated Price");
+    await userEvent.type(screen.getByRole("textbox", { name: /price/i }), "10");
 
     await userEvent.type(
       screen.getByRole("textbox", { name: /reorder level/i }),
