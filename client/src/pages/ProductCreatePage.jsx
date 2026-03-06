@@ -75,6 +75,8 @@ export default function ProductCreatePage() {
         onSubmit={onSubmit}
         style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "5px" }}
       >
+        {loading && <div data-testid="loading">Loading...</div>}
+
         <label>
           Name
           <input name="name" value={values.name} onChange={onChange} />
