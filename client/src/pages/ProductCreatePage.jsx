@@ -4,36 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { listCategories } from "../api/categories";
 import { createProduct } from "../api/products";
 
-/**
- * Validate required fields for product creation.
- * @param {object} values
- * @returns {{name?: string, category?: string, price? : string, reorderLevel?: string}}
- */
-function validate(values) {
-  const errors = {};
-
-  const name = values.name;
-  const category = values.category;
-  const reorder = values.reorderLevel;
-  const price = values.price;
-
-  if (name.trim() === "" || name === undefined || name === null) {
-    errors["name"] = "Name is required";
-  }
-
-  if (category.trim() === "" || category === undefined || category === null) {
-    errors["category"] = "Category is required";
-  }
-
-  if (price == null || price.trim() === "" || Number(price) < 0) {
-    errors.price = "Price must be 0 or more if provided";
-  }
-
-  if (reorder == null || reorder.trim() === "" || Number(reorder) < 0) {
-    errors.reorderLevel = "Reorder level must be 0 or more if provided";
-  }
-  return errors;
-}
+import validateProductPayload from "../validation/validateProductPayload";
 
 export default function ProductCreatePage() {
   const [loading, setLoading] = useState(false);
@@ -42,7 +13,7 @@ export default function ProductCreatePage() {
   const [errors, setErrors] = useState({});
   const [values, setValues] = useState({
     name: "",
-    category: "",
+    categoryId: "",
     skuOrBarcode: "",
     unit: "",
     price: "",
@@ -83,28 +54,16 @@ export default function ProductCreatePage() {
   async function onSubmit(e) {
     e.preventDefault();
 
-    const nextErrors = validate(values);
-    setErrors(nextErrors);
+    const validatedPayload = validateProductPayload(values);
 
-    if (Object.keys(nextErrors).length) {
+    if (validatedPayload.errors) {
+      setErrors(validatedPayload.errors);
       return;
-    } else if (Object.keys(nextErrors).length === 0) {
-      setErrors({});
     }
 
-    const priceNum = Number(values.price);
-    const reorderNum = Number(values.reorderLevel);
+    setErrors({});
 
-    const payload = {
-      name: values.name,
-      categoryId: values.category,
-      skuOrBarcode: values.skuOrBarcode.trim(),
-      unit: values.unit,
-      price: priceNum,
-      reorderLevel: reorderNum,
-    };
-
-    await createProduct(payload);
+    await createProduct(validatedPayload.data);
     navigate("/inventory");
   }
 
@@ -124,7 +83,7 @@ export default function ProductCreatePage() {
         {fetchError && <span role="alert">Error: Fetching Categories</span>}
         <label>
           Category
-          <select name="category" onChange={onChange}>
+          <select name="categoryId" onChange={onChange}>
             <option value="">--Select a category --</option>
             {categories.map((category) => (
               <option value={category.id} key={category.id}>
@@ -133,7 +92,7 @@ export default function ProductCreatePage() {
             ))}
           </select>
         </label>
-        {errors.category ? <span role="alert">{errors.category}</span> : null}
+        {errors.categoryId ? <span role="alert">{errors.categoryId}</span> : null}
         <label>
           SKU or Barcode
           <input name="skuOrBarcode" value={values.skuOrBarcode} onChange={onChange} />
@@ -142,6 +101,7 @@ export default function ProductCreatePage() {
           Unit
           <input name="unit" value={values.unit} onChange={onChange} />
         </label>
+        {errors.unit ? <span role="alert">{errors.unit}</span> : null}
         <label>
           Price
           <input name="price" value={values.price} onChange={onChange} />

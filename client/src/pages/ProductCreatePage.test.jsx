@@ -92,22 +92,32 @@ describe("Product Create Page Tests", () => {
     render(<RouterProvider router={router} />);
 
     const save = screen.getByRole("button", { name: /save/i });
+
+    await userEvent.type(screen.getByRole("textbox", { name: /reorder level/i }), "-1");
+    await userEvent.type(screen.getByRole("textbox", { name: /price/i }), "-1");
+
     await userEvent.click(save);
 
     expect(screen.getByText(/name is required/i)).toBeInTheDocument();
     expect(screen.getByText(/category is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/unit is required/i)).toBeInTheDocument();
     expect(screen.getByText(/price must be 0 or more if provided/i)).toBeInTheDocument();
     expect(screen.getByText(/reorder level must be 0 or more if provided/i)).toBeInTheDocument();
 
     const name = screen.getByRole("textbox", { name: /name/i });
     const category = screen.getByRole("combobox", { name: /category/i });
     const skuOrBarcode = screen.getByRole("textbox", { name: /sku or barcode/i });
+    const unit = screen.getByRole("textbox", { name: /unit/i });
     const price = screen.getByRole("textbox", { name: /price/i });
     const reorderLevel = screen.getByRole("textbox", { name: /reorder level/i });
+
+    await userEvent.clear(price);
+    await userEvent.clear(reorderLevel);
 
     await userEvent.type(name, "valid name");
     await userEvent.selectOptions(category, "cat-fruit");
     await userEvent.type(skuOrBarcode, "valid sku");
+    await userEvent.type(unit, "kg");
     await userEvent.type(price, "10");
     await userEvent.type(reorderLevel, "10");
 
@@ -115,12 +125,13 @@ describe("Product Create Page Tests", () => {
 
     expect(screen.queryByText(/name is required/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/category is required/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/unit is required/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/price must be 0 or more if provided/i)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/reorder level must be 0 or more if provided/i),
     ).not.toBeInTheDocument();
 
-    expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
+    expect(await screen.findByTestId("inventory-page")).toBeInTheDocument();
   });
 
   it("loads categories on mount", async () => {
