@@ -109,7 +109,7 @@ describe("Product Edit Page Tests", () => {
     expect(await screen.findByRole("alert")).toBeInTheDocument();
   });
 
-  it("edit form triggers PUT request on submit", async () => {
+  it("triggers PUT request on submit and sends proper payload", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => categories,
@@ -154,6 +154,9 @@ describe("Product Edit Page Tests", () => {
       global.fetch.mock.calls.forEach((call) => {
         if (call[0].includes("/products/123") && call[1]?.method === "PUT") {
           found = true;
+
+          const parsedPayload = JSON.parse(call[1].body);
+          expect(parsedPayload).toEqual(updated);
         }
       });
       expect(found).toBe(true);
