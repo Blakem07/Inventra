@@ -205,7 +205,7 @@ describe("Product Edit Page Tests", () => {
     expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
   });
 
-  it("clicking archive calls the correct endpoint", async () => {
+  it("clicking archive calls the correct endpoint and navigates", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => categories,
@@ -227,11 +227,13 @@ describe("Product Edit Page Tests", () => {
     await waitFor(() => {
       let found = false;
       global.fetch.mock.calls.forEach((call) => {
-        if (call[0].includes("/products/123/archive")) {
+        if (call[0].includes("/products/123/archive") && call[1]?.method == "PATCH") {
           found = true;
         }
       });
       expect(found).toBe(true);
     });
+
+    expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
   });
 });

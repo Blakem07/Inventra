@@ -19,3 +19,9 @@ export async function updateProduct(id, values) {
     body: JSON.stringify(values),
   });
 }
+
+export async function archiveProduct(id) {
+  return await client(`/products/${id}/archive`, {
+    method: "PATCH",
+  });
+}

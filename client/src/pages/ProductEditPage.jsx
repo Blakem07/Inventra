@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { listCategories } from "../api/categories";
-import { updateProduct } from "../api/products";
+import { archiveProduct, updateProduct } from "../api/products";
 
 import validateProductPayload from "../validation/validateProductPayload";
 
@@ -68,11 +68,28 @@ export default function ProductEditPage() {
     navigate("/inventory");
   }
 
+  async function onArchive(e) {
+    e.preventDefault();
+    archiveProduct(id);
+    navigate("/inventory");
+  }
+
   return (
     <div data-testid="product-edit-page">
       <h1>Product Edit Page</h1>
       <h3>
         ID: <span>{id}</span>
+        <button
+          onClick={onArchive}
+          style={{
+            alignSelf: "flex-start",
+            placeSelf: "center",
+            backgroundColor: "yellow",
+            fontWeight: "bolder",
+          }}
+        >
+          Archive
+        </button>
       </h3>
 
       <form
