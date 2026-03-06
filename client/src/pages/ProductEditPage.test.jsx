@@ -6,7 +6,6 @@ import { routes } from "../app/routes";
 
 import { testProducts } from "../tests/testProducts";
 import { testCategories } from "../tests/testCategories";
-import { wait } from "@testing-library/user-event/dist/cjs/utils/index.js";
 
 describe("Product Edit Page Tests", () => {
   let products;
@@ -235,5 +234,53 @@ describe("Product Edit Page Tests", () => {
     });
 
     expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
+  });
+
+  it("loads product by id and pre-fills fields", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products[0],
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
+    const router = createMemoryRouter(routes, {
+      initialEntries: [`/inventory/${products[0].id}/edit`],
+    });
+
+    render(<RouterProvider router={router} />);
+
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      let found = false;
+
+      global.fetch.mock.calls.forEach((call) => {
+        if (call[0].includes(`/products/${products[0].id}`)) {
+          found = true;
+        }
+      });
+
+      expect(found).toBe(true);
+    });
+
+    const nameInput = await screen.findByRole("textbox", { name: /name/i });
+    const categorySelect = await screen.findByRole("combobox", { name: /category/i });
+    const skuInput = await screen.findByRole("textbox", { name: /sku or barcode/i });
+    const unitInput = await screen.findByRole("textbox", { name: /unit/i });
+    const priceInput = await screen.findByRole("textbox", { name: /price/i });
+    const reorderInput = await screen.findByRole("textbox", { name: /reorder level/i });
+
+    expect(nameInput.value).toBe(products[0].name);
+    expect(categorySelect.value).toBe(products[0].categoryId);
+    expect(skuInput.value).toBe(products[0].skuOrBarcode);
+    expect(unitInput.value).toBe(products[0].unit);
+    expect(priceInput.value).toBe(String(products[0].price));
+    expect(reorderInput.value).toBe(String(products[0].reorderLevel));
+
+    expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
   });
 });
