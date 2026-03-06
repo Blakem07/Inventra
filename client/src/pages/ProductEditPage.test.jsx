@@ -233,10 +233,7 @@ describe("Product Edit Page Tests", () => {
 
     await userEvent.type(screen.getByRole("textbox", { name: /price/i }), "10");
 
-    await userEvent.type(
-      screen.getByRole("textbox", { name: /reorder level/i }),
-      "Updated Reorder Level",
-    );
+    await userEvent.type(screen.getByRole("textbox", { name: /reorder level/i }), "10");
 
     await userEvent.click(screen.getByRole("button", { name: /save/i }));
 
@@ -347,7 +344,10 @@ describe("Product Edit Page Tests", () => {
 
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
-    await userEvent.type(screen.getByRole("textbox", { name: /name/i }), "-1");
+    await userEvent.clear(screen.getByRole("textbox", { name: /price/i }));
+    await userEvent.clear(screen.getByRole("textbox", { name: /reorder level/i }));
+
+    await userEvent.type(screen.getByRole("textbox", { name: /price/i }), "-1");
     await userEvent.type(screen.getByRole("textbox", { name: /reorder level/i }), "-1");
 
     await userEvent.click(screen.getByRole("button", { name: /save/i }));

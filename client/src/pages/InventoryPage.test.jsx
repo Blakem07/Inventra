@@ -216,6 +216,10 @@ describe("Inventory Page Tests", () => {
     });
     fetch.mockResolvedValueOnce({
       ok: true,
+      json: async () => products[0],
+    });
+    fetch.mockResolvedValueOnce({
+      ok: true,
       json: async () => categories,
     });
 

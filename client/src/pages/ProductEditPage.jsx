@@ -19,7 +19,7 @@ export default function ProductEditPage() {
   const { id } = useParams();
 
   const [loading, setLoading] = useState(false);
-  const [error, setErrors] = useState({});
+  const [errors, setErrors] = useState({});
   const [fetchError, setFetchError] = useState(false);
 
   const [categories, setCategories] = useState([]);
@@ -66,8 +66,8 @@ export default function ProductEditPage() {
 
     const validatedPayload = validateProductPayload(values);
 
-    if (validatedPayload.error) {
-      setErrors(validatedPayload.error);
+    if (validatedPayload.errors) {
+      setErrors(validatedPayload.errors);
       return;
     }
 
@@ -79,7 +79,7 @@ export default function ProductEditPage() {
 
   async function onArchive(e) {
     e.preventDefault();
-    archiveProduct(id);
+    await archiveProduct(id);
     navigate("/inventory");
   }
 
@@ -141,10 +141,14 @@ export default function ProductEditPage() {
           <input name="price" value={values.price} onChange={onChange} />
         </label>
 
+        {errors.price ? <span role="alert">{errors.price}</span> : null}
+
         <label>
           Reorder Level
           <input name="reorderLevel" value={values.reorderLevel} onChange={onChange} />
         </label>
+
+        {errors.reorderLevel ? <span role="alert">{errors.reorderLevel}</span> : null}
 
         <button type="submit" style={{ alignSelf: "flex-start", placeSelf: "center" }}>
           Save
