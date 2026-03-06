@@ -227,13 +227,26 @@ describe("Product Edit Page Tests", () => {
       categories[1].id,
     );
 
-    await userEvent.type(screen.getByRole("textbox", { name: /sku or barcode/i }), "Updated SKU");
+    const name = await screen.findByRole("textbox", { name: /name/i });
+    const categoryId = await screen.findByRole("combobox", { name: /category/i });
+    const skuOrBarcode = await screen.findByRole("textbox", { name: /sku or barcode/i });
+    const unit = await screen.findByRole("textbox", { name: /unit/i });
+    const price = await screen.findByRole("textbox", { name: /price/i });
+    const reorderLevel = await screen.findByRole("textbox", { name: /reorder level/i });
 
-    await userEvent.type(screen.getByRole("textbox", { name: /unit/i }), "10");
+    await userEvent.clear(name);
+    await userEvent.selectOptions(categoryId, "");
+    await userEvent.clear(skuOrBarcode);
+    await userEvent.clear(unit);
+    await userEvent.clear(price);
+    await userEvent.clear(reorderLevel);
 
-    await userEvent.type(screen.getByRole("textbox", { name: /price/i }), "10");
-
-    await userEvent.type(screen.getByRole("textbox", { name: /reorder level/i }), "10");
+    await userEvent.type(name, "Updated Name");
+    await userEvent.selectOptions(categoryId, "cat-veg");
+    await userEvent.type(skuOrBarcode, "Updated SKU");
+    await userEvent.type(unit, "kg");
+    await userEvent.type(price, "10");
+    await userEvent.type(reorderLevel, "10");
 
     await userEvent.click(screen.getByRole("button", { name: /save/i }));
 

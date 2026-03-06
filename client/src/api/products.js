@@ -19,7 +19,7 @@ export async function createProduct(values) {
 export async function updateProduct(id, values) {
   return await client(`/products/${id}`, {
     method: "PUT",
-    headers: { "Content Type": "application/json" },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(values),
   });
 }

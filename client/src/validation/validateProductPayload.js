@@ -22,10 +22,6 @@ export default function validateProductPayload(values) {
     errors.categoryId = "Category is required";
   }
 
-  if (!skuOrBarcode) {
-    errors.skuOrBarcode = "SKU or Barcode is required";
-  }
-
   if (!unit) {
     errors.unit = "Unit is required";
   }
