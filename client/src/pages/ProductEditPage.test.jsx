@@ -162,4 +162,44 @@ describe("Product Edit Page Tests", () => {
       expect(found).toBe(true);
     });
   });
+
+  it("navigates to inventory page after successful save", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ id: 123 }),
+    });
+
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/inventory/123/edit"],
+    });
+
+    render(<RouterProvider router={router} />);
+
+    await userEvent.type(screen.getByRole("textbox", { name: /name/i }), "Updated Name");
+
+    await userEvent.selectOptions(
+      screen.getByRole("combobox", { name: /category/i }),
+      categories[1].id,
+    );
+
+    await userEvent.type(screen.getByRole("textbox", { name: /sku or barcode/i }), "Updated SKU");
+
+    await userEvent.type(screen.getByRole("textbox", { name: /unit/i }), "Updated Unit");
+
+    await userEvent.type(screen.getByRole("textbox", { name: /price/i }), "Updated Price");
+
+    await userEvent.type(
+      screen.getByRole("textbox", { name: /reorder level/i }),
+      "Updated Reorder Level",
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
+  });
 });
