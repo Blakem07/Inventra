@@ -204,4 +204,34 @@ describe("Product Edit Page Tests", () => {
 
     expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
   });
+
+  it("clicking archive calls the correct endpoint", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ id: 123 }),
+    });
+
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/inventory/123/edit"],
+    });
+
+    render(<RouterProvider router={router} />);
+
+    await userEvent.click(screen.getByRole("button", { name: /archive/i }));
+
+    await waitFor(() => {
+      let found = false;
+      global.fetch.mock.calls.forEach((call) => {
+        if (call[0].includes("/products/123/archive")) {
+          found = true;
+        }
+      });
+      expect(found).toBe(true);
+    });
+  });
 });
