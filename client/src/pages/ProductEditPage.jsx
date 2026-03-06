@@ -2,41 +2,50 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { listCategories } from "../api/categories";
-import { archiveProduct, updateProduct } from "../api/products";
+import { archiveProduct, updateProduct, getProduct } from "../api/products";
 
 import validateProductPayload from "../validation/validateProductPayload";
+
+const initialValues = {
+  name: "",
+  categoryId: "",
+  skuOrBarcode: "",
+  unit: "",
+  price: "",
+  reorderLevel: "",
+};
 
 export default function ProductEditPage() {
   const { id } = useParams();
 
-  const [categories, setCategories] = useState([]);
-  const [fetchError, setFetchError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setErrors] = useState({});
-  const [values, setValues] = useState({
-    name: "",
-    categoryId: "",
-    skuOrBarcode: "",
-    unit: "",
-    price: "",
-    reorderLevel: "",
-  });
+  const [fetchError, setFetchError] = useState(false);
+
+  const [categories, setCategories] = useState([]);
+  const [values, setValues] = useState(initialValues);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     async function load() {
+      setLoading(true);
       setFetchError(false);
 
       try {
+        const productData = await getProduct(id);
         const categoryData = await listCategories();
 
-        if (!Array.isArray(categoryData)) {
+        if (!Array.isArray(categoryData) || typeof productData !== "object") {
           throw new Error("Invalid category data shape");
         }
 
+        setValues(productData);
         setCategories(categoryData);
       } catch {
         setFetchError(true);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -91,6 +100,8 @@ export default function ProductEditPage() {
           Archive
         </button>
       </h3>
+
+      {loading && <div data-testid="loading">Loading...</div>}
 
       <form
         onSubmit={onSubmit}
