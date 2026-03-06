@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { listCategories } from "../api/categories";
@@ -17,6 +17,8 @@ export default function ProductEditPage() {
     price: "",
     reorderLevel: "",
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function load() {
@@ -49,7 +51,9 @@ export default function ProductEditPage() {
 
   async function onSubmit(e) {
     e.preventDefault();
+
     await updateProduct(id, values);
+    navigate("/inventory");
   }
 
   return (
