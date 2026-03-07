@@ -54,7 +54,7 @@ describe("Product Create Page Tests", () => {
     expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
   });
 
-  it("requires name and category to submit", async () => {
+  it("requires name, category and unit to submit", async () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory/new"] });
     render(<RouterProvider router={router} />);
 
@@ -63,6 +63,7 @@ describe("Product Create Page Tests", () => {
 
     expect(screen.getByText(/name is required/i)).toBeInTheDocument();
     expect(screen.getByText(/category is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/unit is required/i)).toBeInTheDocument();
 
     expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
   });

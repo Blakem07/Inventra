@@ -141,6 +141,8 @@ export default function ProductEditPage() {
           <input name="unit" value={values.unit} onChange={onChange} />
         </label>
 
+        {errors.unit ? <span role="alert">{errors.unit}</span> : null}
+
         <label>
           Price
           <input name="price" value={values.price} onChange={onChange} />
