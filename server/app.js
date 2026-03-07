@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
 import { connectDB } from "./db.js";
 import "./models/index.js";
 import stockRoutes from "./routes/stockRoutes.js";
@@ -10,12 +11,13 @@ import dashboardRoutes from "./routes/dashboardRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
-
 /**
  * Builds and configures the Express application.
  * Does not start the HTTP server.
  */
 const app = express();
+
+app.use(cors({ origin: "http://localhost:5173", optionsSuccessStatus: 200 }));
 
 app.use(express.json());
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider, MemoryRouter, Routes, Route } from "react-router-dom";
 import { userEvent } from "@testing-library/user-event";
@@ -16,9 +16,28 @@ describe("Inventory Page Tests", () => {
   beforeEach(() => {
     products = testProducts;
     categories = testCategories;
+
+    global.fetch = vi.fn();
   });
 
   it("navigates to product create when Add Item is clicked", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products,
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
+    // ProductCreatePage loads categories on mount
+    // So a mock is required
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
     render(
       <MemoryRouter initialEntries={["/inventory"]}>
         <Routes>
@@ -33,12 +52,29 @@ describe("Inventory Page Tests", () => {
 
     await userEvent.click(addItem);
 
+    const dropbox = screen.getByRole("combobox");
+    expect(
+      await within(dropbox).findByRole("option", { name: categories[0].name }),
+    ).toBeInTheDocument();
+
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
   });
 
-  it("renders a row for each Product", () => {
+  it("renders a row for each Product", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products,
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
     render(<RouterProvider router={router} />);
+
+    await screen.findByText(products[0].name); // Wait for the fetch
 
     const table = screen.getByRole("table");
     const tbody = table.querySelector("tbody");
@@ -48,11 +84,23 @@ describe("Inventory Page Tests", () => {
   });
 
   it("filters rows by searching product name", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products,
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
     render(
       <MemoryRouter>
         <InventoryPage />
       </MemoryRouter>,
     );
+
+    await screen.findByText(products[0].name); // Wait for the fetch
 
     const search = screen.getByRole("searchbox");
     await userEvent.type(search, products[0].name);
@@ -69,11 +117,23 @@ describe("Inventory Page Tests", () => {
   });
 
   it("filters rows by searching SKU", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products,
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
     render(
       <MemoryRouter>
         <InventoryPage />
       </MemoryRouter>,
     );
+
+    await screen.findByText(products[0].name); // Wait for the fetch
 
     const search = screen.getByRole("searchbox");
     await userEvent.type(search, products[0].skuOrBarcode);
@@ -89,11 +149,23 @@ describe("Inventory Page Tests", () => {
   });
 
   it("filters rows by dropdown categories", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products,
+    });
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
     render(
       <MemoryRouter>
         <InventoryPage />
       </MemoryRouter>,
     );
+
+    await screen.findByText(products[0].name); // Wait for the fetch
+    await screen.findByRole("option", { name: categories[0].name });
 
     const dropbox = screen.getByRole("combobox");
     await userEvent.selectOptions(dropbox, categories[0].name); // fruit
@@ -106,11 +178,22 @@ describe("Inventory Page Tests", () => {
   });
 
   it("shows all products when category is all", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products,
+    });
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
     render(
       <MemoryRouter>
         <InventoryPage />
       </MemoryRouter>,
     );
+
+    await screen.findByText(products[0].name); // Wait for the fetch
 
     const dropbox = screen.getByRole("combobox");
     await userEvent.selectOptions(dropbox, "all");
@@ -123,8 +206,27 @@ describe("Inventory Page Tests", () => {
   });
 
   it("navigates to correct product edit page when clicking edit", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products,
+    });
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products[0],
+    });
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
     render(<RouterProvider router={router} />);
+
+    await screen.findByText(products[0].name); // Wait for the fetch
 
     expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
 
@@ -139,5 +241,61 @@ describe("Inventory Page Tests", () => {
 
     expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
     expect(screen.getByText(products[0].id)).toBeInTheDocument();
+  });
+
+  it("loads products and categories on mount", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [{ id: 1, name: "Test", category: "General", categoryId: 1 }],
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [{ id: 1, name: "General" }],
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
+    render(<RouterProvider router={router} />);
+
+    // Pre load
+
+    expect(screen.getByTestId("loading")).toBeInTheDocument();
+    expect(screen.queryByText("Test")).not.toBeInTheDocument();
+
+    // Post load
+
+    expect(await screen.findByText("Test")).toBeInTheDocument();
+
+    const dropbox = screen.getByRole("combobox");
+    const options = within(dropbox).getAllByRole("option");
+
+    expect(options.map((option) => option.textContent)).toContain("General");
+
+    expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch.mock.calls[0][0]).toContain("/products");
+    expect(fetch.mock.calls[1][0]).toContain("/categories");
+  });
+
+  it("shows error banner on fetch failure", async () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({ message: "Server Error" }),
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [{ id: 1, name: "General" }],
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
+    render(<RouterProvider router={router} />);
+
+    expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
+
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
   });
 });

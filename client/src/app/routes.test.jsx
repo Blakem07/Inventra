@@ -1,9 +1,25 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { createMemoryRouter, RouterProvider, Routes, Route } from "react-router-dom";
-import userEvent from "@testing-library/user-event";
-
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, waitForElementToBeRemoved } from "@testing-library/react";
+import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routes } from "./routes";
+
+vi.mock("../api/categories", () => ({
+  listCategories: vi.fn(async () => []),
+}));
+
+vi.mock("../api/products", () => ({
+  getProduct: vi.fn(async () => ({
+    id: "123",
+    name: "Mock Product",
+    categoryId: "",
+    skuOrBarcode: "",
+    unit: "",
+    price: "",
+    reorderLevel: "",
+  })),
+  updateProduct: vi.fn(async () => ({})),
+  archiveProduct: vi.fn(async () => ({})),
+}));
 
 describe("Routes Tests", () => {
   it("renders Dashboard page via deep link", () => {
@@ -31,23 +47,27 @@ describe("Routes Tests", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByTestId("inventory-page"));
+    expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
   });
 
-  it("renders Product Create Page via deep link", () => {
+  it("renders Product Create Page via deep link", async () => {
     const router = createMemoryRouter(routes, {
       initialEntries: ["/inventory/new"],
     });
 
     render(<RouterProvider router={router} />);
 
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
   });
 
-  it("renders Product Edit Page via deep link", () => {
+  it("renders Product Edit Page via deep link", async () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory/123/edit"] });
 
     render(<RouterProvider router={router} />);
+
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
     expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
   });

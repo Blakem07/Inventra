@@ -1,49 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-/**
- * Validate required fields for product creation.
- * @param {object} values
- * @returns {{name?: string, category?: string, price? : string, reorderLevel?: string}}
- */
-function validate(values) {
-  const errors = {};
+import { listCategories } from "../api/categories";
+import { createProduct } from "../api/products";
 
-  const name = values.name;
-  const category = values.category;
-  const reorder = values.reorderLevel;
-  const price = values.price;
-
-  if (name.trim() === "" || name === undefined || name === null) {
-    errors["name"] = "Name is required";
-  }
-
-  if (category.trim() === "" || category === undefined || category === null) {
-    errors["category"] = "Category is required";
-  }
-
-  if (price == null || price.trim() === "" || Number(price) < 0) {
-    errors.price = "Price must be 0 or more if provided";
-  }
-
-  if (reorder == null || reorder.trim() === "" || Number(reorder) < 0) {
-    errors.reorderLevel = "Reorder level must be 0 or more if provided";
-  }
-  return errors;
-}
+import validateProductPayload from "../validation/validateProductPayload";
 
 export default function ProductCreatePage() {
-  const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [errors, setErrors] = useState({});
   const [values, setValues] = useState({
     name: "",
-    category: "",
+    categoryId: "",
     skuOrBarcode: "",
+    unit: "",
     price: "",
     reorderLevel: "",
   });
 
-  const [errors, setErrors] = useState({});
+  useEffect(() => {
+    async function load() {
+      setFetchError(false);
+      setLoading(true);
+      try {
+        const categoriesData = await listCategories();
+
+        if (!Array.isArray(categoriesData)) {
+          throw new Error("Invalid Data Shape");
+        }
+        setCategories(categoriesData);
+      } catch {
+        setFetchError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const navigate = useNavigate();
 
   function onChange(e) {
     const { name, value } = e.target;
@@ -54,18 +51,19 @@ export default function ProductCreatePage() {
     }));
   }
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
 
-    const nextErrors = validate(values);
-    setErrors(nextErrors);
+    const validatedPayload = validateProductPayload(values);
 
-    if (Object.keys(nextErrors).length) {
+    if (validatedPayload.errors) {
+      setErrors(validatedPayload.errors);
       return;
-    } else if (Object.keys(nextErrors).length === 0) {
-      setErrors({});
     }
 
+    setErrors({});
+
+    await createProduct(validatedPayload.data);
     navigate("/inventory");
   }
 
@@ -77,23 +75,35 @@ export default function ProductCreatePage() {
         onSubmit={onSubmit}
         style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "5px" }}
       >
+        {loading && <div data-testid="loading">Loading...</div>}
+
         <label>
           Name
           <input name="name" value={values.name} onChange={onChange} />
         </label>
         {errors.name ? <span role="alert">{errors.name}</span> : null}
+        {fetchError && <span role="alert">Error: Fetching Categories</span>}
         <label>
           Category
-          <select name="category" onChange={onChange}>
+          <select name="categoryId" onChange={onChange}>
             <option value="">--Select a category --</option>
-            <option value={"cat-fruit"}>Fruit</option>
+            {categories.map((category) => (
+              <option value={category.id} key={category.id}>
+                {category.name}
+              </option>
+            ))}
           </select>
         </label>
-        {errors.category ? <span role="alert">{errors.category}</span> : null}
+        {errors.categoryId ? <span role="alert">{errors.categoryId}</span> : null}
         <label>
           SKU or Barcode
-          <input name="skuOrBarcode" />
+          <input name="skuOrBarcode" value={values.skuOrBarcode} onChange={onChange} />
         </label>
+        <label>
+          Unit
+          <input name="unit" value={values.unit} onChange={onChange} />
+        </label>
+        {errors.unit ? <span role="alert">{errors.unit}</span> : null}
         <label>
           Price
           <input name="price" value={values.price} onChange={onChange} />
