@@ -338,7 +338,7 @@ describe("Product Edit Page Tests", () => {
     expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
   });
 
-  it("requires name and category to submit", async () => {
+  it("requires name, category and unit to submit", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => products[0],
@@ -359,11 +359,16 @@ describe("Product Edit Page Tests", () => {
 
     await userEvent.clear(screen.getByRole("textbox", { name: /name/i }));
     await userEvent.selectOptions(screen.getByRole("combobox", { name: /category/i }), "");
+    await userEvent.clear(screen.getByRole("textbox", { name: /unit/i }));
 
     await userEvent.click(screen.getByRole("button", { name: /save/i }));
 
     expect(screen.getByText(/name is required/i)).toBeInTheDocument();
     expect(screen.getByText(/category is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/unit is required/i)).toBeInTheDocument();
+
+    expect(screen.queryByTestId("inventory-page")).not.toBeInTheDocument();
+    expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
   });
 
   it("requires price and reorder level to be positive to submit", async () => {
