@@ -37,7 +37,7 @@ describe("Routes Tests", () => {
   });
 
   it("renders Sale Create Page via deep link", () => {
-    const router = createMemoryRouter(routes, { initialEntries: ["/sale/new"] });
+    const router = createMemoryRouter(routes, { initialEntries: ["/sales/new"] });
     render(<RouterProvider router={router} />);
 
     expect(screen.getByTestId("sale-create-page")).toBeInTheDocument();

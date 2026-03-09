@@ -45,12 +45,12 @@ describe("Quick Actions Tests", () => {
     ).toBeInTheDocument();
   });
 
-  it("Record Sale action button navigates to sale/new", async () => {
+  it("Record Sale action button navigates to sales/new", async () => {
     render(
       <MemoryRouter>
         <Routes>
           <Route path="/" element={<DashboardPage />} />
-          <Route path="sale/new" element={<h1>Create Sale Page</h1>} />
+          <Route path="sales/new" element={<h1>Create Sale Page</h1>} />
         </Routes>
       </MemoryRouter>,
     );

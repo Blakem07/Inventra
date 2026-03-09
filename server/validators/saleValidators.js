@@ -4,11 +4,11 @@ import mongoose from "mongoose";
  *
  * Ensures:
  * - Body is a non-null object (not an array).
- * - payment_method is one of: Cash, GCash, Other.
- * - performed_by is a non-empty trimmed string.
+ * - paymentMethod is one of: Cash, GCash, Other.
+ * - performedBy is a non-empty trimmed string.
  * - items is a non-empty array of objects.
  * - Each item contains:
- *   - product_id: non-empty string and valid MongoDB ObjectId.
+ *   - productId: non-empty string and valid MongoDB ObjectId.
  *   - quantity: integer >= 1.
  *
  * Throws Error with status 400 on validation failure.
@@ -22,14 +22,14 @@ export function validateSale(body) {
     throw e;
   }
 
-  if (!allowedPay.includes(body.payment_method)) {
-    const e = new Error("payment_method invalid");
+  if (!allowedPay.includes(body.paymentMethod)) {
+    const e = new Error("paymentMethod invalid");
     e.status = 400;
     throw e;
   }
 
-  if (typeof body.performed_by !== "string" || body.performed_by.trim().length === 0) {
-    const e = new Error("performed_by is required");
+  if (typeof body.performedBy !== "string" || body.performedBy.trim().length === 0) {
+    const e = new Error("performedBy is required");
     e.status = 400;
     throw e;
   }
@@ -47,13 +47,13 @@ export function validateSale(body) {
       throw e;
     }
 
-    if (typeof item.product_id !== "string" || item.product_id.trim().length === 0) {
-      const e = new Error("item.product_id is required");
+    if (typeof item.productId !== "string" || item.productId.trim().length === 0) {
+      const e = new Error("item.productId is required");
       e.status = 400;
       throw e;
     }
 
-    if (!mongoose.Types.ObjectId.isValid(item.product_id)) {
+    if (!mongoose.Types.ObjectId.isValid(item.productId)) {
       const e = new Error("The product id provided is invalid.");
       e.status = 400;
       throw e;

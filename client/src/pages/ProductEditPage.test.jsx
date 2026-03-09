@@ -44,9 +44,9 @@ describe("Product Edit Page Tests", () => {
     render(<RouterProvider router={router} />);
 
     // Wait for fetch to load categories
-    const dropbox = screen.getByRole("combobox");
+    const select = screen.getByRole("combobox");
     expect(
-      await within(dropbox).findByRole("option", { name: categories[0].name }),
+      await within(select).findByRole("option", { name: categories[0].name }),
     ).toBeInTheDocument();
 
     expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
@@ -71,9 +71,9 @@ describe("Product Edit Page Tests", () => {
     expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
 
     // Wait for fetch to load categories
-    const dropbox = screen.getByRole("combobox");
+    const select = screen.getByRole("combobox");
     expect(
-      await within(dropbox).findByRole("option", { name: categories[0].name }),
+      await within(select).findByRole("option", { name: categories[0].name }),
     ).toBeInTheDocument();
 
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
@@ -102,9 +102,9 @@ describe("Product Edit Page Tests", () => {
     expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
 
     // Wait for fetch to load categories
-    const dropbox = screen.getByRole("combobox");
+    const select = screen.getByRole("combobox");
     expect(
-      await within(dropbox).findByRole("option", { name: categories[0].name }),
+      await within(select).findByRole("option", { name: categories[0].name }),
     ).toBeInTheDocument();
 
     let found = false;

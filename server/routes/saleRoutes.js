@@ -5,6 +5,8 @@ import { validateSale } from "../validators/saleValidators.js";
 import Sale from "../models/Sale.js";
 import { buildCreatedAtRange } from "../helpers/index.js";
 
+import { formatSaleToDB, formatSaleResponseForFE } from "./saleFormatter.js";
+
 const router = Router();
 
 /**
@@ -17,8 +19,10 @@ const router = Router();
  */
 router.post("/", validateBody(validateSale), async (req, res, next) => {
   try {
-    const result = await SaleService.recordSale(req.body);
-    res.status(201).json(result);
+    const salePayload = formatSaleToDB(req.body);
+    const result = await SaleService.recordSale(salePayload);
+
+    res.status(201).json(formatSaleResponseForFE(result));
   } catch (err) {
     next(err);
   }

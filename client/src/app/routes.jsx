@@ -20,7 +20,7 @@ export const routes = [
     children: [
       { index: true, element: <DashboardPage /> },
       { path: "/stock/new", element: <StockMovementCreatePage /> },
-      { path: "/sale/new", element: <SaleCreatePage /> },
+      { path: "/sales/new", element: <SaleCreatePage /> },
 
       { path: "/inventory", element: <InventoryPage /> },
       { path: "/inventory/new", element: <ProductCreatePage /> },

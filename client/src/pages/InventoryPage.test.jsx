@@ -52,9 +52,9 @@ describe("Inventory Page Tests", () => {
 
     await userEvent.click(addItem);
 
-    const dropbox = screen.getByRole("combobox");
+    const select = screen.getByRole("combobox");
     expect(
-      await within(dropbox).findByRole("option", { name: categories[0].name }),
+      await within(select).findByRole("option", { name: categories[0].name }),
     ).toBeInTheDocument();
 
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
@@ -167,8 +167,8 @@ describe("Inventory Page Tests", () => {
     await screen.findByText(products[0].name); // Wait for the fetch
     await screen.findByRole("option", { name: categories[0].name });
 
-    const dropbox = screen.getByRole("combobox");
-    await userEvent.selectOptions(dropbox, categories[0].name); // fruit
+    const select = screen.getByRole("combobox");
+    await userEvent.selectOptions(select, categories[0].name); // fruit
 
     const table = screen.getByRole("table");
     const tbody = table.querySelector("tbody");
@@ -195,8 +195,8 @@ describe("Inventory Page Tests", () => {
 
     await screen.findByText(products[0].name); // Wait for the fetch
 
-    const dropbox = screen.getByRole("combobox");
-    await userEvent.selectOptions(dropbox, "all");
+    const select = screen.getByRole("combobox");
+    await userEvent.selectOptions(select, "all");
 
     const table = screen.getByRole("table");
     const tbody = table.querySelector("tbody");
@@ -266,8 +266,8 @@ describe("Inventory Page Tests", () => {
 
     expect(await screen.findByText("Test")).toBeInTheDocument();
 
-    const dropbox = screen.getByRole("combobox");
-    const options = within(dropbox).getAllByRole("option");
+    const select = screen.getByRole("combobox");
+    const options = within(select).getAllByRole("option");
 
     expect(options.map((option) => option.textContent)).toContain("General");
 

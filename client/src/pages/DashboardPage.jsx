@@ -7,7 +7,7 @@ export default function DashboardPage() {
       <QuickActions
         actions={[
           { label: "Add Stock", path: "stock/new" },
-          { label: "Record Sale", path: "sale/new" },
+          { label: "Record Sale", path: "sales/new" },
           { label: "View All", path: "reports" },
         ]}
       />

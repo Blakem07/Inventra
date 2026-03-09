@@ -113,9 +113,17 @@ export default function ProductEditPage() {
           <input name="name" value={values.name} onChange={onChange} />
         </label>
 
-        {errors.name ? <span role="alert">{errors.name}</span> : null}
+        {errors.name ? (
+          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+            {errors.name}
+          </span>
+        ) : null}
 
-        {fetchError && <span role="alert">Error: Fetching Categories</span>}
+        {fetchError && (
+          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+            Error: Fetching Categories
+          </span>
+        )}
 
         <label>
           Category
@@ -129,7 +137,11 @@ export default function ProductEditPage() {
           </select>
         </label>
 
-        {errors.categoryId ? <span role="alert">{errors.categoryId}</span> : null}
+        {errors.categoryId ? (
+          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+            {errors.categoryId}
+          </span>
+        ) : null}
 
         <label>
           SKU or Barcode
@@ -141,21 +153,33 @@ export default function ProductEditPage() {
           <input name="unit" value={values.unit} onChange={onChange} />
         </label>
 
-        {errors.unit ? <span role="alert">{errors.unit}</span> : null}
+        {errors.unit ? (
+          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+            {errors.unit}
+          </span>
+        ) : null}
 
         <label>
           Price
           <input name="price" value={values.price} onChange={onChange} />
         </label>
 
-        {errors.price ? <span role="alert">{errors.price}</span> : null}
+        {errors.price ? (
+          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+            {errors.price}
+          </span>
+        ) : null}
 
         <label>
           Reorder Level
           <input name="reorderLevel" value={values.reorderLevel} onChange={onChange} />
         </label>
 
-        {errors.reorderLevel ? <span role="alert">{errors.reorderLevel}</span> : null}
+        {errors.reorderLevel ? (
+          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+            {errors.reorderLevel}
+          </span>
+        ) : null}
 
         <button type="submit" style={{ alignSelf: "flex-start", placeSelf: "center" }}>
           Save

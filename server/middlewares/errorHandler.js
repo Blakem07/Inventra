@@ -1,9 +1,14 @@
 /**
  * Centralized Express error handler.
  *
- * Normalizes all application errors into a consistent JSON response.
- * Expects services and controllers to attach an HTTP status code to errors.
- * Must be registered after all routes and middleware.
+ * Converts thrown application errors into a consistent JSON response shape:
+ * { error: { message, status, ...metadata } }
+ *
+ * Special handling:
+ * - MongoDB duplicate key errors (E11000) → HTTP 409.
+ * - preserves additional error metadata (e.g. productId) when present.
+ *
+ * must be registered after all routes and middleware.
  */
 export function errorHandler(err, req, res, next) {
   // MongoDB duplicate key (E11000)
@@ -24,6 +29,7 @@ export function errorHandler(err, req, res, next) {
     error: {
       message: err.message ?? "Server error",
       status,
+      ...(err.productId && { productId: err.productId.toString() }), // For oversell
     },
   });
 }

@@ -41,9 +41,9 @@ describe("Product Create Page Tests", () => {
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
 
     // Wait for fetch to load categories
-    const dropbox = screen.getByRole("combobox");
+    const select = screen.getByRole("combobox");
     expect(
-      await within(dropbox).findByRole("option", { name: categories[0].name }),
+      await within(select).findByRole("option", { name: categories[0].name }),
     ).toBeInTheDocument();
 
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
@@ -139,15 +139,15 @@ describe("Product Create Page Tests", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory/new"] });
     render(<RouterProvider router={router} />);
 
-    const dropbox = screen.getByRole("combobox");
+    const select = screen.getByRole("combobox");
     expect(
-      await within(dropbox).findByRole("option", { name: categories[0].name }),
+      await within(select).findByRole("option", { name: categories[0].name }),
     ).toBeInTheDocument();
 
     const validCategoryNames = categories.map((category) => category.name);
 
     validCategoryNames.forEach((category) => {
-      expect(within(dropbox).getByRole("option", { name: category })).toBeInTheDocument();
+      expect(within(select).getByRole("option", { name: category })).toBeInTheDocument();
     });
 
     expect(global.fetch.mock.calls[0][0]).toMatch(/categories/i);
@@ -173,9 +173,9 @@ describe("Product Create Page Tests", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory/new"] });
     render(<RouterProvider router={router} />);
 
-    const dropbox = screen.getByRole("combobox");
+    const select = screen.getByRole("combobox");
     expect(
-      await within(dropbox).findByRole("option", { name: categories[0].name }),
+      await within(select).findByRole("option", { name: categories[0].name }),
     ).toBeInTheDocument();
 
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
