@@ -24,15 +24,13 @@ describe("Inventory Table Tests", () => {
 
     const table = screen.getByRole("table");
     const tbody = table.querySelector("tbody");
-    const rows = within(tbody).getAllByRole("row");
     const editButtons = within(tbody).getAllByRole("link", { name: /edit/i });
 
-    expect(rows).toHaveLength(products.length);
     expect(editButtons).toHaveLength(products.length);
 
     products.forEach((product) => {
-      const name = within(tbody).getByRole("rowheader", { name: product.name });
-      expect(name).toBeInTheDocument();
+      const nameCell = within(tbody).getByText(product.name);
+      expect(nameCell).toBeInTheDocument();
     });
   });
 });

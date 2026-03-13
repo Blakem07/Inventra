@@ -3,33 +3,44 @@ import StatusPill from "./StatusPill";
 
 export default function InventoryTable({ products }) {
   return (
-    <div style={{ placeSelf: "center", marginTop: "20px" }}>
-      <table>
+    <div style={containerStyle}>
+      <table style={tableStyle}>
         <thead>
           <tr>
-            <th scope="col">Item Name</th>
-            <th scope="col">SKU</th>
-            <th scope="col">Stock</th>
-            <th scope="col">Price</th>
-            <th scope="col">Status</th>
+            <th scope="col" style={thStyle}>
+              Item Name
+            </th>
+            <th scope="col" style={thStyle}>
+              SKU
+            </th>
+            <th scope="col" style={thStyle}>
+              Stock
+            </th>
+            <th scope="col" style={thStyle}>
+              Price
+            </th>
+            <th scope="col" style={thStyle}>
+              Status
+            </th>
+            <th scope="col" style={thStyle}></th>
           </tr>
         </thead>
         <tbody>
           {products.map((product) => {
             return (
               <tr key={product.id}>
-                <th scope="row">{product.name}</th>
-                <td>{product.skuOrBarcode || "N/A"}</td>
-                <td>{product.onHand}</td>
-                <td>{product.price}</td>
-                <td>
+                <td style={tdStyle}>{product.name}</td>
+                <td style={tdStyle}>{product.skuOrBarcode || "N/A"}</td>
+                <td style={tdStyle}>{product.onHand}</td>
+                <td style={tdStyle}>{product.price}</td>
+                <td style={tdStyle}>
                   <StatusPill
                     status={product.status}
                     onHand={product.onHand}
                     reorderLevel={product.reorderLevel}
                   />
                 </td>
-                <td>
+                <td style={actionTdStyle}>
                   <NavLink to={`${product.id}/edit`}>Edit</NavLink>
                 </td>
               </tr>
@@ -40,3 +51,42 @@ export default function InventoryTable({ products }) {
     </div>
   );
 }
+
+const containerStyle = {
+  placeSelf: "center",
+  marginTop: "20px",
+  border: "1px solid #ccc",
+  padding: "16px",
+  borderRadius: "4px",
+  width: "100%",
+  boxSizing: "border-box",
+  background: "#fff",
+};
+
+const tableStyle = {
+  width: "100%",
+  borderCollapse: "collapse",
+  fontFamily: "inherit",
+};
+
+const thStyle = {
+  textAlign: "left",
+  padding: "8px",
+  borderBottom: "1px solid #eee",
+  fontWeight: 600,
+  verticalAlign: "top", 
+};
+
+const tdStyle = {
+  textAlign: "left", 
+  padding: "8px",
+  borderBottom: "1px solid #f5f5f5",
+  verticalAlign: "top", 
+};
+
+const actionTdStyle = {
+  ...tdStyle,
+  textAlign: "left", 
+  width: "1%",
+  whiteSpace: "nowrap",
+};

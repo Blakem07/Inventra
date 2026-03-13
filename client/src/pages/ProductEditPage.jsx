@@ -50,7 +50,7 @@ export default function ProductEditPage() {
     }
 
     load();
-  }, []);
+  }, [id]);
 
   function onChange(e) {
     const { name, value } = e.target;
@@ -87,47 +87,43 @@ export default function ProductEditPage() {
     <div data-testid="product-edit-page">
       <h1>Product Edit Page</h1>
 
-      <h3>
-        ID: <span>{id}</span>
-        <button
-          onClick={onArchive}
-          style={{
-            alignSelf: "flex-start",
-            placeSelf: "center",
-            backgroundColor: "yellow",
-            fontWeight: "bolder",
-          }}
-        >
+      <h3 style={{ display: "flex", placeSelf: "center", alignItems: "center", gap: 12 }}>
+        <span>
+          ID: <span>{id}</span>
+        </span>
+        <button onClick={onArchive} style={archiveButtonStyle}>
           Archive
         </button>
       </h3>
 
       {loading && <div data-testid="loading">Loading...</div>}
 
-      <form
-        onSubmit={onSubmit}
-        style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "5px" }}
-      >
-        <label>
-          Name
-          <input name="name" value={values.name} onChange={onChange} />
+      <form onSubmit={onSubmit} style={containerStyle}>
+        <label style={fieldStyle}>
+          <span style={labelTextStyle}>Name</span>
+          <input name="name" value={values.name} onChange={onChange} style={inputStyle} />
         </label>
 
         {errors.name ? (
-          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+          <div role="alert" style={errorStyle}>
             {errors.name}
-          </span>
+          </div>
         ) : null}
 
         {fetchError && (
-          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+          <div role="alert" style={errorStyle}>
             Error: Fetching Categories
-          </span>
+          </div>
         )}
 
-        <label>
-          Category
-          <select name="categoryId" value={values.categoryId} onChange={onChange}>
+        <label style={fieldStyle}>
+          <span style={labelTextStyle}>Category</span>
+          <select
+            name="categoryId"
+            value={values.categoryId}
+            onChange={onChange}
+            style={inputStyle}
+          >
             <option value="">--Select a category --</option>
             {categories.map((category) => (
               <option value={category.id} key={category.id}>
@@ -138,53 +134,125 @@ export default function ProductEditPage() {
         </label>
 
         {errors.categoryId ? (
-          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+          <div role="alert" style={errorStyle}>
             {errors.categoryId}
-          </span>
+          </div>
         ) : null}
 
-        <label>
-          SKU or Barcode
-          <input name="skuOrBarcode" value={values.skuOrBarcode} onChange={onChange} />
+        <label style={fieldStyle}>
+          <span style={labelTextStyle}>SKU or Barcode</span>
+          <input
+            name="skuOrBarcode"
+            value={values.skuOrBarcode}
+            onChange={onChange}
+            style={inputStyle}
+          />
         </label>
 
-        <label>
-          Unit
-          <input name="unit" value={values.unit} onChange={onChange} />
+        <label style={fieldStyle}>
+          <span style={labelTextStyle}>Unit</span>
+          <input name="unit" value={values.unit} onChange={onChange} style={inputStyle} />
         </label>
 
         {errors.unit ? (
-          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+          <div role="alert" style={errorStyle}>
             {errors.unit}
-          </span>
+          </div>
         ) : null}
 
-        <label>
-          Price
-          <input name="price" value={values.price} onChange={onChange} />
+        <label style={fieldStyle}>
+          <span style={labelTextStyle}>Price</span>
+          <input name="price" value={values.price} onChange={onChange} style={inputStyle} />
         </label>
 
         {errors.price ? (
-          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+          <div role="alert" style={errorStyle}>
             {errors.price}
-          </span>
+          </div>
         ) : null}
 
-        <label>
-          Reorder Level
-          <input name="reorderLevel" value={values.reorderLevel} onChange={onChange} />
+        <label style={fieldStyle}>
+          <span style={labelTextStyle}>Reorder Level</span>
+          <input
+            name="reorderLevel"
+            value={values.reorderLevel}
+            onChange={onChange}
+            style={inputStyle}
+          />
         </label>
 
         {errors.reorderLevel ? (
-          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+          <div role="alert" style={errorStyle}>
             {errors.reorderLevel}
-          </span>
+          </div>
         ) : null}
 
-        <button type="submit" style={{ alignSelf: "flex-start", placeSelf: "center" }}>
+        <button type="submit" style={buttonStyle}>
           Save
         </button>
       </form>
     </div>
   );
 }
+
+const containerStyle = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "stretch",
+  border: "1px solid #ccc",
+  padding: "16px",
+  borderRadius: "4px",
+  background: "#fff",
+  width: "100%",
+  maxWidth: 800,
+  boxSizing: "border-box",
+  margin: "0 auto",
+};
+
+const fieldStyle = {
+  display: "flex",
+  flexDirection: "row",
+  gap: "8px",
+  alignItems: "center",
+  marginBottom: "8px",
+};
+
+const labelTextStyle = {
+  minWidth: 120,
+  display: "inline-block",
+};
+
+const inputStyle = {
+  padding: "8px",
+  border: "1px solid #ddd",
+  borderRadius: "4px",
+  fontFamily: "inherit",
+  flex: 1,
+  minWidth: 0,
+};
+
+const buttonStyle = {
+  alignSelf: "center",
+  padding: "8px 12px",
+  borderRadius: "4px",
+  border: "1px solid #000",
+  background: "#bdbdbd",
+  color: "#000",
+  cursor: "pointer",
+};
+
+const archiveButtonStyle = {
+  alignSelf: "flex-start",
+  backgroundColor: "yellow",
+  fontWeight: "bolder",
+  border: "1px solid #999",
+  padding: "6px 10px",
+  borderRadius: 4,
+  cursor: "pointer",
+};
+
+const errorStyle = {
+  color: "#d32f2f",
+  fontSize: "0.9em",
+  marginBottom: "8px",
+};

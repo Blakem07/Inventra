@@ -108,9 +108,11 @@ describe("Inventory Page Tests", () => {
     const table = screen.getByRole("table");
     const tbody = table.querySelector("tbody");
 
-    const matchingHeader = within(tbody).getByRole("rowheader", products[0].name);
+    const matchingCell = within(tbody).getByRole("cell", {
+      name: products[0].name,
+    });
 
-    expect(matchingHeader).toBeInTheDocument();
+    expect(matchingCell).toBeInTheDocument();
 
     const allRows = within(tbody).getAllByRole("row");
     expect(allRows).toHaveLength(1);
@@ -141,8 +143,11 @@ describe("Inventory Page Tests", () => {
     const table = screen.getByRole("table");
     const tbody = table.querySelector("tbody");
 
-    const matchingHeader = within(tbody).getByRole("rowheader", products[0].skuOrBarcode);
-    expect(matchingHeader).toBeInTheDocument();
+    const matchingCell = within(tbody).getByRole("cell", {
+      name: products[0].skuOrBarcode,
+    });
+
+    expect(matchingCell).toBeInTheDocument();
 
     const allRows = within(tbody).getAllByRole("row");
     expect(allRows).toHaveLength(1);
@@ -233,8 +238,8 @@ describe("Inventory Page Tests", () => {
     const table = screen.getByRole("table");
     const tbody = table.querySelector("tbody");
 
-    const allRows = within(tbody).getAllByRole("row");
-    const targetRow = allRows.find((row) => within(row).getByRole("rowheader", products[0].name));
+    const cell = within(tbody).getByRole("cell", { name: products[0].name });
+    const targetRow = cell.closest("tr");
 
     const edit = within(targetRow).getByRole("link", { name: /edit/i });
     await userEvent.click(edit);

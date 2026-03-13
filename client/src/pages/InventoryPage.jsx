@@ -60,15 +60,50 @@ export default function InventoryPage() {
   return (
     <div data-testid="inventory-page" style={{ display: "flex", flexDirection: "column" }}>
       <h1>Inventory Page</h1>
-      <QuickActions actions={[{ label: "Add Item", path: "new" }]} />
-      <InventoryToolbar
-        setSearchFilter={setSearchFilter}
-        setCategoryFilter={setCategoryFilter}
-        categories={categories}
-      />
-      <InventoryTable products={filteredProducts} />
-      {loading && <div data-testid="loading">Loading...</div>}
-      {error && <div role="alert">Error: Whilst Attempting To Load...</div>}
+
+      <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
+        <section
+          style={{
+            border: "1px solid #ccc",
+            padding: "16px",
+            borderRadius: "4px",
+            flex: 1,
+          }}
+        >
+          <h2>Filters</h2>
+          <InventoryToolbar
+            setSearchFilter={setSearchFilter}
+            setCategoryFilter={setCategoryFilter}
+            categories={categories}
+          />
+        </section>
+
+        <section
+          style={{
+            border: "1px solid #ccc",
+            padding: "16px",
+            borderRadius: "4px",
+            flex: 1,
+          }}
+        >
+          <h2>Quick Action</h2>
+          <QuickActions actions={[{ label: "Add Item", path: "new" }]} />
+        </section>
+      </div>
+
+      <section
+        style={{
+          border: "1px solid #ccc",
+          padding: "16px",
+          marginBottom: "16px",
+          borderRadius: "4px",
+        }}
+      >
+        <h2>Inventory</h2>
+        <InventoryTable products={filteredProducts} />
+        {loading && <div data-testid="loading">Loading...</div>}
+        {error && <div role="alert">Error: Whilst Attempting To Load...</div>}
+      </section>
     </div>
   );
 }

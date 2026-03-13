@@ -306,7 +306,7 @@ describe("Sales Create Page Tests", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /confirm sale/i }));
 
-    expect(screen.getByTestId("dashboard-page"));
+    expect(await screen.findByTestId("dashboard-page")).toBeInTheDocument();
   });
 
   it("shows an inline error when the sale exceeds available inventory", async () => {

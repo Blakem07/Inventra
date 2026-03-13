@@ -250,7 +250,7 @@ describe("Product Edit Page Tests", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /save/i }));
 
-    expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
+    expect(await screen.findByTestId("inventory-page")).toBeInTheDocument();
   });
 
   it("clicking archive calls the correct endpoint and navigates", async () => {
@@ -402,6 +402,6 @@ describe("Product Edit Page Tests", () => {
     expect(screen.getByText(/reorder level must be 0 or more if provided/i)).toBeInTheDocument();
 
     expect(screen.queryByTestId("inventory-page")).not.toBeInTheDocument();
-    expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
+    expect(await screen.findByTestId("product-edit-page")).toBeInTheDocument();
   });
 });

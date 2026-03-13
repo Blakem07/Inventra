@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import createSale from "../api/sale";
 
@@ -89,52 +89,49 @@ export default function SalesForm({ products = [] }) {
   }
 
   return (
-    <form
-      method="POST"
-      onSubmit={onSubmit}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {values.items.map((item, index) => (
-        <LineItemRow
-          key={index}
-          itemValues={item}
-          products={products}
-          error={errors[item.productId]}
-          submitted={submitted}
-          onChange={(field, value) => handleLineItemChange(index, field, value)}
-          onRemove={() => handleRemoveItem(index)}
-        />
-      ))}
+    <form method="POST" onSubmit={onSubmit} style={formStyle}>
+      <div style={itemsContainerStyle}>
+        {values.items.map((item, index) => (
+          <LineItemRow
+            key={index}
+            itemValues={item}
+            products={products}
+            error={errors[item.productId]}
+            submitted={submitted}
+            onChange={(field, value) => handleLineItemChange(index, field, value)}
+            onRemove={() => handleRemoveItem(index)}
+          />
+        ))}
+      </div>
 
-      <button onClick={handleAddItem}>Add Item +</button>
+      <div style={rowStyle}>
+        <button onClick={handleAddItem} style={addButtonStyle}>
+          Add Item +
+        </button>
+      </div>
 
-      <fieldset
-        aria-label="transaction details"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
-          alignItems: "flex-start",
-        }}
-      >
-        <label>
-          Performed By
-          <input name="performedBy" type="text" value={values.performedBy} onChange={onChange} />
+      <fieldset aria-label="transaction details" style={fieldsetStyle}>
+        <label style={labelStyle}>
+          <span style={labelTextStyle}>Performed By</span>
+          <input
+            name="performedBy"
+            type="text"
+            value={values.performedBy}
+            onChange={onChange}
+            style={inputStyle}
+          />
         </label>
 
         {errors.performedBy && (
-          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+          <span role="alert" style={errorStyle}>
             Performed By is required
           </span>
         )}
 
-        <fieldset>
-          <legend>Payment Method</legend>
+        <fieldset style={paymentFieldsetStyle}>
+          <legend style={legendStyle}>Payment Method</legend>
 
-          <label>
+          <label style={radioLabelStyle}>
             <input
               type="radio"
               name="paymentMethod"
@@ -145,7 +142,7 @@ export default function SalesForm({ products = [] }) {
             Cash
           </label>
 
-          <label>
+          <label style={radioLabelStyle}>
             <input
               type="radio"
               name="paymentMethod"
@@ -156,7 +153,7 @@ export default function SalesForm({ products = [] }) {
             GCash
           </label>
 
-          <label>
+          <label style={radioLabelStyle}>
             <input
               type="radio"
               name="paymentMethod"
@@ -169,36 +166,160 @@ export default function SalesForm({ products = [] }) {
         </fieldset>
 
         {errors.paymentMethod && (
-          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+          <span role="alert" style={errorStyle}>
             Payment method is required
           </span>
         )}
 
-        <label
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-            alignItems: "flex-start",
-          }}
-        >
-          Notes (Optional)
+        <label style={labelStyleColumn}>
+          <span style={labelTextStyle}>Notes (Optional)</span>
           <textarea
             name="note"
             minLength={0}
             maxLength={200}
             value={values.note}
             onChange={onChange}
-          ></textarea>
+            style={textareaStyle}
+          />
         </label>
       </fieldset>
-      <button>Confirm Sale</button>
+
+      <div style={actionsStyle}>
+        <button type="submit" style={confirmButtonStyle}>
+          Confirm Sale
+        </button>
+      </div>
 
       {errors.form && (
-        <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
+        <span role="alert" style={errorStyle}>
           Something went wrong...
         </span>
       )}
     </form>
   );
 }
+
+const formStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "12px",
+  padding: "16px",
+  background: "#fff",
+  borderRadius: 6,
+  border: "1px solid #e0e0e0",
+  maxWidth: 900,
+  margin: "0 auto",
+  boxSizing: "border-box",
+};
+
+const itemsContainerStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+};
+
+const rowStyle = {
+  display: "flex",
+  justifyContent: "flex-start",
+};
+
+const fieldsetStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "12px",
+  border: "1px solid #eee",
+  padding: "12px",
+  borderRadius: 6,
+  background: "#fafafa",
+};
+
+const paymentFieldsetStyle = {
+  display: "flex",
+  flexDirection: "row",
+  gap: "12px",
+  alignItems: "center",
+  border: "none",
+  padding: 0,
+  margin: 0,
+};
+
+const legendStyle = {
+  marginBottom: 6,
+  fontWeight: 600,
+};
+
+const labelStyle = {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 12,
+};
+
+const labelStyleColumn = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 8,
+  alignItems: "flex-start",
+};
+
+const labelTextStyle = {
+  minWidth: 120,
+  display: "inline-block",
+  fontWeight: 600,
+};
+
+const inputStyle = {
+  padding: "8px",
+  border: "1px solid #ddd",
+  borderRadius: 4,
+  fontFamily: "inherit",
+  flex: 1,
+  minWidth: 0,
+};
+
+const textareaStyle = {
+  padding: "8px",
+  border: "1px solid #ddd",
+  borderRadius: 4,
+  fontFamily: "inherit",
+  width: "100%",
+  minHeight: 80,
+  boxSizing: "border-box",
+};
+
+const radioLabelStyle = {
+  display: "flex",
+  gap: 6,
+  alignItems: "center",
+  fontSize: "0.95rem",
+};
+
+const addButtonStyle = {
+  padding: "8px 10px",
+  borderRadius: 4,
+  border: "1px solid #999",
+  background: "#e0e0e0",
+  cursor: "pointer",
+};
+
+const confirmButtonStyle = {
+  display: "block",
+  margin: "auto",
+  padding: "10px 14px",
+  borderRadius: 6,
+  border: "1px solid #000",
+  background: "#e0e0e0",
+
+  cursor: "pointer",
+  fontWeight: 600,
+};
+
+const actionsStyle = {
+  display: "flex",
+  justifyContent: "flex-end",
+};
+
+const errorStyle = {
+  color: "#d32f2f",
+  fontSize: "0.85rem",
+};
