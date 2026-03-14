@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import ThemeToggle from "./ThemeToggle";
 
 export default function TopNav() {
   return (
@@ -19,6 +20,8 @@ export default function TopNav() {
           <Button asChild variant="ghost">
             <NavLink to="/reports">Reports</NavLink>
           </Button>
+
+          <ThemeToggle />
         </nav>
       </div>
     </header>
