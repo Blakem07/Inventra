@@ -170,17 +170,19 @@ describe("Inventory Page Tests", () => {
       </MemoryRouter>,
     );
 
-    await screen.findByText(products[0].name); // Wait for the fetch
-    await screen.findByRole("option", { name: categories[0].name });
+    await screen.findByText(products[0].name);
 
-    const select = screen.getByRole("combobox");
-    await userEvent.selectOptions(select, categories[0].name); // fruit
+    const trigger = screen.getByRole("combobox", { name: /category/i });
+    await userEvent.click(trigger);
+
+    const option = await screen.findByRole("option", { name: categories[0].name });
+    await userEvent.click(option);
 
     const table = screen.getByRole("table");
     const tbody = table.querySelector("tbody");
 
-    const allRows = within(tbody).getAllByRole("row");
-    expect(allRows).toHaveLength(2);
+    const rows = within(tbody).getAllByRole("row");
+    expect(rows).toHaveLength(2);
   });
 
   it("shows all products when category is all", async () => {
@@ -199,16 +201,19 @@ describe("Inventory Page Tests", () => {
       </MemoryRouter>,
     );
 
-    await screen.findByText(products[0].name); // Wait for the fetch
+    await screen.findByText(products[0].name);
 
-    const select = screen.getByRole("combobox");
-    await userEvent.selectOptions(select, "all");
+    const trigger = screen.getByRole("combobox", { name: /category/i });
+    await userEvent.click(trigger);
+
+    const allOption = await screen.findByRole("option", { name: /all/i });
+    await userEvent.click(allOption);
 
     const table = screen.getByRole("table");
     const tbody = table.querySelector("tbody");
 
     const allRows = within(tbody).getAllByRole("row");
-    expect(allRows).toHaveLength(testProducts.length);
+    expect(allRows).toHaveLength(products.length);
   });
 
   it("navigates to correct product edit page when clicking edit", async () => {
@@ -266,9 +271,9 @@ describe("Inventory Page Tests", () => {
     expect(await screen.findByText(products[0].name)).toBeInTheDocument();
 
     const combobox = screen.getByRole("combobox", { name: /category/i });
-    const options = Array.from(combobox.options).map((option) => option.text);
+    await userEvent.click(combobox);
 
-    expect(options).toContain(categories[0].name);
+    expect(await screen.findByRole("option", { name: categories[0].name })).toBeInTheDocument();
 
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(fetch.mock.calls[0][0]).toContain("/products");
