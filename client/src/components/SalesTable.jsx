@@ -1,79 +1,50 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
 export default function SalesTable(props) {
   const rows = props.rows || [];
 
   return (
-    <div style={containerStyle}>
-      <table style={tableStyle}>
-        <thead>
-          <tr>
-            <th scope="col" style={thStyle}>
-              Date
-            </th>
-            <th scope="col" style={thStyle}>
-              Payment Method
-            </th>
-            <th scope="col" style={thStyle}>
-              Amount
-            </th>
-            <th scope="col" style={thStyle}>
-              Staff
-            </th>
-          </tr>
-        </thead>
+    <div className="mt-5 w-full place-self-center rounded-md border border-border bg-background p-4">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-left align-top">Date</TableHead>
+            <TableHead className="text-left align-top">Payment Method</TableHead>
+            <TableHead className="text-left align-top">Amount</TableHead>
+            <TableHead className="text-left align-top">Staff</TableHead>
+          </TableRow>
+        </TableHeader>
 
-        <tbody>
+        <TableBody>
           {rows.length === 0 ? (
-            <tr>
-              <td colSpan={4} style={{ textAlign: "center", padding: "16px" }}>
+            <TableRow>
+              <TableCell colSpan={4} className="py-4 text-center">
                 No data
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ) : (
             rows.map(function (row) {
               return (
-                <tr key={row.saleId}>
-                  <td style={tdStyle}>{row.occurredAt.slice(0, 10)}</td>
-                  <td style={tdStyle}>{row.paymentMethod}</td>
-                  <td style={tdStyle}>{row.totalAmount}</td>
-                  <td style={tdStyle}>{row.performedBy}</td>
-                </tr>
+                <TableRow key={row.saleId}>
+                  <TableCell className="text-left align-top">
+                    {row.occurredAt.slice(0, 10)}
+                  </TableCell>
+                  <TableCell className="text-left align-top">{row.paymentMethod}</TableCell>
+                  <TableCell className="text-left align-top">{row.totalAmount}</TableCell>
+                  <TableCell className="text-left align-top">{row.performedBy}</TableCell>
+                </TableRow>
               );
             })
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }
-
-const containerStyle = {
-  placeSelf: "center",
-  marginTop: "20px",
-  border: "1px solid #ccc",
-  padding: "16px",
-  borderRadius: "4px",
-  width: "100%",
-  boxSizing: "border-box",
-  background: "#fff",
-};
-
-const tableStyle = {
-  width: "100%",
-  borderCollapse: "collapse",
-  fontFamily: "inherit",
-};
-
-const thStyle = {
-  textAlign: "left",
-  padding: "8px",
-  borderBottom: "1px solid #eee",
-  fontWeight: 600,
-  verticalAlign: "top",
-};
-
-const tdStyle = {
-  textAlign: "left",
-  padding: "8px",
-  borderBottom: "1px solid #f5f5f5",
-  verticalAlign: "top",
-};
