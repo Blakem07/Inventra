@@ -2,6 +2,8 @@ import QuickActions from "../components/QuickActions";
 
 import getDashboardSummary from "../api/dashboard";
 
+import { Button } from "@/components/ui/button";
+
 import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
@@ -39,6 +41,10 @@ export default function DashboardPage() {
 
       <div className="p-8">
         <div className="bg-red-500 text-white p-4 text-3xl font-bold">Tailwind working</div>
+      </div>
+
+      <div className="p-10">
+        <Button>Shadcn working</Button>
       </div>
 
       <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
