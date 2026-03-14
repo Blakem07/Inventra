@@ -39,14 +39,6 @@ export default function DashboardPage() {
       {loading && <span role="alert">Loading...</span>}
       {fetchError && <span role="alert">Error: Fetching Dashboard Summary...</span>}
 
-      <div className="p-8">
-        <div className="bg-red-500 text-white p-4 text-3xl font-bold">Tailwind working</div>
-      </div>
-
-      <div className="p-10">
-        <Button>Shadcn working</Button>
-      </div>
-
       <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
         <section
           aria-labelledby="stock-alerts-heading"
