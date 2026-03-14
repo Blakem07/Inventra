@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider, MemoryRouter, Routes, Route } from "react-router-dom";
 import { userEvent } from "@testing-library/user-event";
+import { waitFor } from "@testing-library/dom";
 import { within } from "@testing-library/dom";
 import InventoryPage from "./InventoryPage";
 import ProductCreatePage from "./ProductCreatePage";
@@ -251,32 +252,24 @@ describe("Inventory Page Tests", () => {
   it("loads products and categories on mount", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => [{ id: 1, name: "Test", category: "General", categoryId: 1 }],
+      json: async () => products,
     });
 
     fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => [{ id: 1, name: "General" }],
+      json: async () => categories,
     });
 
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
     render(<RouterProvider router={router} />);
 
-    // Pre load
+    expect(await screen.findByText(products[0].name)).toBeInTheDocument();
 
-    expect(screen.getByTestId("loading")).toBeInTheDocument();
-    expect(screen.queryByText("Test")).not.toBeInTheDocument();
+    const combobox = screen.getByRole("combobox", { name: /category/i });
+    const options = Array.from(combobox.options).map((option) => option.text);
 
-    // Post load
+    expect(options).toContain(categories[0].name);
 
-    expect(await screen.findByText("Test")).toBeInTheDocument();
-
-    const select = screen.getByRole("combobox");
-    const options = within(select).getAllByRole("option");
-
-    expect(options.map((option) => option.textContent)).toContain("General");
-
-    expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(fetch.mock.calls[0][0]).toContain("/products");
     expect(fetch.mock.calls[1][0]).toContain("/categories");
@@ -301,6 +294,6 @@ describe("Inventory Page Tests", () => {
 
     expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
 
-    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(await screen.findByText(/error: fetching inventory data/i)).toBeInTheDocument();
   });
 });

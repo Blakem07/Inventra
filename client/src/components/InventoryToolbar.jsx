@@ -10,8 +10,8 @@ export default function InventoryToolbar({ setSearchFilter, setCategoryFilter, c
           setSearchFilter(e.target.value);
         }}
       />
-      <label htmlFor="category-select">Category:</label>
 
+      <label htmlFor="category-select">Category:</label>
       <select
         name="categories"
         id="category-select"
