@@ -4,6 +4,7 @@ import QuickActions from "../components/QuickActions";
 import getDashboardSummary from "../api/dashboard";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import PageHeader from "@/components/PageHeader";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,12 @@ export default function DashboardPage() {
 
   return (
     <div data-testid="dashboard-page" className="space-y-4">
-      <h1 data-testid="dashboard-page-heading">Dashboard</h1>
+      <PageHeader
+        badge="Overview"
+        title="Dashboard"
+        description="Track low stock alerts, today’s sales performance, and recent activity in one place."
+        testId="dashboard-page-heading"
+      />
 
       {loading && (
         <span role="alert" data-testid="dashboard-page-loading">
