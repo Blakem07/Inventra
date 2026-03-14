@@ -9,17 +9,17 @@ export default function TopNav() {
         <span className="font-semibold text-foreground">Inventra</span>
 
         <nav className="flex gap-2">
-          <Button asChild variant="ghost">
-            <NavLink to="/">Dashboard</NavLink>
-          </Button>
+          <NavLink to="/">
+            <Button variant="ghost">Dashboard</Button>
+          </NavLink>
 
-          <Button asChild variant="ghost">
-            <NavLink to="/inventory">Inventory</NavLink>
-          </Button>
+          <NavLink to="/inventory">
+            <Button variant="ghost">Inventory</Button>
+          </NavLink>
 
-          <Button asChild variant="ghost">
-            <NavLink to="/reports">Reports</NavLink>
-          </Button>
+          <NavLink to="/reports">
+            <Button variant="ghost">Reports</Button>
+          </NavLink>
 
           <ThemeToggle />
         </nav>

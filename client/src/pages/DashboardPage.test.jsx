@@ -120,7 +120,7 @@ describe("Dashboard Page Tests", () => {
     ).toBeInTheDocument();
 
     expect(
-      within(section).getByText(`Total Sales Amount: ${dashboardSummary.totalSalesAmountToday}`),
+      within(section).getByText(`Total Sales Amount: ₱${dashboardSummary.totalSalesAmountToday}`),
     ).toBeInTheDocument();
   });
 
