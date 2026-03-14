@@ -1,92 +1,55 @@
 import { NavLink } from "react-router-dom";
 import StatusPill from "./StatusPill";
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
 export default function InventoryTable({ products }) {
   return (
-    <div style={containerStyle}>
-      <table style={tableStyle}>
-        <thead>
-          <tr>
-            <th scope="col" style={thStyle}>
-              Item Name
-            </th>
-            <th scope="col" style={thStyle}>
-              SKU
-            </th>
-            <th scope="col" style={thStyle}>
-              Stock
-            </th>
-            <th scope="col" style={thStyle}>
-              Price
-            </th>
-            <th scope="col" style={thStyle}>
-              Status
-            </th>
-            <th scope="col" style={thStyle}></th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="mt-5 w-full place-self-center rounded-md border border-border bg-background p-4">
+      <Table className="text-left align-top">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-left align-top">Item Name</TableHead>
+            <TableHead className="text-left align-top">SKU</TableHead>
+            <TableHead className="text-left align-top">Stock</TableHead>
+            <TableHead className="text-left align-top">Price</TableHead>
+            <TableHead className="text-left align-top">Status</TableHead>
+            <TableHead className="text-left align-top"></TableHead>
+          </TableRow>
+        </TableHeader>
+
+        <TableBody>
           {products.map((product) => {
             return (
-              <tr key={product.id}>
-                <td style={tdStyle}>{product.name}</td>
-                <td style={tdStyle}>{product.skuOrBarcode || "N/A"}</td>
-                <td style={tdStyle}>{product.onHand}</td>
-                <td style={tdStyle}>{product.price}</td>
-                <td style={tdStyle}>
+              <TableRow key={product.id} className="text-left align-top">
+                <TableCell className="text-left align-top">{product.name}</TableCell>
+                <TableCell className="text-left align-top">
+                  {product.skuOrBarcode || "N/A"}
+                </TableCell>
+                <TableCell className="text-left align-top">{product.onHand}</TableCell>
+                <TableCell className="text-left align-top">{product.price}</TableCell>
+                <TableCell className="text-left align-top">
                   <StatusPill
                     status={product.status}
                     onHand={product.onHand}
                     reorderLevel={product.reorderLevel}
                   />
-                </td>
-                <td style={actionTdStyle}>
+                </TableCell>
+                <TableCell className="text-left align-top w-[1%] whitespace-nowrap">
                   <NavLink to={`${product.id}/edit`}>Edit</NavLink>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             );
           })}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }
-
-const containerStyle = {
-  placeSelf: "center",
-  marginTop: "20px",
-  border: "1px solid #ccc",
-  padding: "16px",
-  borderRadius: "4px",
-  width: "100%",
-  boxSizing: "border-box",
-  background: "#fff",
-};
-
-const tableStyle = {
-  width: "100%",
-  borderCollapse: "collapse",
-  fontFamily: "inherit",
-};
-
-const thStyle = {
-  textAlign: "left",
-  padding: "8px",
-  borderBottom: "1px solid #eee",
-  fontWeight: 600,
-  verticalAlign: "top", 
-};
-
-const tdStyle = {
-  textAlign: "left", 
-  padding: "8px",
-  borderBottom: "1px solid #f5f5f5",
-  verticalAlign: "top", 
-};
-
-const actionTdStyle = {
-  ...tdStyle,
-  textAlign: "left", 
-  width: "1%",
-  whiteSpace: "nowrap",
-};
