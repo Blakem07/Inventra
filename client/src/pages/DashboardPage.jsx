@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
+import PageHeader from "@/components/PageHeader";
 import QuickActions from "../components/QuickActions";
 import getDashboardSummary from "../api/dashboard";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import PageHeader from "@/components/PageHeader";
+import { PlusIcon, ReceiptIcon, BarChart3Icon } from "lucide-react";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
@@ -110,9 +111,21 @@ export default function DashboardPage() {
           <CardContent>
             <QuickActions
               actions={[
-                { label: "Add Stock", path: "stock/new" },
-                { label: "Record Sale", path: "sales/new" },
-                { label: "View All", path: "reports" },
+                {
+                  label: "Add Stock",
+                  path: "stock/new",
+                  icon: PlusIcon,
+                },
+                {
+                  label: "Record Sale",
+                  path: "sales/new",
+                  icon: ReceiptIcon,
+                },
+                {
+                  label: "View All",
+                  path: "reports",
+                  icon: BarChart3Icon,
+                },
               ]}
             />
           </CardContent>
