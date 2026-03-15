@@ -26,9 +26,6 @@ describe("Stock Movement Create Page Tests", () => {
 
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
-    const productSelect = screen.getByRole("combobox", { name: /product/i });
-    expect(productSelect).toBeInTheDocument();
-
     await waitFor(() => {
       let found = false;
       global.fetch.mock.calls.forEach((call) => {
@@ -39,8 +36,10 @@ describe("Stock Movement Create Page Tests", () => {
       expect(found).toBe(true);
     });
 
-    const productNameOption = within(productSelect).getByText(products[0].name);
-    expect(productNameOption).toBeInTheDocument();
+    const trigger = screen.getByRole("combobox", { name: /product/i });
+    userEvent.click(trigger);
+
+    expect(await screen.findByRole("option", { name: products[0].name })).toBeInTheDocument();
   });
 
   it("renders the form correctly", async () => {
@@ -102,8 +101,11 @@ describe("Stock Movement Create Page Tests", () => {
 
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
-    const productSelect = screen.getByRole("combobox", { name: /product/i });
-    await userEvent.selectOptions(productSelect, products[0].id);
+    const trigger = screen.getByRole("combobox", { name: /product/i });
+    userEvent.click(trigger);
+
+    const productOption = await screen.findByRole("option", { name: products[0].name });
+    userEvent.click(productOption);
 
     const movementTypeIn = screen.getByRole("radio", { name: /in/i });
     await userEvent.click(movementTypeIn);
@@ -168,8 +170,11 @@ describe("Stock Movement Create Page Tests", () => {
 
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
-    const productSelect = screen.getByRole("combobox", { name: /product/i });
-    await userEvent.selectOptions(productSelect, products[0].id);
+    const trigger = screen.getByRole("combobox", { name: /product/i });
+    userEvent.click(trigger);
+
+    const productOption = await screen.findByRole("option", { name: products[0].name });
+    userEvent.click(productOption);
 
     const movementTypeIn = screen.getByRole("radio", { name: /in/i });
     await userEvent.click(movementTypeIn);
@@ -209,8 +214,11 @@ describe("Stock Movement Create Page Tests", () => {
 
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
-    const productSelect = screen.getByRole("combobox", { name: /product/i });
-    await userEvent.selectOptions(productSelect, products[0].id);
+    const trigger = screen.getByRole("combobox", { name: /product/i });
+    userEvent.click(trigger);
+
+    const productOption = await screen.findByRole("option", { name: products[0].name });
+    userEvent.click(productOption);
 
     const movementTypeOut = screen.getByRole("radio", { name: /out/i });
     await userEvent.click(movementTypeOut);
@@ -252,8 +260,11 @@ describe("Stock Movement Create Page Tests", () => {
 
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
-    const productSelect = screen.getByRole("combobox", { name: /product/i });
-    await userEvent.selectOptions(productSelect, products[0].id);
+    const trigger = screen.getByRole("combobox", { name: /product/i });
+    userEvent.click(trigger);
+
+    const productOption = await screen.findByRole("option", { name: products[0].name });
+    userEvent.click(productOption);
 
     const movementTypeIn = screen.getByRole("radio", { name: /in/i });
     await userEvent.click(movementTypeIn);
