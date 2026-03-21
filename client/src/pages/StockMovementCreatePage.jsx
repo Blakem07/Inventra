@@ -5,6 +5,8 @@ import { listProducts } from "../api/products";
 import { createStockMovement } from "../api/stock";
 import validateStockMovementPayload from "../validation/validateStockMovementPayload";
 
+import SubPageHeader from "@/components/SubPageHeader";
+
 import { StockMovementForm } from "../components/StockMovementForm";
 
 const initialValues = {
@@ -92,8 +94,13 @@ export default function StockMovementPage() {
   }
 
   return (
-    <div data-testid="stock-movement-create-page">
-      <h1>Stock Movement Create Page</h1>
+    <div data-testid="stock-movement-create-page" className="space-y-4">
+      <SubPageHeader
+        badge="Stock"
+        title="Create Stock Movement"
+        description="Record a new stock movement event with product, quantity, and transaction details."
+        testId="stock-movement-create-page-heading"
+      />
 
       {loading && <div data-testid="loading">Loading...</div>}
       {fetchError && <div data-testid="error">Error: Fetching Data.</div>}
