@@ -39,7 +39,13 @@ export function StockMovementForm({ values, errors, products, onChange, onSubmit
             }
           >
             <SelectTrigger id="product" className="flex-1">
-              <SelectValue placeholder="-- Choose a product --" />
+              <SelectValue placeholder="-- Choose a product --">
+                {/*values.productId stores the id;
+                map it back to the product name for display*/}
+                {values.productId
+                  ? products.find((p) => String(p.id) === values.productId)?.name
+                  : "-- Choose a product --"}
+              </SelectValue>
             </SelectTrigger>
 
             <SelectContent>
