@@ -98,6 +98,7 @@ export default function InventoryPage() {
             <InventoryToolbar
               setSearchFilter={setSearchFilter}
               setCategoryFilter={setCategoryFilter}
+              categoryFilter={categoryFilter}
               categories={categories}
             />
           </Card>

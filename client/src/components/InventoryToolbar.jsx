@@ -7,7 +7,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function InventoryToolbar({ setSearchFilter, setCategoryFilter, categories }) {
+export default function InventoryToolbar({
+  setSearchFilter,
+  setCategoryFilter,
+  categoryFilter,
+  categories,
+}) {
   return (
     <div className="flex items-end justify-center gap-4">
       <div>
@@ -26,7 +31,13 @@ export default function InventoryToolbar({ setSearchFilter, setCategoryFilter, c
         <label htmlFor="category-select">Category:</label>
         <Select defaultValue="all" onValueChange={(value) => setCategoryFilter(value)}>
           <SelectTrigger id="category-select" className="w-[200px]">
-            <SelectValue placeholder="All" />
+            <SelectValue placeholder="All">
+              {/* categoryFilter stores the selected category id;
+                 find the matching category by id and display its name */}
+              {categoryFilter === "all"
+                ? "All"
+                : categories.find((c) => String(c.id) === categoryFilter)?.name}
+            </SelectValue>
           </SelectTrigger>
 
           <SelectContent>
