@@ -102,6 +102,7 @@ export default function SalesForm({ products = [] }) {
         {values.items.map((item, index) => (
           <LineItemRow
             key={index}
+            index={index}
             itemValues={item}
             products={products}
             error={errors[item.productId]}

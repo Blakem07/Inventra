@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 
 export default function LineItemRow({
+  index,
   itemValues,
   products,
   submitted,
@@ -36,7 +37,7 @@ export default function LineItemRow({
           <Label>Product</Label>
 
           <Select value={itemValues.productId || ""} onValueChange={handleSelectChange}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full" aria-label="Product">
               <SelectValue placeholder="-- Choose a product --" />
             </SelectTrigger>
 
@@ -63,11 +64,9 @@ export default function LineItemRow({
         </div>
 
         <div className="flex w-[140px] flex-col gap-1.5">
-          <Label>Quantity</Label>
-
-          <label htmlFor="quantity">Quantity</label>
+          <Label htmlFor={`quantity-${index}`}>Quantity</Label>
           <Input
-            id="quantity"
+            id={`quantity-${index}`}
             type="number"
             name="quantity"
             min="1"
