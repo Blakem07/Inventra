@@ -1,3 +1,14 @@
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+
 export default function LineItemRow({
   itemValues,
   products,
@@ -11,39 +22,52 @@ export default function LineItemRow({
     onChange(name, value);
   }
 
+  function handleSelectChange(value) {
+    onChange("productId", value);
+  }
+
   return (
     <fieldset
       aria-label="sale item"
-      style={{ display: "flex", gap: "8px", alignItems: "flex-start", justifyContent: "center" }}
+      className="flex  justify-between gap-4 rounded-md border bg-muted/20 p-4"
     >
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label>
-          Product
-          <select name="productId" value={itemValues.productId} onChange={handleChange}>
-            <option value="">-- Choose a product --</option>
-            {products.map((product) => (
-              <option key={product.id} value={product.id}>
-                {product.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        {submitted && !itemValues.productId && (
-          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
-            Product is required
-          </span>
-        )}
-        {error && (
-          <span role="alert" style={{ color: "red", fontSize: "0.85rem" }}>
-            {error}
-          </span>
-        )}
-      </div>
+      <div className="flex flex-1 items-start gap-4">
+        <div className="flex min-w-0 flex-[2] flex-col gap-1.5">
+          <Label>Product</Label>
 
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label>
-          Quantity
-          <input
+          <Select value={itemValues.productId || ""} onValueChange={handleSelectChange}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="-- Choose a product --" />
+            </SelectTrigger>
+
+            <SelectContent>
+              {products.map((product) => (
+                <SelectItem key={product.id} value={String(product.id)}>
+                  {product.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {submitted && !itemValues.productId && (
+            <span role="alert" className="text-xs text-destructive">
+              Product is required
+            </span>
+          )}
+
+          {error && (
+            <span role="alert" className="text-xs text-destructive">
+              {error}
+            </span>
+          )}
+        </div>
+
+        <div className="flex w-[140px] flex-col gap-1.5">
+          <Label>Quantity</Label>
+
+          <label htmlFor="quantity">Quantity</label>
+          <Input
+            id="quantity"
             type="number"
             name="quantity"
             min="1"
@@ -51,15 +75,18 @@ export default function LineItemRow({
             value={itemValues.quantity}
             onChange={handleChange}
           />
-        </label>
-        {Number(itemValues.quantity) < 1 && (
-          <span style={{ color: "red", fontSize: "0.85rem" }}>Quantity above 0 is required</span>
-        )}
+
+          {Number(itemValues.quantity) < 1 && (
+            <span className="text-xs text-destructive">Quantity above 0 is required</span>
+          )}
+        </div>
       </div>
 
-      <button type="button" aria-label="Delete item" onClick={onRemove}>
-        Delete
-      </button>
+      <div className="flex shrink-0 items-end">
+        <Button type="button" variant="destructive" onClick={onRemove}>
+          Delete
+        </Button>
+      </div>
     </fieldset>
   );
 }
