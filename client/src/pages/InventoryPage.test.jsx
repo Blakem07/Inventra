@@ -53,11 +53,10 @@ describe("Inventory Page Tests", () => {
 
     await userEvent.click(addItem);
 
-    const select = screen.getByRole("combobox");
-    expect(
-      await within(select).findByRole("option", { name: categories[0].name }),
-    ).toBeInTheDocument();
+    const select = screen.getByRole("combobox", { name: /category/i });
+    await userEvent.click(select);
 
+    expect(await screen.findByRole("option", { name: categories[0].name })).toBeInTheDocument();
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
   });
 
