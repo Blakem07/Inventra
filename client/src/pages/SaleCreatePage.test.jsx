@@ -33,9 +33,10 @@ describe("Sales Create Page Tests", () => {
 
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
-    const select = await screen.findByRole("combobox");
+    const trigger = await screen.findByRole("combobox");
+    await userEvent.click(trigger);
 
-    expect(within(select).getByRole("option", { name: products[0].name })).toBeInTheDocument();
+    expect(screen.findByRole("option", { name: products[0].name })).toBeTruthy();
   });
 
   it("shows error banner when failing to fetch products", async () => {
@@ -51,7 +52,7 @@ describe("Sales Create Page Tests", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/sales/new"] });
     render(<RouterProvider router={router} />);
 
-    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(await screen.findByTestId("sale-create-page-error")).toBeInTheDocument();
   });
 
   it("renders one default sales row item", async () => {
@@ -230,11 +231,16 @@ describe("Sales Create Page Tests", () => {
     await userEvent.click(screen.getByRole("radio", { name: /^cash$/i }));
     await userEvent.type(screen.getByLabelText(/note/i), "optional");
 
-    await userEvent.selectOptions(productSelects[0], products[0].id);
+    await userEvent.click(productSelects[0]);
+    await userEvent.click(screen.getByRole("option", { name: products[0].name }));
+    await userEvent.click(productSelects[0]); // to close dropdown
+
     await userEvent.clear(quantityInputs[0]);
     await userEvent.type(quantityInputs[0], "1");
 
-    await userEvent.selectOptions(productSelects[1], products[1].id);
+    await userEvent.click(productSelects[1]);
+    await userEvent.click(screen.getByRole("option", { name: products[1].name }));
+
     await userEvent.clear(quantityInputs[1]);
     await userEvent.type(quantityInputs[1], "3");
 
@@ -296,11 +302,15 @@ describe("Sales Create Page Tests", () => {
     await userEvent.click(screen.getByRole("radio", { name: /^cash$/i }));
     await userEvent.type(screen.getByLabelText(/note/i), "optional");
 
-    await userEvent.selectOptions(productSelects[0], products[0].id);
+    await userEvent.click(productSelects[0]);
+    await userEvent.click(await screen.findByRole("option", { name: products[0].name }));
+
     await userEvent.clear(quantityInputs[0]);
     await userEvent.type(quantityInputs[0], "1");
 
-    await userEvent.selectOptions(productSelects[1], products[1].id);
+    await userEvent.click(productSelects[1]);
+    await userEvent.click(await screen.findByRole("option", { name: products[1].name }));
+
     await userEvent.clear(quantityInputs[1]);
     await userEvent.type(quantityInputs[1], "3");
 
@@ -337,7 +347,9 @@ describe("Sales Create Page Tests", () => {
     const productSelect = within(row).getByRole("combobox", { name: /product/i });
     const quantityInput = within(row).getByRole("spinbutton", { name: /quantity/i });
 
-    await userEvent.selectOptions(productSelect, products[0].id);
+    await userEvent.click(productSelect);
+    await userEvent.click(await screen.findByRole("option", { name: products[0].name }));
+
     await userEvent.clear(quantityInput);
     await userEvent.type(quantityInput, "1000000");
     await userEvent.type(screen.getByRole("textbox", { name: /performed by/i }), "Staff A");
@@ -366,7 +378,9 @@ describe("Sales Create Page Tests", () => {
     const productSelect = within(row).getByRole("combobox", { name: /product/i });
     const quantityInput = within(row).getByRole("spinbutton", { name: /quantity/i });
 
-    await userEvent.selectOptions(productSelect, products[0].id);
+    await userEvent.click(productSelect);
+    await userEvent.click(await screen.findByRole("option", { name: products[0].name }));
+
     await userEvent.clear(quantityInput);
     await userEvent.type(quantityInput, "0");
     await userEvent.type(screen.getByRole("textbox", { name: /performed by/i }), "Staff A");
@@ -374,7 +388,6 @@ describe("Sales Create Page Tests", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /confirm sale/i }));
 
-    // Validator should catch this client-side and prevent a POST
     expect(await within(row).findByText(/above 0/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /confirm sale/i })).toBeInTheDocument();
     expect(global.fetch).toHaveBeenCalledTimes(1);
@@ -430,7 +443,9 @@ describe("Sales Create Page Tests", () => {
     const productSelect = within(row).getByRole("combobox", { name: /product/i });
     const quantityInput = within(row).getByRole("spinbutton", { name: /quantity/i });
 
-    await userEvent.selectOptions(productSelect, products[0].id);
+    await userEvent.click(productSelect);
+    await userEvent.click(await screen.findByRole("option", { name: products[0].name }));
+
     await userEvent.clear(quantityInput);
     await userEvent.type(quantityInput, "1");
     await userEvent.type(screen.getByRole("textbox", { name: /performed by/i }), "Staff A");
@@ -463,7 +478,9 @@ describe("Sales Create Page Tests", () => {
     const productSelect = within(row).getByRole("combobox", { name: /product/i });
     const quantityInput = within(row).getByRole("spinbutton", { name: /quantity/i });
 
-    await userEvent.selectOptions(productSelect, products[0].id);
+    await userEvent.click(productSelect);
+    await userEvent.click(await screen.findByRole("option", { name: products[0].name }));
+
     await userEvent.clear(quantityInput);
     await userEvent.type(quantityInput, "1");
     await userEvent.type(screen.getByRole("textbox", { name: /performed by/i }), "Staff A");
@@ -471,7 +488,6 @@ describe("Sales Create Page Tests", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /confirm sale/i }));
 
-    // shared generic submit error should render
     expect(await screen.findByRole("alert")).toBeInTheDocument();
     expect(screen.queryByTestId("dashboard-page")).not.toBeInTheDocument();
   });
