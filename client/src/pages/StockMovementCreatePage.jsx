@@ -96,10 +96,8 @@ export default function StockMovementPage() {
   return (
     <div data-testid="stock-movement-create-page" className="space-y-4">
       <SubPageHeader
-        badge="Stock"
         title="Create Stock Movement"
         description="Record a new stock movement event with product, quantity, and transaction details."
-        testId="stock-movement-create-page-heading"
       />
 
       {loading && <div data-testid="loading">Loading...</div>}

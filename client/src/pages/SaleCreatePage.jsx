@@ -36,10 +36,8 @@ export default function SaleCreatePage() {
   return (
     <div data-testid="sale-create-page" className="space-y-4">
       <SubPageHeader
-        badge="Sales"
         title="Create Sale"
         description="Record a new sale with line items, payment method, and transaction details."
-        testId="sale-create-page-heading"
       />
 
       {loading && (

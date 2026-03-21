@@ -1,12 +1,26 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { listCategories } from "../api/categories";
 import { createProduct } from "../api/products";
-
 import validateProductPayload from "../validation/validateProductPayload";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+
+import SubPageHeader from "@/components/SubPageHeader";
+
 export default function ProductCreatePage() {
+  const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -24,12 +38,14 @@ export default function ProductCreatePage() {
     async function load() {
       setFetchError(false);
       setLoading(true);
+
       try {
         const categoriesData = await listCategories();
 
         if (!Array.isArray(categoriesData)) {
           throw new Error("Invalid Data Shape");
         }
+
         setCategories(categoriesData);
       } catch {
         setFetchError(true);
@@ -37,10 +53,9 @@ export default function ProductCreatePage() {
         setLoading(false);
       }
     }
+
     load();
   }, []);
-
-  const navigate = useNavigate();
 
   function onChange(e) {
     const { name, value } = e.target;
@@ -48,6 +63,16 @@ export default function ProductCreatePage() {
     setValues((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  }
+
+  // shadcn Select does NOT emit a normal DOM event (no e.target.name/value)
+  // it only returns the selected value, so manually map that value
+  // into form state and update the correct field
+  function onCategoryChange(value) {
+    setValues((prev) => ({
+      ...prev,
+      categoryId: value,
     }));
   }
 
@@ -68,150 +93,108 @@ export default function ProductCreatePage() {
   }
 
   return (
-    <div data-testid="product-create-page">
-      <h1>Product Create Page</h1>
-      <form method="POST" onSubmit={onSubmit} style={containerStyle}>
-        {loading && <div data-testid="loading">Loading...</div>}
+    <div data-testid="product-create-page" className="mx-auto w-full max-w-3xl space-y-4">
+      <SubPageHeader title="Create Product" description="Add a new inventory item." />
 
-        <label style={fieldStyle}>
-          <span style={labelTextStyle}>Name</span>
-          <input name="name" value={values.name} onChange={onChange} style={inputStyle} />
-        </label>
-        {errors.name ? (
-          <div role="alert" style={errorStyle}>
-            {errors.name}
+      <form
+        method="POST"
+        onSubmit={onSubmit}
+        className="space-y-6 rounded-md border bg-background p-6"
+      >
+        {loading && (
+          <div data-testid="loading" className="text-sm text-muted-foreground">
+            Loading...
           </div>
-        ) : null}
+        )}
 
         {fetchError && (
-          <div role="alert" style={errorStyle}>
+          <div role="alert" className="text-sm text-destructive">
             Error: Fetching Categories
           </div>
         )}
 
-        <label style={fieldStyle}>
-          <span style={labelTextStyle}>Category</span>
-          <select
-            name="categoryId"
-            value={values.categoryId}
-            onChange={onChange}
-            style={inputStyle}
-          >
-            <option value="">--Select a category --</option>
-            {categories.map((category) => (
-              <option value={category.id} key={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        {errors.categoryId ? (
-          <div role="alert" style={errorStyle}>
-            {errors.categoryId}
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input id="name" name="name" value={values.name} onChange={onChange} />
+            {errors.name ? (
+              <div role="alert" className="text-sm text-destructive">
+                {errors.name}
+              </div>
+            ) : null}
           </div>
-        ) : null}
 
-        <label style={fieldStyle}>
-          <span style={labelTextStyle}>SKU or Barcode</span>
-          <input
-            name="skuOrBarcode"
-            value={values.skuOrBarcode}
-            onChange={onChange}
-            style={inputStyle}
-          />
-        </label>
-
-        <label style={fieldStyle}>
-          <span style={labelTextStyle}>Unit</span>
-          <input name="unit" value={values.unit} onChange={onChange} style={inputStyle} />
-        </label>
-        {errors.unit ? (
-          <div role="alert" style={errorStyle}>
-            {errors.unit}
+          <div className="space-y-2">
+            <Label htmlFor="category">Category</Label>
+            <Select value={values.categoryId} onValueChange={onCategoryChange}>
+              <SelectTrigger id="category" aria-label="Category" className="w-full">
+                <SelectValue placeholder="-- Select a category --" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={String(category.id)}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.categoryId ? (
+              <div role="alert" className="text-sm text-destructive">
+                {errors.categoryId}
+              </div>
+            ) : null}
           </div>
-        ) : null}
 
-        <label style={fieldStyle}>
-          <span style={labelTextStyle}>Price</span>
-          <input name="price" value={values.price} onChange={onChange} style={inputStyle} />
-        </label>
-        {errors.price ? (
-          <div role="alert" style={errorStyle}>
-            {errors.price}
+          <div className="space-y-2">
+            <Label htmlFor="skuOrBarcode">SKU or Barcode</Label>
+            <Input
+              id="skuOrBarcode"
+              name="skuOrBarcode"
+              value={values.skuOrBarcode}
+              onChange={onChange}
+            />
           </div>
-        ) : null}
 
-        <label style={fieldStyle}>
-          <span style={labelTextStyle}>Reorder Level</span>
-          <input
-            name="reorderLevel"
-            value={values.reorderLevel}
-            onChange={onChange}
-            style={inputStyle}
-          />
-        </label>
-        {errors.reorderLevel ? (
-          <div role="alert" style={errorStyle}>
-            {errors.reorderLevel}
+          <div className="space-y-2">
+            <Label htmlFor="unit">Unit</Label>
+            <Input id="unit" name="unit" value={values.unit} onChange={onChange} />
+            {errors.unit ? (
+              <div role="alert" className="text-sm text-destructive">
+                {errors.unit}
+              </div>
+            ) : null}
           </div>
-        ) : null}
 
-        <button type="submit" style={buttonStyle}>
-          Save
-        </button>
+          <div className="space-y-2">
+            <Label htmlFor="price">Price</Label>
+            <Input id="price" name="price" value={values.price} onChange={onChange} />
+            {errors.price ? (
+              <div role="alert" className="text-sm text-destructive">
+                {errors.price}
+              </div>
+            ) : null}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="reorderLevel">Reorder Level</Label>
+            <Input
+              id="reorderLevel"
+              name="reorderLevel"
+              value={values.reorderLevel}
+              onChange={onChange}
+            />
+            {errors.reorderLevel ? (
+              <div role="alert" className="text-sm text-destructive">
+                {errors.reorderLevel}
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <Button type="submit">Save Product</Button>
+        </div>
       </form>
     </div>
   );
 }
-
-const containerStyle = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "stretch",
-  border: "1px solid #ccc",
-  padding: "16px",
-  borderRadius: "4px",
-  background: "#fff",
-  width: "100%",
-  maxWidth: 800,
-  boxSizing: "border-box",
-  margin: "0 auto",
-};
-
-const fieldStyle = {
-  display: "flex",
-  flexDirection: "row",
-  gap: "8px",
-  alignItems: "center",
-  marginBottom: "8px",
-};
-
-const labelTextStyle = {
-  minWidth: 120,
-  display: "inline-block",
-};
-
-const inputStyle = {
-  padding: "8px",
-  border: "1px solid #ddd",
-  borderRadius: "4px",
-  fontFamily: "inherit",
-  flex: 1,
-  minWidth: 0,
-};
-
-const buttonStyle = {
-  alignSelf: "center",
-  padding: "8px 12px",
-  borderRadius: "4px",
-  border: "1px solid #000",
-  background: "#bdbdbd",
-  color: "#000",
-  cursor: "pointer",
-};
-
-const errorStyle = {
-  color: "#d32f2f",
-  fontSize: "0.9em",
-  marginBottom: "8px",
-};
