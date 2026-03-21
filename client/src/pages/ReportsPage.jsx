@@ -28,6 +28,14 @@ export default function ReportsPage() {
   const [salesReport, setSalesReport] = useState({ sales: [] });
   const [movementsReport, setMovementsReport] = useState({ movements: [] });
 
+  const rangeLabels = {
+    today: "Today",
+    last7: "Last 7 Days",
+    last30: "Last 30 Days",
+    thisMonth: "This Month",
+    lastMonth: "Last Month",
+  };
+
   useEffect(() => {
     const range = getDateRange(rangeType);
 
@@ -121,7 +129,7 @@ export default function ReportsPage() {
 
                 <Select value={rangeType} onValueChange={setRangeType}>
                   <SelectTrigger id="rangeType" className="w-[180px]">
-                    <SelectValue />
+                    <SelectValue>{rangeLabels[rangeType]}</SelectValue>
                   </SelectTrigger>
 
                   <SelectContent>
