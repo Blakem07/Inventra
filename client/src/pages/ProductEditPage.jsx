@@ -104,9 +104,7 @@ export default function ProductEditPage() {
         className="mx-auto flex max-w-[800px] flex-col gap-3 rounded-md border bg-background p-4"
       >
         <div className="flex items-center justify-between gap-3 rounded-md border bg-muted/30 p-3">
-          <div className="text-sm font-medium">
-            Product ID: <span className="font-normal">{id}</span>
-          </div>
+          <div className="text-sm font-medium">Product ID: {id}</div>
 
           <Button type="button" variant="destructive" onClick={onArchive}>
             Archive

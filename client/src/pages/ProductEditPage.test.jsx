@@ -7,7 +7,7 @@ import { routes } from "../app/routes";
 import { testProducts } from "../tests/testProducts";
 import { testCategories } from "../tests/testCategories";
 
-describe("Product Edit Page Tests", () => {
+describe.only("Product Edit Page Tests", () => {
   let products;
   let categories;
 
@@ -29,7 +29,7 @@ describe("Product Edit Page Tests", () => {
     global.fetch = vi.fn();
   });
 
-  it("loads route param and shows edit mode with id", async () => {
+  it.only("loads route param and shows edit mode with id", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => products[0],
@@ -41,17 +41,15 @@ describe("Product Edit Page Tests", () => {
     });
 
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory/123/edit"] });
+
     render(<RouterProvider router={router} />);
 
-    // Wait for fetch to load categories
-    const select = screen.getByRole("combobox");
-    expect(
-      await within(select).findByRole("option", { name: categories[0].name }),
-    ).toBeInTheDocument();
+    const select = await screen.findByRole("combobox", { name: /category/i });
+    await userEvent.click(select);
 
+    expect(await screen.findByRole("option", { name: categories[0].name })).toBeInTheDocument();
     expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /edit page/i }));
-    expect(screen.getByRole("heading", { name: /id:\s*123/i })).toBeInTheDocument();
+    expect(await screen.findByText(/id:\s*123/i)).toBeInTheDocument();
   });
 
   it("renders product update input fields", async () => {

@@ -250,7 +250,7 @@ describe("Inventory Page Tests", () => {
     await userEvent.click(edit);
 
     expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
-    expect(screen.getByText(products[0].id)).toBeInTheDocument();
+    expect(await screen.findByText(new RegExp(products[0].id, "i"))).toBeInTheDocument();
   });
 
   it("loads products and categories on mount", async () => {
