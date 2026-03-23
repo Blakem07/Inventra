@@ -52,7 +52,7 @@ describe.only("Product Edit Page Tests", () => {
     expect(await screen.findByText(/id:\s*123/i)).toBeInTheDocument();
   });
 
-  it.only("renders product update input fields", async () => {
+  it("renders product update input fields", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => products[0],
@@ -72,7 +72,7 @@ describe.only("Product Edit Page Tests", () => {
     const select = screen.getByRole("combobox");
     await userEvent.click(select);
 
-    expect(screen.findByRole("option", { name: categories[0].name }));
+    expect(await screen.findByRole("option", { name: categories[0].name }));
 
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Category")).toBeInTheDocument();
@@ -83,7 +83,7 @@ describe.only("Product Edit Page Tests", () => {
     expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
   });
 
-  it("loads categories on mount", async () => {
+  it.only("loads categories on mount", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => products[0],
@@ -101,9 +101,9 @@ describe.only("Product Edit Page Tests", () => {
 
     // Wait for fetch to load categories
     const select = screen.getByRole("combobox");
-    expect(
-      await within(select).findByRole("option", { name: categories[0].name }),
-    ).toBeInTheDocument();
+    await userEvent.click(select);
+
+    expect(await screen.findByRole("option", { name: categories[0].name }));
 
     let found = false;
 
