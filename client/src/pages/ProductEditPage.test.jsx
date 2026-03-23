@@ -7,11 +7,9 @@ import { routes } from "../app/routes";
 import { testProducts } from "../tests/testProducts";
 import { testCategories } from "../tests/testCategories";
 
-describe.only("Product Edit Page Tests", () => {
+describe("Product Edit Page Tests", () => {
   let products;
   let categories;
-
-  let validPayload;
 
   beforeEach(() => {
     products = testProducts.map((product) => ({ ...product })); // For mutation in archive test
@@ -361,7 +359,10 @@ describe.only("Product Edit Page Tests", () => {
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
     await userEvent.clear(screen.getByRole("textbox", { name: /name/i }));
-    await userEvent.selectOptions(screen.getByRole("combobox", { name: /category/i }), "");
+
+    await userEvent.click(screen.getByRole("combobox", { name: /category/i }));
+    await userEvent.click(await screen.findByRole("option", { name: /select a category/i }));
+
     await userEvent.clear(screen.getByRole("textbox", { name: /unit/i }));
 
     await userEvent.click(screen.getByRole("button", { name: /save/i }));

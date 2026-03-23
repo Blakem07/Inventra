@@ -169,6 +169,7 @@ export default function ProductEditPage() {
               </SelectTrigger>
 
               <SelectContent>
+                <SelectItem value="">-- Select a category --</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={String(category.id)}>
                     {category.name}
