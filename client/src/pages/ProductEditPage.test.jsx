@@ -17,15 +17,6 @@ describe.only("Product Edit Page Tests", () => {
     products = testProducts.map((product) => ({ ...product })); // For mutation in archive test
     categories = testCategories.map((category) => ({ ...category }));
 
-    validPayload = {
-      name: "validName",
-      categoryId: testCategories[0].id,
-      skuOrBarcode: "validSkuOrBarcode",
-      unit: "kg",
-      price: 10,
-      reorderLevel: 5,
-    };
-
     global.fetch = vi.fn();
   });
 
@@ -83,7 +74,7 @@ describe.only("Product Edit Page Tests", () => {
     expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
   });
 
-  it.only("loads categories on mount", async () => {
+  it("loads categories on mount", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => products[0],
@@ -166,32 +157,47 @@ describe.only("Product Edit Page Tests", () => {
     const reorderLevel = screen.getByRole("textbox", { name: /reorder level/i });
 
     await userEvent.clear(name);
-    await userEvent.selectOptions(categoryId, "");
     await userEvent.clear(skuOrBarcode);
     await userEvent.clear(unit);
     await userEvent.clear(price);
     await userEvent.clear(reorderLevel);
 
-    await userEvent.type(name, validPayload.name);
-    await userEvent.selectOptions(categoryId, validPayload.categoryId);
-    await userEvent.type(skuOrBarcode, validPayload.skuOrBarcode);
-    await userEvent.type(unit, validPayload.unit);
-    await userEvent.type(price, validPayload.price.toString());
-    await userEvent.type(reorderLevel, validPayload.reorderLevel.toString());
+    await userEvent.type(name, "validName");
+
+    await userEvent.click(categoryId);
+    await userEvent.click(
+      await screen.findByRole("option", {
+        name: categories[0].name,
+      }),
+    );
+
+    await userEvent.type(skuOrBarcode, "validSkuOrBarcode");
+    await userEvent.type(unit, "kg");
+    await userEvent.type(price, "10");
+    await userEvent.type(reorderLevel, "5");
 
     const save = screen.getByRole("button", { name: /save/i });
     await userEvent.click(save);
 
     await waitFor(() => {
       let found = false;
+
       global.fetch.mock.calls.forEach((call) => {
         if (call[0].includes("/products/123") && call[1]?.method === "PUT") {
           found = true;
 
           const parsedPayload = JSON.parse(call[1].body);
-          expect(parsedPayload).toEqual(validPayload);
+          expect(parsedPayload).toEqual({
+            name: "validName",
+            categoryId: categories[0].id,
+            skuOrBarcode: "validSkuOrBarcode",
+            unit: "kg",
+            price: 10,
+            reorderLevel: 5,
+          });
         }
       });
+
       expect(found).toBe(true);
     });
   });
