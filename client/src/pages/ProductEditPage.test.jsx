@@ -29,7 +29,7 @@ describe.only("Product Edit Page Tests", () => {
     global.fetch = vi.fn();
   });
 
-  it.only("loads route param and shows edit mode with id", async () => {
+  it("loads route param and shows edit mode with id", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => products[0],
@@ -52,7 +52,7 @@ describe.only("Product Edit Page Tests", () => {
     expect(await screen.findByText(/id:\s*123/i)).toBeInTheDocument();
   });
 
-  it("renders product update input fields", async () => {
+  it.only("renders product update input fields", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => products[0],
@@ -70,9 +70,9 @@ describe.only("Product Edit Page Tests", () => {
 
     // Wait for fetch to load categories
     const select = screen.getByRole("combobox");
-    expect(
-      await within(select).findByRole("option", { name: categories[0].name }),
-    ).toBeInTheDocument();
+    await userEvent.click(select);
+
+    expect(screen.findByRole("option", { name: categories[0].name }));
 
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Category")).toBeInTheDocument();
