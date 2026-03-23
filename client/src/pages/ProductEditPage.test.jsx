@@ -224,12 +224,7 @@ describe.only("Product Edit Page Tests", () => {
 
     render(<RouterProvider router={router} />);
 
-    await userEvent.type(screen.getByRole("textbox", { name: /name/i }), "Updated Name");
-
-    await userEvent.selectOptions(
-      screen.getByRole("combobox", { name: /category/i }),
-      categories[1].id,
-    );
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
     const name = await screen.findByRole("textbox", { name: /name/i });
     const categoryId = await screen.findByRole("combobox", { name: /category/i });
@@ -239,14 +234,16 @@ describe.only("Product Edit Page Tests", () => {
     const reorderLevel = await screen.findByRole("textbox", { name: /reorder level/i });
 
     await userEvent.clear(name);
-    await userEvent.selectOptions(categoryId, "");
     await userEvent.clear(skuOrBarcode);
     await userEvent.clear(unit);
     await userEvent.clear(price);
     await userEvent.clear(reorderLevel);
 
     await userEvent.type(name, "Updated Name");
-    await userEvent.selectOptions(categoryId, "cat-veg");
+
+    await userEvent.click(categoryId);
+    await userEvent.click(await screen.findByRole("option", { name: categories[0].name }));
+
     await userEvent.type(skuOrBarcode, "Updated SKU");
     await userEvent.type(unit, "kg");
     await userEvent.type(price, "10");
