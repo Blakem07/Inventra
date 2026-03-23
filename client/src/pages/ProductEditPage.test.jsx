@@ -330,7 +330,9 @@ describe.only("Product Edit Page Tests", () => {
     const reorderInput = await screen.findByRole("textbox", { name: /reorder level/i });
 
     expect(nameInput.value).toBe(products[0].name);
-    expect(categorySelect.value).toBe(products[0].categoryId);
+    expect(categorySelect).toHaveTextContent(
+      categories.find((category) => category.id === products[0].categoryId).name,
+    );
     expect(skuInput.value).toBe(products[0].skuOrBarcode);
     expect(unitInput.value).toBe(products[0].unit);
     expect(priceInput.value).toBe(String(products[0].price));
