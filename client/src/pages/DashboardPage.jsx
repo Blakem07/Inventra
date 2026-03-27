@@ -35,6 +35,38 @@ export default function DashboardPage() {
     load();
   }, []);
 
+  if (loading) {
+    return (
+      <div data-testid="dashboard-page" className="space-y-4">
+        <PageHeader
+          badge="Overview"
+          title="Dashboard"
+          description="Track low stock alerts, today’s sales performance, and recent activity in one place."
+          testId="dashboard-page-heading"
+        />
+        <span role="status" data-testid="dashboard-page-loading">
+          Loading...
+        </span>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div data-testid="dashboard-page" className="space-y-4">
+        <PageHeader
+          badge="Overview"
+          title="Dashboard"
+          description="Track low stock alerts, today’s sales performance, and recent activity in one place."
+          testId="dashboard-page-heading"
+        />
+        <span role="alert" data-testid="dashboard-page-error">
+          Error: Fetching Dashboard Summary...
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div data-testid="dashboard-page" className="space-y-4">
       <PageHeader

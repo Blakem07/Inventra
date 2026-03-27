@@ -27,6 +27,8 @@ describe("Dashboard Page Tests", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/"] });
     render(<RouterProvider router={router} />);
 
+    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
+
     const addStock = screen.getByRole("link", { name: /add stock/i });
     expect(addStock).toBeInTheDocument();
 
@@ -43,6 +45,8 @@ describe("Dashboard Page Tests", () => {
 
     const router = createMemoryRouter(routes, { initialEntries: ["/"] });
     render(<RouterProvider router={router} />);
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
 
     const recordSale = screen.getByRole("link", { name: /record sale/i });
     expect(recordSale).toBeInTheDocument();
@@ -64,6 +68,8 @@ describe("Dashboard Page Tests", () => {
 
     const router = createMemoryRouter(routes, { initialEntries: ["/"] });
     render(<RouterProvider router={router} />);
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
 
     const viewAll = screen.getByRole("link", { name: /view all/i });
     expect(viewAll).toBeInTheDocument();
