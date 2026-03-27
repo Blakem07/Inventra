@@ -126,11 +126,16 @@ export default function ProductCreatePage() {
 
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
+
             <Select value={values.categoryId} onValueChange={onCategoryChange}>
               <SelectTrigger id="category" aria-label="Category" className="w-full">
-                <SelectValue placeholder="-- Select a category --" />
+                <SelectValue placeholder="-- Select a category --">
+                  {categories.find((c) => String(c.id) === String(values.categoryId))?.name}
+                </SelectValue>
               </SelectTrigger>
+
               <SelectContent>
+                <SelectItem value="">-- Select a category --</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={String(category.id)}>
                     {category.name}
@@ -138,6 +143,7 @@ export default function ProductCreatePage() {
                 ))}
               </SelectContent>
             </Select>
+
             {errors.categoryId ? (
               <div role="alert" className="text-sm text-destructive">
                 {errors.categoryId}
