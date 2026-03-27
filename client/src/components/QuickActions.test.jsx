@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitForElementToBeRemoved } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import QuickActions from "./QuickActions";
@@ -38,6 +38,8 @@ describe("Quick Actions Tests", () => {
       </MemoryRouter>,
     );
 
+    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
+
     await userEvent.click(screen.getByRole("link", { name: /add stock/i }));
 
     expect(
@@ -55,6 +57,8 @@ describe("Quick Actions Tests", () => {
       </MemoryRouter>,
     );
 
+    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
+
     await userEvent.click(screen.getByRole("link", { name: /record sale/i }));
 
     expect(screen.getByRole("heading", { name: /create sale page/i })).toBeInTheDocument();
@@ -70,7 +74,9 @@ describe("Quick Actions Tests", () => {
       </MemoryRouter>,
     );
 
-    await userEvent.click(screen.getByRole("link", { name: /View All/i }));
+    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
+
+    await userEvent.click(screen.getByRole("link", { name: /view all/i }));
 
     expect(screen.getByRole("heading", { name: /reports page/i })).toBeInTheDocument();
   });
