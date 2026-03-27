@@ -221,28 +221,24 @@ describe("Sales Create Page Tests", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
 
-    const productSelects = screen.getAllByRole("combobox");
-    const quantityInputs = screen.getAllByRole("spinbutton");
-
-    expect(productSelects).toHaveLength(2);
-    expect(quantityInputs).toHaveLength(2);
+    expect(screen.getAllByRole("combobox")).toHaveLength(2);
+    expect(screen.getAllByRole("spinbutton")).toHaveLength(2);
 
     await userEvent.type(screen.getByLabelText(/performed by/i), "Staff A");
     await userEvent.click(screen.getByRole("radio", { name: /^cash$/i }));
     await userEvent.type(screen.getByLabelText(/note/i), "optional");
 
-    await userEvent.click(productSelects[0]);
-    await userEvent.click(screen.getByRole("option", { name: products[0].name }));
-    await userEvent.click(productSelects[0]); // to close dropdown
+    await userEvent.click(screen.getAllByRole("combobox")[0]);
+    await userEvent.click(await screen.findByRole("option", { name: products[0].name }));
 
-    await userEvent.clear(quantityInputs[0]);
-    await userEvent.type(quantityInputs[0], "1");
+    await userEvent.clear(screen.getAllByRole("spinbutton")[0]);
+    await userEvent.type(screen.getAllByRole("spinbutton")[0], "1");
 
-    await userEvent.click(productSelects[1]);
-    await userEvent.click(screen.getByRole("option", { name: products[1].name }));
+    await userEvent.click(screen.getAllByRole("combobox")[1]);
+    await userEvent.click(await screen.findByRole("option", { name: products[1].name }));
 
-    await userEvent.clear(quantityInputs[1]);
-    await userEvent.type(quantityInputs[1], "3");
+    await userEvent.clear(screen.getAllByRole("spinbutton")[1]);
+    await userEvent.type(screen.getAllByRole("spinbutton")[1], "3");
 
     await userEvent.click(screen.getByRole("button", { name: /confirm sale/i }));
 
