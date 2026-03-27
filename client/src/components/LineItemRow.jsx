@@ -34,14 +34,19 @@ export default function LineItemRow({
     >
       <div className="flex flex-1 items-start gap-4">
         <div className="flex min-w-0 flex-[2] flex-col gap-1.5">
-          <Label>Product</Label>
+          <Label htmlFor="productId" className="min-w-[120px]">
+            Product
+          </Label>
 
-          <Select value={itemValues.productId || ""} onValueChange={handleSelectChange}>
-            <SelectTrigger className="w-full" aria-label="Product">
-              <SelectValue placeholder="-- Choose a product --" />
+          <Select value={itemValues.productId} onValueChange={(value) => handleSelectChange(value)}>
+            <SelectTrigger id="productId" aria-label="Product" className="flex-1">
+              <SelectValue placeholder="Select a product">
+                {products.find((p) => String(p.id) === String(itemValues.productId))?.name}
+              </SelectValue>
             </SelectTrigger>
 
             <SelectContent>
+              <SelectItem value="">-- Select a product --</SelectItem>
               {products.map((product) => (
                 <SelectItem key={product.id} value={String(product.id)}>
                   {product.name}
@@ -51,7 +56,7 @@ export default function LineItemRow({
           </Select>
 
           {submitted && !itemValues.productId && (
-            <span role="alert" className="text-xs text-destructive">
+            <span role="alert" className="mt-1 text-xs text-destructive self-start">
               Product is required
             </span>
           )}
