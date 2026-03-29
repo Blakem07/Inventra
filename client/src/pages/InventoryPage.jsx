@@ -11,6 +11,8 @@ import { listCategories } from "../api/categories";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
+import { LoadingItem } from "../components/LoadingItem";
+
 export default function InventoryPage() {
   const [searchFilter, setSearchFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -70,9 +72,8 @@ export default function InventoryPage() {
           description="Manage products, filter inventory by category, and quickly add new items."
           testId="inventory-page-heading"
         />
-        <span role="status" data-testid="inventory-page-loading">
-          Loading...
-        </span>
+
+        <LoadingItem testId="inventory-page-loading" />
       </div>
     );
   }
