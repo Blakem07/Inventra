@@ -61,6 +61,38 @@ export default function InventoryPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <div data-testid="inventory-page" className="space-y-4">
+        <PageHeader
+          badge="Inventory"
+          title="Inventory"
+          description="Manage products, filter inventory by category, and quickly add new items."
+          testId="inventory-page-heading"
+        />
+        <span role="status" data-testid="inventory-page-loading">
+          Loading...
+        </span>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div data-testid="inventory-page" className="space-y-4">
+        <PageHeader
+          badge="Inventory"
+          title="Inventory"
+          description="Manage products, filter inventory by category, and quickly add new items."
+          testId="inventory-page-heading"
+        />
+        <span role="alert" data-testid="inventory-page-error">
+          Error: Fetching Inventory Data...
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div data-testid="inventory-page" className="space-y-4">
       <PageHeader

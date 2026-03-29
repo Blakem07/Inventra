@@ -48,7 +48,7 @@ describe("Inventory Page Tests", () => {
       </MemoryRouter>,
     );
 
-    const addItem = screen.getByRole("link", { name: /add item/i });
+    const addItem = await screen.findByRole("link", { name: /add item/i });
     expect(addItem).toBeInTheDocument();
 
     await userEvent.click(addItem);
