@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
+import { LoadingItem } from "../components/LoadingItem";
+
 export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
@@ -96,9 +98,7 @@ export default function ReportsPage() {
           description="View sales and stock movement reports for selected date ranges."
           testId="reports-page-heading"
         />
-        <span role="status" data-testid="reports-loading">
-          Loading...
-        </span>
+        <LoadingItem testId="reports-page-loading" />
       </div>
     );
   }
