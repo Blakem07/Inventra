@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { LoadingItem } from "../components/LoadingItem";
+import { ErrorItem } from "../components/ErrorItem";
 
 export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
@@ -112,9 +113,7 @@ export default function ReportsPage() {
           description="View sales and stock movement reports for selected date ranges."
           testId="reports-page-heading"
         />
-        <span role="alert" data-testid="reports-error">
-          Error: Fetching Reports Data...
-        </span>
+        <ErrorItem testId="reports-page-error" />
       </div>
     );
   }
