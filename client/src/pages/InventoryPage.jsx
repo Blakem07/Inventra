@@ -12,6 +12,7 @@ import { listCategories } from "../api/categories";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 import { LoadingItem } from "../components/LoadingItem";
+import { ErrorItem } from "../components/ErrorItem";
 
 export default function InventoryPage() {
   const [searchFilter, setSearchFilter] = useState("");
@@ -87,9 +88,7 @@ export default function InventoryPage() {
           description="Manage products, filter inventory by category, and quickly add new items."
           testId="inventory-page-heading"
         />
-        <span role="alert" data-testid="inventory-page-error">
-          Error: Fetching Inventory Data...
-        </span>
+        <ErrorItem testId="inventory-page-error" />
       </div>
     );
   }
@@ -102,18 +101,6 @@ export default function InventoryPage() {
         description="Manage products, filter inventory by category, and quickly add new items."
         testId="inventory-page-heading"
       />
-
-      {loading && (
-        <span role="alert" data-testid="inventory-page-loading">
-          Loading...
-        </span>
-      )}
-
-      {fetchError && (
-        <span role="alert" data-testid="inventory-page-error">
-          Error: Fetching Inventory Data...
-        </span>
-      )}
 
       <div className="mb-4 flex gap-4">
         <section aria-labelledby="filters-heading" className="flex-1">

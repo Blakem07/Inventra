@@ -296,8 +296,6 @@ describe("Inventory Page Tests", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
-
-    expect(await screen.findByText(/error: fetching inventory data/i)).toBeInTheDocument();
+    expect(await screen.findByTestId("inventory-page-error")).toBeInTheDocument();
   });
 });
