@@ -168,7 +168,7 @@ describe("Dashboard Page Tests", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/"] });
     render(<RouterProvider router={router} />);
 
-    const errorBanner = await screen.findByText(/error/i);
+    const errorBanner = await screen.findByTestId("dashboard-page-error");
 
     expect(errorBanner).toBeInTheDocument();
   });
