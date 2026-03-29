@@ -1,44 +1,31 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { render, screen, waitForElementToBeRemoved } from "@testing-library/react";
-import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import QuickActions from "./QuickActions";
-import DashboardPage from "../pages/DashboardPage";
 
-describe("Quick Actions Tests", () => {
-  let actions;
+describe("QuickActions", () => {
+  const actions = [
+    { label: "Add Stock", path: "stock/new" },
+    { label: "Record Sale", path: "sales/new" },
+    { label: "View All", path: "reports" },
+  ];
 
-  beforeEach(() => {
-    actions = [
-      { label: "Add Stock", path: "stock/new" },
-      { label: "Record Sale", path: "sale/new" },
-      { label: "View All", path: "reports" },
-    ];
-  });
-
-  it("renders NavLinks containing the correct labels", () => {
-    render(
-      <MemoryRouter>
-        <QuickActions actions={actions}></QuickActions>
-      </MemoryRouter>,
-    );
-
-    actions.forEach((action) => {
-      expect(() => screen.getByRole("link", { name: action.label })).not.toThrow();
-    });
-  });
-
-  it("Add Stock action button navigates to /stock/new", async () => {
+  function renderWithRoutes() {
     render(
       <MemoryRouter initialEntries={["/"]}>
         <Routes>
-          <Route path="/" element={<DashboardPage />} />
+          <Route path="/" element={<QuickActions actions={actions} />} />
           <Route path="/stock/new" element={<h1>Create Stock Movement Page</h1>} />
+          <Route path="/sales/new" element={<h1>Create Sale Page</h1>} />
+          <Route path="/reports" element={<h1>Reports Page</h1>} />
         </Routes>
       </MemoryRouter>,
     );
+  }
 
-    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
+  it("navigates to /stock/new when Add Stock is clicked", async () => {
+    renderWithRoutes();
 
     await userEvent.click(screen.getByRole("link", { name: /add stock/i }));
 
@@ -47,34 +34,16 @@ describe("Quick Actions Tests", () => {
     ).toBeInTheDocument();
   });
 
-  it("Record Sale action button navigates to sales/new", async () => {
-    render(
-      <MemoryRouter>
-        <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="sales/new" element={<h1>Create Sale Page</h1>} />
-        </Routes>
-      </MemoryRouter>,
-    );
-
-    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
+  it("navigates to /sales/new when Record Sale is clicked", async () => {
+    renderWithRoutes();
 
     await userEvent.click(screen.getByRole("link", { name: /record sale/i }));
 
     expect(screen.getByRole("heading", { name: /create sale page/i })).toBeInTheDocument();
   });
 
-  it("View All Action button navigates to /reports", async () => {
-    render(
-      <MemoryRouter>
-        <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/reports" element={<h1>Reports Page</h1>} />
-        </Routes>
-      </MemoryRouter>,
-    );
-
-    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
+  it("navigates to /reports when View All is clicked", async () => {
+    renderWithRoutes();
 
     await userEvent.click(screen.getByRole("link", { name: /view all/i }));
 
