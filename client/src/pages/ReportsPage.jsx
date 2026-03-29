@@ -87,6 +87,38 @@ export default function ReportsPage() {
     load();
   }, [rangeType]);
 
+  if (loading) {
+    return (
+      <div data-testid="reports-page" className="space-y-4">
+        <PageHeader
+          badge="Reports"
+          title="Reports"
+          description="View sales and stock movement reports for selected date ranges."
+          testId="reports-page-heading"
+        />
+        <span role="status" data-testid="reports-loading">
+          Loading...
+        </span>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div data-testid="reports-page" className="space-y-4">
+        <PageHeader
+          badge="Reports"
+          title="Reports"
+          description="View sales and stock movement reports for selected date ranges."
+          testId="reports-page-heading"
+        />
+        <span role="alert" data-testid="reports-error">
+          Error: Fetching Reports Data...
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div data-testid="reports-page" className="space-y-4">
       <PageHeader
@@ -95,18 +127,6 @@ export default function ReportsPage() {
         description="View sales and stock movement reports for selected date ranges."
         testId="reports-page-heading"
       />
-
-      {loading && (
-        <span role="alert" data-testid="reports-loading">
-          Loading...
-        </span>
-      )}
-
-      {fetchError && (
-        <span role="alert" data-testid="reports-error">
-          Error: Fetching Reports
-        </span>
-      )}
 
       <section aria-labelledby="reports-section">
         <Card className="shadow-md">
