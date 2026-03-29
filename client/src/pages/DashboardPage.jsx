@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PlusIcon, ReceiptIcon, BarChart3Icon } from "lucide-react";
 
 import { LoadingItem } from "../components/LoadingItem";
+import { ErrorItem } from "../components/ErrorItem";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
@@ -60,9 +61,7 @@ export default function DashboardPage() {
           description="Track low stock alerts, today’s sales performance, and recent activity in one place."
           testId="dashboard-page-heading"
         />
-        <span role="alert" data-testid="dashboard-page-error">
-          Error: Fetching Dashboard Summary...
-        </span>
+        <ErrorItem testId="dashboard-page-error" />
       </div>
     );
   }
