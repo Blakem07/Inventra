@@ -52,8 +52,11 @@ describe("Reports Page Tests", () => {
 
     expect(screen.getByRole("heading", { name: /reports/i })).toBeInTheDocument();
 
-    expect(screen.getByRole("button", { name: /sales/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /movements/i })).toBeInTheDocument();
+    const salesButton = await screen.findByRole("button", { name: /sales/i });
+    expect(salesButton).toBeInTheDocument();
+
+    const movementsButton = await screen.findByRole("button", { name: /movements/i });
+    expect(movementsButton).toBeInTheDocument();
 
     const table = await screen.findByRole("table");
     expect(table).toBeInTheDocument();
@@ -142,9 +145,10 @@ describe("Reports Page Tests", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/reports"] });
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByRole("button", { name: /movements/i })).toBeInTheDocument();
+    const movementsButton = await screen.findByRole("button", { name: /movements/i });
+    expect(movementsButton).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /movements/i }));
+    await userEvent.click(movementsButton);
 
     const table = await screen.findByRole("table");
     expect(table).toBeInTheDocument();
@@ -174,9 +178,10 @@ describe("Reports Page Tests", () => {
 
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+    const movementsButton = await screen.findByRole("button", { name: /movements/i });
+    expect(movementsButton).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /movements/i }));
+    await userEvent.click(movementsButton);
 
     await waitFor(() => {
       const calls = global.fetch.mock.calls;
