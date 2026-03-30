@@ -85,8 +85,8 @@ Query parameters:
 
 Computed `status`:
 
-- `OUT` if `on_hand == 0`
-- `LOW` if `0 < on_hand <= reorder_level`
+- `OUT` if `onHand == 0`
+- `LOW` if `0 < onHand <= reorderLevel`
 - `OK` otherwise
 
 ---
