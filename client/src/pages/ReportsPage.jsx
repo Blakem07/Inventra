@@ -5,6 +5,20 @@ import { listSalesReport, listMovementsReport } from "../api/reports";
 import MovementsTable from "../components/MovementsTable";
 import SalesTable from "../components/SalesTable";
 
+import PageHeader from "@/components/PageHeader";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+
+import { LoadingItem } from "../components/LoadingItem";
+import { ErrorItem } from "../components/ErrorItem";
+
 export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
@@ -16,6 +30,14 @@ export default function ReportsPage() {
   const [activeTab, setActiveTab] = useState("sales");
   const [salesReport, setSalesReport] = useState({ sales: [] });
   const [movementsReport, setMovementsReport] = useState({ movements: [] });
+
+  const rangeLabels = {
+    today: "Today",
+    last7: "Last 7 Days",
+    last30: "Last 30 Days",
+    thisMonth: "This Month",
+    lastMonth: "Last Month",
+  };
 
   useEffect(() => {
     const range = getDateRange(rangeType);
@@ -68,51 +90,108 @@ export default function ReportsPage() {
     load();
   }, [rangeType]);
 
+  if (loading) {
+    return (
+      <div data-testid="reports-page" className="space-y-4">
+        <PageHeader
+          badge="Reports"
+          title="Reports"
+          description="View sales and stock movement reports for selected date ranges."
+          testId="reports-page-heading"
+        />
+        <LoadingItem testId="reports-page-loading" />
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div data-testid="reports-page" className="space-y-4">
+        <PageHeader
+          badge="Reports"
+          title="Reports"
+          description="View sales and stock movement reports for selected date ranges."
+          testId="reports-page-heading"
+        />
+        <ErrorItem testId="reports-page-error" />
+      </div>
+    );
+  }
+
   return (
-    <div data-testid="reports-page" style={{ display: "flex", flexDirection: "column" }}>
-      <h1>Reports Page</h1>
+    <div data-testid="reports-page" className="space-y-4">
+      <PageHeader
+        badge="Reports"
+        title="Reports"
+        description="View sales and stock movement reports for selected date ranges."
+        testId="reports-page-heading"
+      />
 
-      {loading && <div data-testid="loading">Loading...</div>}
-      {fetchError && <div data-testid="error">Error: Fetching Reports</div>}
+      <section aria-labelledby="reports-section">
+        <Card className="shadow-md">
+          <CardHeader>
+            <h2
+              id="reports-section"
+              data-testid="reports-section-heading"
+              className="text-2xl font-semibold leading-none tracking-tight"
+            >
+              Report Viewer
+            </h2>
+          </CardHeader>
 
-      <section
-        style={{
-          border: "1px solid #ccc",
-          padding: "16px",
-          marginBottom: "16px",
-          borderRadius: "4px",
-        }}
-      >
-        <div style={{ display: "flex", gap: "8px", marginBottom: "16px", alignItems: "center" }}>
-          <label htmlFor="rangeType">Date Range:</label>
-          <select id="rangeType" value={rangeType} onChange={(e) => setRangeType(e.target.value)}>
-            <option value="today">Today</option>
-            <option value="last7">Last 7 Days</option>
-            <option value="last30">Last 30 Days</option>
-            <option value="thisMonth">This Month</option>
-            <option value="lastMonth">Last Month</option>
-          </select>
+          <CardContent className="space-y-4">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2">
+                <label htmlFor="rangeType" className="text-sm font-medium">
+                  Date Range:
+                </label>
 
-          <span>From: {from}</span>
-          <span>To: {to}</span>
-        </div>
+                <Select value={rangeType} onValueChange={setRangeType}>
+                  <SelectTrigger id="rangeType" className="w-[180px]">
+                    <SelectValue>{rangeLabels[rangeType]}</SelectValue>
+                  </SelectTrigger>
 
-        <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
-          <button type="button" onClick={() => setActiveTab("sales")}>
-            Sales
-          </button>
-          <button type="button" onClick={() => setActiveTab("movements")}>
-            Movements
-          </button>
-        </div>
+                  <SelectContent>
+                    <SelectItem value="today">Today</SelectItem>
+                    <SelectItem value="last7">Last 7 Days</SelectItem>
+                    <SelectItem value="last30">Last 30 Days</SelectItem>
+                    <SelectItem value="thisMonth">This Month</SelectItem>
+                    <SelectItem value="lastMonth">Last Month</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-        {!loading &&
-          !fetchError &&
-          (activeTab === "sales" ? (
-            <SalesTable rows={salesReport.sales} />
-          ) : (
-            <MovementsTable rows={movementsReport.movements} />
-          ))}
+              <span className="text-sm text-muted-foreground">From: {from}</span>
+              <span className="text-sm text-muted-foreground">To: {to}</span>
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant={activeTab === "sales" ? "default" : "outline"}
+                onClick={() => setActiveTab("sales")}
+              >
+                Sales
+              </Button>
+
+              <Button
+                type="button"
+                variant={activeTab === "movements" ? "default" : "outline"}
+                onClick={() => setActiveTab("movements")}
+              >
+                Movements
+              </Button>
+            </div>
+
+            {!loading &&
+              !fetchError &&
+              (activeTab === "sales" ? (
+                <SalesTable rows={salesReport.sales} />
+              ) : (
+                <MovementsTable rows={movementsReport.movements} />
+              ))}
+          </CardContent>
+        </Card>
       </section>
     </div>
   );

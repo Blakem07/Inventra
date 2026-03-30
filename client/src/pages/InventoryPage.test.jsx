@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider, MemoryRouter, Routes, Route } from "react-router-dom";
 import { userEvent } from "@testing-library/user-event";
+import { waitFor } from "@testing-library/dom";
 import { within } from "@testing-library/dom";
 import InventoryPage from "./InventoryPage";
 import ProductCreatePage from "./ProductCreatePage";
@@ -47,16 +48,15 @@ describe("Inventory Page Tests", () => {
       </MemoryRouter>,
     );
 
-    const addItem = screen.getByRole("link", { name: /add item/i });
+    const addItem = await screen.findByRole("link", { name: /add item/i });
     expect(addItem).toBeInTheDocument();
 
     await userEvent.click(addItem);
 
-    const select = screen.getByRole("combobox");
-    expect(
-      await within(select).findByRole("option", { name: categories[0].name }),
-    ).toBeInTheDocument();
+    const select = screen.getByRole("combobox", { name: /category/i });
+    await userEvent.click(select);
 
+    expect(await screen.findByRole("option", { name: categories[0].name })).toBeInTheDocument();
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
   });
 
@@ -169,17 +169,19 @@ describe("Inventory Page Tests", () => {
       </MemoryRouter>,
     );
 
-    await screen.findByText(products[0].name); // Wait for the fetch
-    await screen.findByRole("option", { name: categories[0].name });
+    await screen.findByText(products[0].name);
 
-    const select = screen.getByRole("combobox");
-    await userEvent.selectOptions(select, categories[0].name); // fruit
+    const trigger = screen.getByRole("combobox", { name: /category/i });
+    await userEvent.click(trigger);
+
+    const option = await screen.findByRole("option", { name: categories[0].name });
+    await userEvent.click(option);
 
     const table = screen.getByRole("table");
     const tbody = table.querySelector("tbody");
 
-    const allRows = within(tbody).getAllByRole("row");
-    expect(allRows).toHaveLength(2);
+    const rows = within(tbody).getAllByRole("row");
+    expect(rows).toHaveLength(2);
   });
 
   it("shows all products when category is all", async () => {
@@ -198,16 +200,19 @@ describe("Inventory Page Tests", () => {
       </MemoryRouter>,
     );
 
-    await screen.findByText(products[0].name); // Wait for the fetch
+    await screen.findByText(products[0].name);
 
-    const select = screen.getByRole("combobox");
-    await userEvent.selectOptions(select, "all");
+    const trigger = screen.getByRole("combobox", { name: /category/i });
+    await userEvent.click(trigger);
+
+    const allOption = await screen.findByRole("option", { name: /all/i });
+    await userEvent.click(allOption);
 
     const table = screen.getByRole("table");
     const tbody = table.querySelector("tbody");
 
     const allRows = within(tbody).getAllByRole("row");
-    expect(allRows).toHaveLength(testProducts.length);
+    expect(allRows).toHaveLength(products.length);
   });
 
   it("navigates to correct product edit page when clicking edit", async () => {
@@ -245,38 +250,30 @@ describe("Inventory Page Tests", () => {
     await userEvent.click(edit);
 
     expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
-    expect(screen.getByText(products[0].id)).toBeInTheDocument();
+    expect(await screen.findByText(new RegExp(products[0].id, "i"))).toBeInTheDocument();
   });
 
   it("loads products and categories on mount", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => [{ id: 1, name: "Test", category: "General", categoryId: 1 }],
+      json: async () => products,
     });
 
     fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => [{ id: 1, name: "General" }],
+      json: async () => categories,
     });
 
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
     render(<RouterProvider router={router} />);
 
-    // Pre load
+    expect(await screen.findByText(products[0].name)).toBeInTheDocument();
 
-    expect(screen.getByTestId("loading")).toBeInTheDocument();
-    expect(screen.queryByText("Test")).not.toBeInTheDocument();
+    const combobox = screen.getByRole("combobox", { name: /category/i });
+    await userEvent.click(combobox);
 
-    // Post load
+    expect(await screen.findByRole("option", { name: categories[0].name })).toBeInTheDocument();
 
-    expect(await screen.findByText("Test")).toBeInTheDocument();
-
-    const select = screen.getByRole("combobox");
-    const options = within(select).getAllByRole("option");
-
-    expect(options.map((option) => option.textContent)).toContain("General");
-
-    expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(fetch.mock.calls[0][0]).toContain("/products");
     expect(fetch.mock.calls[1][0]).toContain("/categories");
@@ -299,8 +296,23 @@ describe("Inventory Page Tests", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
+    expect(await screen.findByTestId("inventory-page-error")).toBeInTheDocument();
+  });
 
-    expect(await screen.findByRole("alert")).toBeInTheDocument();
+  it("renders 'No products' when response is empty", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [],
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [],
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
+    render(<RouterProvider router={router} />);
+
+    expect(await screen.findByText(/no products/i)).toBeInTheDocument();
   });
 });

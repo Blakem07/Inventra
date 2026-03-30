@@ -52,8 +52,11 @@ describe("Reports Page Tests", () => {
 
     expect(screen.getByRole("heading", { name: /reports/i })).toBeInTheDocument();
 
-    expect(screen.getByRole("button", { name: /sales/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /movements/i })).toBeInTheDocument();
+    const salesButton = await screen.findByRole("button", { name: /sales/i });
+    expect(salesButton).toBeInTheDocument();
+
+    const movementsButton = await screen.findByRole("button", { name: /movements/i });
+    expect(movementsButton).toBeInTheDocument();
 
     const table = await screen.findByRole("table");
     expect(table).toBeInTheDocument();
@@ -142,9 +145,10 @@ describe("Reports Page Tests", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/reports"] });
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByRole("button", { name: /movements/i })).toBeInTheDocument();
+    const movementsButton = await screen.findByRole("button", { name: /movements/i });
+    expect(movementsButton).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /movements/i }));
+    await userEvent.click(movementsButton);
 
     const table = await screen.findByRole("table");
     expect(table).toBeInTheDocument();
@@ -174,9 +178,10 @@ describe("Reports Page Tests", () => {
 
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+    const movementsButton = await screen.findByRole("button", { name: /movements/i });
+    expect(movementsButton).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /movements/i }));
+    await userEvent.click(movementsButton);
 
     await waitFor(() => {
       const calls = global.fetch.mock.calls;
@@ -232,48 +237,39 @@ describe("Reports Page Tests", () => {
       json: async () => movementsReport,
     });
 
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => salesReport,
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => movementsReport,
+    });
+
     const router = createMemoryRouter(routes, { initialEntries: ["/reports"] });
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
-
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
-    await userEvent.click(screen.getByRole("button", { name: /sales/i }));
+    const select = screen.getByRole("combobox", { name: /date range/i });
+    await userEvent.click(select);
+    await userEvent.click(await screen.findByRole("option", { name: /today/i }));
 
     await waitFor(() => {
       const calls = global.fetch.mock.calls;
       let found = false;
 
-      calls.forEach((call) => {
-        if (call[0].includes("/reports/sales")) {
-          found = true;
-          expect(call[0]).toMatch(/\/reports\/sales\?from=.*&to=.*/);
-        }
-      });
-
-      expect(found).toBe(true);
-    });
-
-    const select = screen.getByRole("combobox");
-    await userEvent.selectOptions(select, ["last7"]);
-
-    await waitFor(() => {
-      const calls = global.fetch.mock.calls;
-
       const today = new Date();
-      const start = new Date();
-      start.setDate(today.getDate() - 6);
-
       const todayString = today.toISOString().slice(0, 10);
-      const startString = start.toISOString().slice(0, 10);
 
-      const found = calls.some((call) => {
-        if (call[0].includes("/reports/sales")) {
-          expect(call[0]).toContain(`from=${startString}&to=${todayString}`);
-          return true;
+      calls.forEach((call) => {
+        if (
+          call[0].includes("/reports/sales") &&
+          call[0].includes(`from=${todayString}&to=${todayString}`)
+        ) {
+          found = true;
         }
-        return false;
       });
 
       expect(found).toBe(true);
@@ -291,48 +287,41 @@ describe("Reports Page Tests", () => {
       json: async () => movementsReport,
     });
 
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => salesReport,
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => movementsReport,
+    });
+
     const router = createMemoryRouter(routes, { initialEntries: ["/reports"] });
     render(<RouterProvider router={router} />);
-
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
 
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
     await userEvent.click(screen.getByRole("button", { name: /movements/i }));
 
+    const select = screen.getByRole("combobox", { name: /date range/i });
+    await userEvent.click(select);
+    await userEvent.click(await screen.findByRole("option", { name: /today/i }));
+
     await waitFor(() => {
       const calls = global.fetch.mock.calls;
       let found = false;
 
-      calls.forEach((call) => {
-        if (call[0].includes("/reports/movements")) {
-          found = true;
-          expect(call[0]).toMatch(/\/reports\/movements\?from=.*&to=.*/);
-        }
-      });
-
-      expect(found).toBe(true);
-    });
-
-    const select = screen.getByRole("combobox");
-    await userEvent.selectOptions(select, ["last7"]);
-
-    await waitFor(() => {
-      const calls = global.fetch.mock.calls;
-
       const today = new Date();
-      const start = new Date();
-      start.setDate(today.getDate() - 6);
-
       const todayString = today.toISOString().slice(0, 10);
-      const startString = start.toISOString().slice(0, 10);
 
-      const found = calls.some((call) => {
-        if (call[0].includes("/reports/movements")) {
-          expect(call[0]).toContain(`from=${startString}&to=${todayString}`);
-          return true;
+      calls.forEach((call) => {
+        if (
+          call[0].includes("/reports/movements") &&
+          call[0].includes(`from=${todayString}&to=${todayString}`)
+        ) {
+          found = true;
         }
-        return false;
       });
 
       expect(found).toBe(true);

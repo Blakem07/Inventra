@@ -6,6 +6,19 @@ import { archiveProduct, updateProduct, getProduct } from "../api/products";
 
 import validateProductPayload from "../validation/validateProductPayload";
 
+import SubPageHeader from "@/components/SubPageHeader";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 const initialValues = {
   name: "",
   categoryId: "",
@@ -17,15 +30,13 @@ const initialValues = {
 
 export default function ProductEditPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [fetchError, setFetchError] = useState(false);
-
   const [categories, setCategories] = useState([]);
   const [values, setValues] = useState(initialValues);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     async function load() {
@@ -84,175 +95,171 @@ export default function ProductEditPage() {
   }
 
   return (
-    <div data-testid="product-edit-page">
-      <h1>Product Edit Page</h1>
+    <div data-testid="product-edit-page" className="px-4 py-6 space-y-4">
+      <SubPageHeader title="Edit Product" description="Modify product details." />
 
-      <h3 style={{ display: "flex", placeSelf: "center", alignItems: "center", gap: 12 }}>
-        <span>
-          ID: <span>{id}</span>
-        </span>
-        <button onClick={onArchive} style={archiveButtonStyle}>
-          Archive
-        </button>
-      </h3>
+      <form
+        method="POST"
+        onSubmit={onSubmit}
+        className="mx-auto flex max-w-[800px] flex-col gap-3 rounded-md border bg-background p-4"
+      >
+        <div className="flex items-center justify-between gap-3 rounded-md border bg-muted/30 p-3">
+          <div className="text-sm font-medium">Product ID: {id}</div>
 
-      {loading && <div data-testid="loading">Loading...</div>}
+          <Button type="button" variant="destructive" onClick={onArchive}>
+            Archive
+          </Button>
+        </div>
 
-      <form onSubmit={onSubmit} style={containerStyle}>
-        <label style={fieldStyle}>
-          <span style={labelTextStyle}>Name</span>
-          <input name="name" value={values.name} onChange={onChange} style={inputStyle} />
-        </label>
-
-        {errors.name ? (
-          <div role="alert" style={errorStyle}>
-            {errors.name}
-          </div>
-        ) : null}
-
-        {fetchError && (
-          <div role="alert" style={errorStyle}>
-            Error: Fetching Categories
+        {loading && (
+          <div data-testid="loading" className="text-sm text-muted-foreground">
+            Loading...
           </div>
         )}
 
-        <label style={fieldStyle}>
-          <span style={labelTextStyle}>Category</span>
-          <select
-            name="categoryId"
-            value={values.categoryId}
-            onChange={onChange}
-            style={inputStyle}
-          >
-            <option value="">--Select a category --</option>
-            {categories.map((category) => (
-              <option value={category.id} key={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        {fetchError && (
+          <span role="alert" className="text-sm text-destructive">
+            Error: Fetching Categories
+          </span>
+        )}
 
-        {errors.categoryId ? (
-          <div role="alert" style={errorStyle}>
-            {errors.categoryId}
+        <fieldset
+          aria-label="product details"
+          className="flex flex-col gap-3 rounded-md border bg-muted/30 p-3"
+        >
+          <div className="flex items-center gap-3">
+            <Label htmlFor="name" className="min-w-[120px]">
+              Name
+            </Label>
+            <Input
+              id="name"
+              name="name"
+              value={values.name}
+              onChange={onChange}
+              className="flex-1"
+            />
           </div>
-        ) : null}
 
-        <label style={fieldStyle}>
-          <span style={labelTextStyle}>SKU or Barcode</span>
-          <input
-            name="skuOrBarcode"
-            value={values.skuOrBarcode}
-            onChange={onChange}
-            style={inputStyle}
-          />
-        </label>
+          {errors.name && (
+            <span role="alert" className="text-sm text-destructive">
+              {errors.name}
+            </span>
+          )}
 
-        <label style={fieldStyle}>
-          <span style={labelTextStyle}>Unit</span>
-          <input name="unit" value={values.unit} onChange={onChange} style={inputStyle} />
-        </label>
+          <div className="flex items-center gap-3">
+            <Label htmlFor="categoryId" className="min-w-[120px]">
+              Category
+            </Label>
 
-        {errors.unit ? (
-          <div role="alert" style={errorStyle}>
-            {errors.unit}
+            <Select
+              value={values.categoryId}
+              onValueChange={(value) =>
+                onChange({
+                  target: {
+                    name: "categoryId",
+                    value,
+                  },
+                })
+              }
+            >
+              <SelectTrigger id="categoryId" aria-label="Category" className="flex-1">
+                <SelectValue placeholder="Select a category">
+                  {categories.find((c) => String(c.id) === values.categoryId)?.name}
+                </SelectValue>
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem value="">-- Select a category --</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={String(category.id)}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        ) : null}
 
-        <label style={fieldStyle}>
-          <span style={labelTextStyle}>Price</span>
-          <input name="price" value={values.price} onChange={onChange} style={inputStyle} />
-        </label>
+          {errors.categoryId && (
+            <span role="alert" className="text-sm text-destructive">
+              {errors.categoryId}
+            </span>
+          )}
 
-        {errors.price ? (
-          <div role="alert" style={errorStyle}>
-            {errors.price}
+          <div className="flex items-center gap-3">
+            <Label htmlFor="skuOrBarcode" className="min-w-[120px]">
+              SKU or Barcode
+            </Label>
+            <Input
+              id="skuOrBarcode"
+              name="skuOrBarcode"
+              value={values.skuOrBarcode}
+              onChange={onChange}
+              className="flex-1"
+            />
           </div>
-        ) : null}
 
-        <label style={fieldStyle}>
-          <span style={labelTextStyle}>Reorder Level</span>
-          <input
-            name="reorderLevel"
-            value={values.reorderLevel}
-            onChange={onChange}
-            style={inputStyle}
-          />
-        </label>
-
-        {errors.reorderLevel ? (
-          <div role="alert" style={errorStyle}>
-            {errors.reorderLevel}
+          <div className="flex items-center gap-3">
+            <Label htmlFor="unit" className="min-w-[120px]">
+              Unit
+            </Label>
+            <Input
+              id="unit"
+              name="unit"
+              value={values.unit}
+              onChange={onChange}
+              className="flex-1"
+            />
           </div>
-        ) : null}
 
-        <button type="submit" style={buttonStyle}>
-          Save
-        </button>
+          {errors.unit && (
+            <span role="alert" className="text-sm text-destructive">
+              {errors.unit}
+            </span>
+          )}
+
+          <div className="flex items-center gap-3">
+            <Label htmlFor="price" className="min-w-[120px]">
+              Price
+            </Label>
+            <Input
+              id="price"
+              name="price"
+              value={values.price}
+              onChange={onChange}
+              className="flex-1"
+            />
+          </div>
+
+          {errors.price && (
+            <span role="alert" className="text-sm text-destructive">
+              {errors.price}
+            </span>
+          )}
+
+          <div className="flex items-center gap-3">
+            <Label htmlFor="reorderLevel" className="min-w-[120px]">
+              Reorder Level
+            </Label>
+            <Input
+              id="reorderLevel"
+              name="reorderLevel"
+              value={values.reorderLevel}
+              onChange={onChange}
+              className="flex-1"
+            />
+          </div>
+
+          {errors.reorderLevel && (
+            <span role="alert" className="text-sm text-destructive">
+              {errors.reorderLevel}
+            </span>
+          )}
+        </fieldset>
+
+        <div className="flex justify-center">
+          <Button type="submit">Save Changes</Button>
+        </div>
       </form>
     </div>
   );
 }
-
-const containerStyle = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "stretch",
-  border: "1px solid #ccc",
-  padding: "16px",
-  borderRadius: "4px",
-  background: "#fff",
-  width: "100%",
-  maxWidth: 800,
-  boxSizing: "border-box",
-  margin: "0 auto",
-};
-
-const fieldStyle = {
-  display: "flex",
-  flexDirection: "row",
-  gap: "8px",
-  alignItems: "center",
-  marginBottom: "8px",
-};
-
-const labelTextStyle = {
-  minWidth: 120,
-  display: "inline-block",
-};
-
-const inputStyle = {
-  padding: "8px",
-  border: "1px solid #ddd",
-  borderRadius: "4px",
-  fontFamily: "inherit",
-  flex: 1,
-  minWidth: 0,
-};
-
-const buttonStyle = {
-  alignSelf: "center",
-  padding: "8px 12px",
-  borderRadius: "4px",
-  border: "1px solid #000",
-  background: "#bdbdbd",
-  color: "#000",
-  cursor: "pointer",
-};
-
-const archiveButtonStyle = {
-  alignSelf: "flex-start",
-  backgroundColor: "yellow",
-  fontWeight: "bolder",
-  border: "1px solid #999",
-  padding: "6px 10px",
-  borderRadius: 4,
-  cursor: "pointer",
-};
-
-const errorStyle = {
-  color: "#d32f2f",
-  fontSize: "0.9em",
-  marginBottom: "8px",
-};

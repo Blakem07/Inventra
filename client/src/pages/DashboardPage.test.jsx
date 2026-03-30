@@ -27,6 +27,8 @@ describe("Dashboard Page Tests", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/"] });
     render(<RouterProvider router={router} />);
 
+    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
+
     const addStock = screen.getByRole("link", { name: /add stock/i });
     expect(addStock).toBeInTheDocument();
 
@@ -43,6 +45,8 @@ describe("Dashboard Page Tests", () => {
 
     const router = createMemoryRouter(routes, { initialEntries: ["/"] });
     render(<RouterProvider router={router} />);
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
 
     const recordSale = screen.getByRole("link", { name: /record sale/i });
     expect(recordSale).toBeInTheDocument();
@@ -64,6 +68,8 @@ describe("Dashboard Page Tests", () => {
 
     const router = createMemoryRouter(routes, { initialEntries: ["/"] });
     render(<RouterProvider router={router} />);
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
 
     const viewAll = screen.getByRole("link", { name: /view all/i });
     expect(viewAll).toBeInTheDocument();
@@ -120,7 +126,7 @@ describe("Dashboard Page Tests", () => {
     ).toBeInTheDocument();
 
     expect(
-      within(section).getByText(`Total Sales Amount: ${dashboardSummary.totalSalesAmountToday}`),
+      within(section).getByText(`Total Sales Amount: ₱${dashboardSummary.totalSalesAmountToday}`),
     ).toBeInTheDocument();
   });
 
@@ -162,8 +168,28 @@ describe("Dashboard Page Tests", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/"] });
     render(<RouterProvider router={router} />);
 
-    const errorBanner = await screen.findByText(/error/i);
+    const errorBanner = await screen.findByTestId("dashboard-page-error");
 
     expect(errorBanner).toBeInTheDocument();
+  });
+
+  it("renders 'No recent activity' when response is empty", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        summaryDate: "2026-03-10",
+        lowStockCount: 0,
+        outOfStockCount: 0,
+        salesCountToday: 0,
+        totalSalesAmountToday: 0,
+        itemsSoldToday: 0,
+        recentActivity: [],
+      }),
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/"] });
+    render(<RouterProvider router={router} />);
+
+    expect(await screen.findByText(/no recent activity/i)).toBeInTheDocument();
   });
 });

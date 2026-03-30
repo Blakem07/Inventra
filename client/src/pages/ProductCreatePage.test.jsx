@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, within, waitFor } from "@testing-library/react";
-import { createMemoryRouter, RouterProvider, MemoryRouter, useLocation } from "react-router-dom";
+import { createMemoryRouter, RouterProvider, MemoryRouter } from "react-router-dom";
 import { routes } from "../app/routes";
 
 import { userEvent } from "@testing-library/user-event";
@@ -40,11 +40,9 @@ describe("Product Create Page Tests", () => {
 
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
 
-    // Wait for fetch to load categories
     const select = screen.getByRole("combobox");
-    expect(
-      await within(select).findByRole("option", { name: categories[0].name }),
-    ).toBeInTheDocument();
+    await userEvent.click(select);
+    expect(await screen.findByRole("option", { name: categories[0].name })).toBeInTheDocument();
 
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Category")).toBeInTheDocument();
@@ -116,7 +114,8 @@ describe("Product Create Page Tests", () => {
     await userEvent.clear(reorderLevel);
 
     await userEvent.type(name, "valid name");
-    await userEvent.selectOptions(category, "cat-fruit");
+    await userEvent.click(category);
+    await userEvent.click(await screen.findByRole("option", { name: /fruit/i }));
     await userEvent.type(skuOrBarcode, "valid sku");
     await userEvent.type(unit, "kg");
     await userEvent.type(price, "10");
@@ -140,21 +139,19 @@ describe("Product Create Page Tests", () => {
     render(<RouterProvider router={router} />);
 
     const select = screen.getByRole("combobox");
-    expect(
-      await within(select).findByRole("option", { name: categories[0].name }),
-    ).toBeInTheDocument();
+    await userEvent.click(select);
+    expect(await screen.findByRole("option", { name: categories[0].name })).toBeInTheDocument();
 
     const validCategoryNames = categories.map((category) => category.name);
 
     validCategoryNames.forEach((category) => {
-      expect(within(select).getByRole("option", { name: category })).toBeInTheDocument();
+      expect(screen.getByRole("option", { name: category })).toBeInTheDocument();
     });
 
     expect(global.fetch.mock.calls[0][0]).toMatch(/categories/i);
   });
 
   it("shows an error banner on fetch failure", async () => {
-    // Prevents stderr caused by client console.log() on error
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     fetch.mockResolvedValueOnce({
@@ -174,9 +171,8 @@ describe("Product Create Page Tests", () => {
     render(<RouterProvider router={router} />);
 
     const select = screen.getByRole("combobox");
-    expect(
-      await within(select).findByRole("option", { name: categories[0].name }),
-    ).toBeInTheDocument();
+    await userEvent.click(select);
+    expect(await screen.findByRole("option", { name: categories[0].name })).toBeInTheDocument();
 
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
 
@@ -188,7 +184,8 @@ describe("Product Create Page Tests", () => {
     const reorderLevel = screen.getByRole("textbox", { name: /reorder level/i });
 
     await userEvent.type(name, validPayload.name);
-    await userEvent.selectOptions(categoryId, validPayload.categoryId);
+    await userEvent.click(categoryId);
+    await userEvent.click(await screen.findByRole("option", { name: categories[0].name }));
     await userEvent.type(skuOrBarcode, validPayload.skuOrBarcode);
     await userEvent.type(unit, validPayload.unit);
 
@@ -203,7 +200,6 @@ describe("Product Create Page Tests", () => {
       let found = false;
 
       calls.forEach((call) => {
-        // Optional chaining to prevent crashed caused by call on inventory page
         if (call[0].includes("/products") && call[1]?.method === "POST") {
           found = true;
 

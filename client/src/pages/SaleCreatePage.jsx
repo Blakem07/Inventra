@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { listProducts } from "../api/products";
 
 import SalesForm from "../components/SaleForm";
+import SubPageHeader from "../components/SubPageHeader";
 
 export default function SaleCreatePage() {
   const [products, setProducts] = useState([]);
@@ -13,6 +14,7 @@ export default function SaleCreatePage() {
     async function load() {
       setFetchError(false);
       setLoading(true);
+
       try {
         const productsData = await listProducts();
 
@@ -27,15 +29,35 @@ export default function SaleCreatePage() {
         setLoading(false);
       }
     }
+
     load();
   }, []);
 
   return (
-    <div data-testid="sale-create-page">
-      <h1>Sale Create Page</h1>
-      {loading && <div data-testid="loading">Loading...</div>}
-      {fetchError && <div role="alert">Error: Fetching Products</div>}
-      <SalesForm products={products} />
+    <div data-testid="sale-create-page" className="space-y-4">
+      <SubPageHeader
+        title="Create Sale"
+        description="Record a new sale with line items, payment method, and transaction details."
+      />
+
+      {loading && (
+        <span role="alert" data-testid="sale-create-page-loading">
+          Loading...
+        </span>
+      )}
+
+      {fetchError && (
+        <span role="alert" data-testid="sale-create-page-error">
+          Error: Fetching Products
+        </span>
+      )}
+
+      <section aria-labelledby="sale-form-heading">
+        <h2 id="sale-form-heading" className="sr-only">
+          Sale Form
+        </h2>
+        <SalesForm products={products} />
+      </section>
     </div>
   );
 }

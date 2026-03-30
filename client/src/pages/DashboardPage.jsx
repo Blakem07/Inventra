@@ -1,18 +1,25 @@
-import QuickActions from "../components/QuickActions";
+import { useEffect, useState } from "react";
 
+import PageHeader from "@/components/PageHeader";
+import QuickActions from "../components/QuickActions";
 import getDashboardSummary from "../api/dashboard";
 
-import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { PlusIcon, ReceiptIcon, BarChart3Icon } from "lucide-react";
+
+import { LoadingItem } from "../components/LoadingItem";
+import { ErrorItem } from "../components/ErrorItem";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(false);
-  const [dashboardSummary, setDashboardSummary] = useState();
+  const [dashboardSummary, setDashboardSummary] = useState(null);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
       setFetchError(false);
+
       try {
         const dashboardData = await getDashboardSummary();
 
@@ -27,180 +34,152 @@ export default function DashboardPage() {
         setLoading(false);
       }
     }
+
     load();
   }, []);
 
+  if (loading) {
+    return (
+      <div data-testid="dashboard-page" className="space-y-4">
+        <PageHeader
+          badge="Overview"
+          title="Dashboard"
+          description="Track low stock alerts, today’s sales performance, and recent activity in one place."
+          testId="dashboard-page-heading"
+        />
+        <LoadingItem testId="dashboard-page-loading" />
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div data-testid="dashboard-page" className="space-y-4">
+        <PageHeader
+          badge="Overview"
+          title="Dashboard"
+          description="Track low stock alerts, today’s sales performance, and recent activity in one place."
+          testId="dashboard-page-heading"
+        />
+        <ErrorItem testId="dashboard-page-error" />
+      </div>
+    );
+  }
+
   return (
-    <div data-testid="dashboard-page">
-      <h1>Dashboard Page</h1>
+    <div data-testid="dashboard-page" className="space-y-4">
+      <PageHeader
+        badge="Overview"
+        title="Dashboard"
+        description="Track low stock alerts, today’s sales performance, and recent activity in one place."
+        testId="dashboard-page-heading"
+      />
 
-      {loading && <span role="alert">Loading...</span>}
-      {fetchError && <span role="alert">Error: Fetching Dashboard Summary...</span>}
+      <div className="mb-4 flex gap-4">
+        <section aria-labelledby="stock-alerts-heading" className="flex-1">
+          <Card className="h-full shadow-md">
+            <CardHeader>
+              <h2
+                id="stock-alerts-heading"
+                data-testid="stock-alerts-heading"
+                className="text-2xl font-semibold leading-none tracking-tight"
+              >
+                Stock Alerts
+              </h2>
+            </CardHeader>
 
-      <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
-        <section
-          aria-labelledby="stock-alerts-heading"
-          style={{
-            border: "1px solid #ccc",
-            padding: "16px",
-            borderRadius: "4px",
-            flex: 1,
-          }}
-        >
-          <h2 id="stock-alerts-heading">Stock Alerts</h2>
-          <p>Low Stock Items: {dashboardSummary?.lowStockCount}</p>
-          <p>Out Of Stock Items: {dashboardSummary?.outOfStockCount}</p>
+            <CardContent>
+              <p>Low Stock Items: {dashboardSummary?.lowStockCount}</p>
+              <p>Out Of Stock Items: {dashboardSummary?.outOfStockCount}</p>
+            </CardContent>
+          </Card>
         </section>
 
-        <section
-          style={{
-            border: "1px solid #ccc",
-            padding: "16px",
-            borderRadius: "4px",
-            flex: 1,
-          }}
-        >
-          <h2>Today's Summary</h2>
-          <p>Sales Today: {dashboardSummary?.salesCountToday}</p>
-          <p>Items Sold Today: {dashboardSummary?.itemsSoldToday}</p>
-          <p>Total Sales Amount: {dashboardSummary?.totalSalesAmountToday}</p>
+        <section aria-labelledby="today-summary-heading" className="flex-1">
+          <Card className="h-full shadow-md">
+            <CardHeader>
+              <h2
+                id="today-summary-heading"
+                data-testid="today-summary-heading"
+                className="text-2xl font-semibold leading-none tracking-tight"
+              >
+                Today's Summary
+              </h2>
+            </CardHeader>
+
+            <CardContent>
+              <p>Sales Today: {dashboardSummary?.salesCountToday}</p>
+              <p>Items Sold Today: {dashboardSummary?.itemsSoldToday}</p>
+              <p>Total Sales Amount: ₱{dashboardSummary?.totalSalesAmountToday}</p>
+            </CardContent>
+          </Card>
         </section>
       </div>
+      <section aria-labelledby="quick-action-heading" className="mb-4">
+        <Card className="shadow-md">
+          <CardHeader>
+            <h2
+              id="quick-action-heading"
+              data-testid="quick-action-heading"
+              className="text-2xl font-semibold leading-none tracking-tight"
+            >
+              Quick Action
+            </h2>
+          </CardHeader>
 
-      <section
-        style={{
-          border: "1px solid #ccc",
-          padding: "16px",
-          marginBottom: "16px",
-          borderRadius: "4px",
-        }}
-      >
-        <h2>Quick Action</h2>
-
-        <QuickActions
-          actions={[
-            { label: "Add Stock", path: "stock/new" },
-            { label: "Record Sale", path: "sales/new" },
-            { label: "View All", path: "reports" },
-          ]}
-        />
+          <CardContent>
+            <QuickActions
+              actions={[
+                {
+                  label: "Add Stock",
+                  path: "stock/new",
+                  icon: PlusIcon,
+                },
+                {
+                  label: "Record Sale",
+                  path: "sales/new",
+                  icon: ReceiptIcon,
+                },
+                {
+                  label: "View All",
+                  path: "reports",
+                  icon: BarChart3Icon,
+                },
+              ]}
+            />
+          </CardContent>
+        </Card>
       </section>
 
-      <section
-        style={{
-          border: "1px solid #ccc",
-          padding: "16px",
-          marginBottom: "16px",
-          borderRadius: "4px",
-        }}
-      >
-        <h2>Recent Activity</h2>
-        <ul
-          style={{
-            listStyle: "none",
-            padding: 0,
-            margin: 0,
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-          }}
-        >
-          {dashboardSummary?.recentActivity.map((activity) => (
-            <li
-              key={activity.id}
-              style={{
-                padding: "6px 0",
-                fontSize: "14px",
-                borderBottom: "1px solid #eee",
-              }}
+      <section aria-labelledby="recent-activity-heading" className="mb-4">
+        <Card className="shadow-md">
+          <CardHeader>
+            <h2
+              id="recent-activity-heading"
+              data-testid="recent-activity-heading"
+              className="text-2xl font-semibold leading-none tracking-tight"
             >
-              <strong>{activity.movementType === "IN" ? "Added Stock:" : "Sold:"}</strong>{" "}
-              {activity.product?.name ?? "Unknown Product"} ({Math.abs(activity?.quantityChange)})
-            </li>
-          ))}
-        </ul>
+              Recent Activity
+            </h2>
+          </CardHeader>
+
+          <CardContent>
+            <ul className="m-0 flex list-none flex-col gap-2 p-0">
+              {dashboardSummary?.recentActivity?.length === 0 ? (
+                <li className="border-b border-border py-1.5 text-sm">No recent activity</li>
+              ) : (
+                dashboardSummary?.recentActivity?.map((activity) => (
+                  <li key={activity.id} className="border-b border-border py-1.5 text-sm">
+                    <strong>{activity.movementType === "IN" ? "Added Stock:" : "Sold:"}</strong>{" "}
+                    {activity.product?.name ?? "Unknown Product"} (
+                    {Math.abs(activity?.quantityChange)})
+                  </li>
+                ))
+              )}
+            </ul>
+          </CardContent>
+        </Card>
       </section>
     </div>
   );
 }
-
-const initialValues = {
-  summaryDate: "2026-03-10",
-  lowStockCount: 3,
-  outOfStockCount: 1,
-  salesCountToday: 8,
-  totalSalesAmountToday: 214.75,
-  itemsSoldToday: 17,
-  recentActivity: [
-    {
-      id: "69adafc523e01bf5301d47b2",
-      occurredAt: "2026-03-10T09:15:00Z",
-      movementType: "OUT",
-      quantityChange: -2,
-      saleId: "69adafc523e01bf5301d47af",
-      performedBy: "Staff A",
-      reason: "SALE",
-      note: "Customer purchase",
-      product: {
-        id: "6991b887404ed8cf6c6d0499",
-        name: "testProductForSalesFlow",
-      },
-    },
-    {
-      id: "69a6c044eb92d21484efab65",
-      occurredAt: "2026-03-10T10:02:00Z",
-      movementType: "OUT",
-      quantityChange: -3,
-      saleId: "69adadf123e01bf5301d4790",
-      performedBy: "Staff A",
-      reason: "SALE",
-      note: "Customer purchase",
-      product: {
-        id: "6991a1cde534a97e330f4cb7",
-        name: "testProductTwo",
-      },
-    },
-    {
-      id: "69a6c044eb92d21484efab66",
-      occurredAt: "2026-03-10T11:20:00Z",
-      movementType: "IN",
-      quantityChange: 25,
-      saleId: null,
-      performedBy: "Staff A",
-      reason: "RESTOCK",
-      note: "Restocked inventory",
-      product: {
-        id: "6991b887404ed8cf6c6d0499",
-        name: "testProductForSalesFlow",
-      },
-    },
-    {
-      id: "69adabbb222090f7fa0c3252",
-      occurredAt: "2026-03-10T12:05:00Z",
-      movementType: "OUT",
-      quantityChange: -1,
-      saleId: "69adabbb222090f7fa0c324f",
-      performedBy: "Staff A",
-      reason: "SALE",
-      note: "Customer purchase",
-      product: {
-        id: "6991b887404ed8cf6c6d0499",
-        name: "testProductForSalesFlow",
-      },
-    },
-    {
-      id: "69adabbb222090f7fa0c3253",
-      occurredAt: "2026-03-10T13:10:00Z",
-      movementType: "IN",
-      quantityChange: 12,
-      saleId: null,
-      performedBy: "Staff A",
-      reason: "RESTOCK",
-      note: "Supplier delivery",
-      product: {
-        id: "6991a1cde534a97e330f4cb7",
-        name: "testProductTwo",
-      },
-    },
-  ],
-};
