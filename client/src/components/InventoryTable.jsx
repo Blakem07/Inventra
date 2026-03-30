@@ -42,28 +42,36 @@ export default function InventoryTable({ products }) {
         </TableHeader>
 
         <TableBody>
-          {products.map((product) => {
-            return (
-              <TableRow key={product.id} className="text-left align-top">
-                <TableCell className="text-left align-top">{product.name}</TableCell>
-                <TableCell className="text-left align-top">
-                  {product.skuOrBarcode || "N/A"}
-                </TableCell>
-                <TableCell className="text-left align-top">{product.onHand}</TableCell>
-                <TableCell className="text-left align-top">{product.price}</TableCell>
-                <TableCell className="text-left align-top">
-                  <StatusPill
-                    status={product.status}
-                    onHand={product.onHand}
-                    reorderLevel={product.reorderLevel}
-                  />
-                </TableCell>
-                <TableCell className="text-left align-top w-[1%] whitespace-nowrap">
-                  <NavLink to={`${product.id}/edit`}>Edit</NavLink>
-                </TableCell>
-              </TableRow>
-            );
-          })}
+          {products.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={4} className="py-4 text-center">
+                No products
+              </TableCell>
+            </TableRow>
+          ) : (
+            products.map((product) => {
+              return (
+                <TableRow key={product.id} className="text-left align-top">
+                  <TableCell className="text-left align-top">{product.name}</TableCell>
+                  <TableCell className="text-left align-top">
+                    {product.skuOrBarcode || "N/A"}
+                  </TableCell>
+                  <TableCell className="text-left align-top">{product.onHand}</TableCell>
+                  <TableCell className="text-left align-top">{product.price}</TableCell>
+                  <TableCell className="text-left align-top">
+                    <StatusPill
+                      status={product.status}
+                      onHand={product.onHand}
+                      reorderLevel={product.reorderLevel}
+                    />
+                  </TableCell>
+                  <TableCell className="text-left align-top w-[1%] whitespace-nowrap">
+                    <NavLink to={`${product.id}/edit`}>Edit</NavLink>
+                  </TableCell>
+                </TableRow>
+              );
+            })
+          )}
         </TableBody>
       </Table>
     </div>
