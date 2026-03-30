@@ -22,7 +22,11 @@
  * @throws {Error} When the response status is not 2xx
  */
 export async function client(path, options) {
-  const baseURL = "http://localhost:3000";
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
+
+  if (!baseURL) {
+    throw new Error("VITE_API_BASE_URL is not defined");
+  }
 
   const response = await fetch(baseURL + path, options);
   const body = await response.json();

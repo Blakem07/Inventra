@@ -1,3 +1,28 @@
+/**
+ * Validates and normalizes sale input.
+ *
+ * @param {Object} values
+ * @param {string} [values.performedBy]
+ * @param {string} [values.paymentMethod]
+ * @param {string} [values.note]
+ * @param {Array<{
+ *   productId?: string,
+ *   quantity?: string|number
+ * }>} [values.items]
+ *
+ * @returns {{
+ *   errors?: Object.<string, string>,
+ *   data?: {
+ *     performedBy: string,
+ *     paymentMethod: string,
+ *     note: string,
+ *     items: Array<{
+ *       productId: string,
+ *       quantity: number
+ *     }>
+ *   }
+ * }}
+ */
 export default function validateSalePayload(values) {
   const errors = {};
 

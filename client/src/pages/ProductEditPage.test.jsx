@@ -11,20 +11,9 @@ describe("Product Edit Page Tests", () => {
   let products;
   let categories;
 
-  let validPayload;
-
   beforeEach(() => {
     products = testProducts.map((product) => ({ ...product })); // For mutation in archive test
     categories = testCategories.map((category) => ({ ...category }));
-
-    validPayload = {
-      name: "validName",
-      categoryId: testCategories[0].id,
-      skuOrBarcode: "validSkuOrBarcode",
-      unit: "kg",
-      price: 10,
-      reorderLevel: 5,
-    };
 
     global.fetch = vi.fn();
   });
@@ -41,17 +30,15 @@ describe("Product Edit Page Tests", () => {
     });
 
     const router = createMemoryRouter(routes, { initialEntries: ["/inventory/123/edit"] });
+
     render(<RouterProvider router={router} />);
 
-    // Wait for fetch to load categories
-    const select = screen.getByRole("combobox");
-    expect(
-      await within(select).findByRole("option", { name: categories[0].name }),
-    ).toBeInTheDocument();
+    const select = await screen.findByRole("combobox", { name: /category/i });
+    await userEvent.click(select);
 
+    expect(await screen.findByRole("option", { name: categories[0].name })).toBeInTheDocument();
     expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /edit page/i }));
-    expect(screen.getByRole("heading", { name: /id:\s*123/i })).toBeInTheDocument();
+    expect(await screen.findByText(/id:\s*123/i)).toBeInTheDocument();
   });
 
   it("renders product update input fields", async () => {
@@ -72,9 +59,9 @@ describe("Product Edit Page Tests", () => {
 
     // Wait for fetch to load categories
     const select = screen.getByRole("combobox");
-    expect(
-      await within(select).findByRole("option", { name: categories[0].name }),
-    ).toBeInTheDocument();
+    await userEvent.click(select);
+
+    expect(await screen.findByRole("option", { name: categories[0].name }));
 
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Category")).toBeInTheDocument();
@@ -103,9 +90,9 @@ describe("Product Edit Page Tests", () => {
 
     // Wait for fetch to load categories
     const select = screen.getByRole("combobox");
-    expect(
-      await within(select).findByRole("option", { name: categories[0].name }),
-    ).toBeInTheDocument();
+    await userEvent.click(select);
+
+    expect(await screen.findByRole("option", { name: categories[0].name }));
 
     let found = false;
 
@@ -168,32 +155,47 @@ describe("Product Edit Page Tests", () => {
     const reorderLevel = screen.getByRole("textbox", { name: /reorder level/i });
 
     await userEvent.clear(name);
-    await userEvent.selectOptions(categoryId, "");
     await userEvent.clear(skuOrBarcode);
     await userEvent.clear(unit);
     await userEvent.clear(price);
     await userEvent.clear(reorderLevel);
 
-    await userEvent.type(name, validPayload.name);
-    await userEvent.selectOptions(categoryId, validPayload.categoryId);
-    await userEvent.type(skuOrBarcode, validPayload.skuOrBarcode);
-    await userEvent.type(unit, validPayload.unit);
-    await userEvent.type(price, validPayload.price.toString());
-    await userEvent.type(reorderLevel, validPayload.reorderLevel.toString());
+    await userEvent.type(name, "validName");
+
+    await userEvent.click(categoryId);
+    await userEvent.click(
+      await screen.findByRole("option", {
+        name: categories[0].name,
+      }),
+    );
+
+    await userEvent.type(skuOrBarcode, "validSkuOrBarcode");
+    await userEvent.type(unit, "kg");
+    await userEvent.type(price, "10");
+    await userEvent.type(reorderLevel, "5");
 
     const save = screen.getByRole("button", { name: /save/i });
     await userEvent.click(save);
 
     await waitFor(() => {
       let found = false;
+
       global.fetch.mock.calls.forEach((call) => {
         if (call[0].includes("/products/123") && call[1]?.method === "PUT") {
           found = true;
 
           const parsedPayload = JSON.parse(call[1].body);
-          expect(parsedPayload).toEqual(validPayload);
+          expect(parsedPayload).toEqual({
+            name: "validName",
+            categoryId: categories[0].id,
+            skuOrBarcode: "validSkuOrBarcode",
+            unit: "kg",
+            price: 10,
+            reorderLevel: 5,
+          });
         }
       });
+
       expect(found).toBe(true);
     });
   });
@@ -220,12 +222,7 @@ describe("Product Edit Page Tests", () => {
 
     render(<RouterProvider router={router} />);
 
-    await userEvent.type(screen.getByRole("textbox", { name: /name/i }), "Updated Name");
-
-    await userEvent.selectOptions(
-      screen.getByRole("combobox", { name: /category/i }),
-      categories[1].id,
-    );
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
     const name = await screen.findByRole("textbox", { name: /name/i });
     const categoryId = await screen.findByRole("combobox", { name: /category/i });
@@ -235,14 +232,16 @@ describe("Product Edit Page Tests", () => {
     const reorderLevel = await screen.findByRole("textbox", { name: /reorder level/i });
 
     await userEvent.clear(name);
-    await userEvent.selectOptions(categoryId, "");
     await userEvent.clear(skuOrBarcode);
     await userEvent.clear(unit);
     await userEvent.clear(price);
     await userEvent.clear(reorderLevel);
 
     await userEvent.type(name, "Updated Name");
-    await userEvent.selectOptions(categoryId, "cat-veg");
+
+    await userEvent.click(categoryId);
+    await userEvent.click(await screen.findByRole("option", { name: categories[0].name }));
+
     await userEvent.type(skuOrBarcode, "Updated SKU");
     await userEvent.type(unit, "kg");
     await userEvent.type(price, "10");
@@ -329,7 +328,9 @@ describe("Product Edit Page Tests", () => {
     const reorderInput = await screen.findByRole("textbox", { name: /reorder level/i });
 
     expect(nameInput.value).toBe(products[0].name);
-    expect(categorySelect.value).toBe(products[0].categoryId);
+    expect(categorySelect).toHaveTextContent(
+      categories.find((category) => category.id === products[0].categoryId).name,
+    );
     expect(skuInput.value).toBe(products[0].skuOrBarcode);
     expect(unitInput.value).toBe(products[0].unit);
     expect(priceInput.value).toBe(String(products[0].price));
@@ -358,7 +359,10 @@ describe("Product Edit Page Tests", () => {
     await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
     await userEvent.clear(screen.getByRole("textbox", { name: /name/i }));
-    await userEvent.selectOptions(screen.getByRole("combobox", { name: /category/i }), "");
+
+    await userEvent.click(screen.getByRole("combobox", { name: /category/i }));
+    await userEvent.click(await screen.findByRole("option", { name: /select a category/i }));
+
     await userEvent.clear(screen.getByRole("textbox", { name: /unit/i }));
 
     await userEvent.click(screen.getByRole("button", { name: /save/i }));

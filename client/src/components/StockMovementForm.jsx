@@ -1,275 +1,212 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+/**
+ * Renders a stock movement form.
+ *
+ * @param {Object} props
+ * @param {{
+ *   productId: string,
+ *   movementType: string,
+ *   quantity: string|number,
+ *   performedBy: string,
+ *   reason: string,
+ *   note: string
+ * }} props.values
+ * @param {Object.<string, string>} props.errors
+ * @param {Array<{ id: string|number, name: string }>} props.products
+ * @param {(event: { target: { name: string, value: string } }) => void} props.onChange
+ * @param {(event: React.FormEvent<HTMLFormElement>) => void} props.onSubmit
+ * @returns {JSX.Element}
+ */
 export function StockMovementForm({ values, errors, products, onChange, onSubmit }) {
   return (
-    <form onSubmit={onSubmit} method="POST" style={formStyle}>
-      <fieldset aria-label="stock movement details" style={fieldsetStyle}>
-        <label htmlFor="product" style={labelStyle}>
-          <span style={labelTextStyle}>Product</span>
-          <select
-            value={values.productId}
-            name="productId"
-            id="product"
-            onChange={onChange}
-            style={selectStyle}
+    <form
+      onSubmit={onSubmit}
+      method="POST"
+      className="mx-auto flex max-w-[900px] flex-col gap-3 rounded-md border bg-background p-4"
+    >
+      <fieldset
+        aria-label="stock movement details"
+        className="flex flex-col gap-3 rounded-md border bg-muted/30 p-3"
+      >
+        <div className="flex items-center gap-3">
+          <Label htmlFor="product" className="min-w-[120px]">
+            Product
+          </Label>
+
+          <Select
+            value={values.productId || ""}
+            onValueChange={(value) =>
+              onChange({
+                target: {
+                  name: "productId",
+                  value,
+                },
+              })
+            }
           >
-            <option value="">-- Choose a product --</option>
-            {products.map((product) => (
-              <option key={product.id} value={product.id}>
-                {product.name}
-              </option>
-            ))}
-          </select>
-        </label>
+            <SelectTrigger id="product" className="flex-1">
+              <SelectValue placeholder="-- Choose a product --">
+                {/*values.productId stores the id;
+                map it back to the product name for display*/}
+                {values.productId
+                  ? products.find((p) => String(p.id) === values.productId)?.name
+                  : "-- Choose a product --"}
+              </SelectValue>
+            </SelectTrigger>
+
+            <SelectContent>
+              {products.map((product) => (
+                <SelectItem key={product.id} value={String(product.id)}>
+                  {product.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         {errors.productId && (
-          <span role="alert" style={errorStyle}>
+          <span role="alert" className="text-sm text-destructive">
             Product is required
           </span>
         )}
 
-        <fieldset aria-label="Type" style={movementFieldsetStyle}>
-          <legend style={legendStyle}>Movement Type</legend>
+        <fieldset aria-label="Type" className="m-0 border-0 p-0">
+          <legend className="mb-2 text-sm font-medium">Movement Type</legend>
 
-          <label htmlFor="in" style={radioLabelStyle}>
-            <input
-              type="radio"
-              name="movementType"
-              value="IN"
-              id="in"
-              checked={values.movementType === "IN"}
-              onChange={onChange}
-            />
-            In
-          </label>
+          <RadioGroup
+            value={values.movementType}
+            onValueChange={(value) =>
+              onChange({
+                target: {
+                  name: "movementType",
+                  value,
+                },
+              })
+            }
+            className="flex flex-row flex-wrap gap-4"
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="IN" id="in" />
+              <Label htmlFor="in">In</Label>
+            </div>
 
-          <label htmlFor="out" style={radioLabelStyle}>
-            <input
-              type="radio"
-              name="movementType"
-              value="OUT"
-              id="out"
-              checked={values.movementType === "OUT"}
-              onChange={onChange}
-            />
-            Out
-          </label>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="OUT" id="out" />
+              <Label htmlFor="out">Out</Label>
+            </div>
 
-          <label htmlFor="adjust" style={radioLabelStyle}>
-            <input
-              type="radio"
-              name="movementType"
-              value="ADJUST"
-              id="adjust"
-              checked={values.movementType === "ADJUST"}
-              onChange={onChange}
-            />
-            Adjust
-          </label>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="ADJUST" id="adjust" />
+              <Label htmlFor="adjust">Adjust</Label>
+            </div>
+          </RadioGroup>
         </fieldset>
 
         {errors.movementType && (
-          <span role="alert" style={errorStyle}>
+          <span role="alert" className="text-sm text-destructive">
             Movement type is required
           </span>
         )}
 
-        <label htmlFor="quantity" style={labelStyle}>
-          <span style={labelTextStyle}>Quantity</span>
-          <input
+        <div className="flex items-center gap-3">
+          <Label htmlFor="quantity" className="min-w-[120px]">
+            Quantity
+          </Label>
+          <Input
             value={values.quantity}
             type="number"
             name="quantity"
             id="quantity"
             aria-label="Quantity"
             onChange={onChange}
-            style={inputStyle}
+            className="flex-1"
           />
-        </label>
+        </div>
 
         {errors.oversell && (
-          <span role="alert" style={errorStyle}>
+          <span role="alert" className="text-sm text-destructive">
             {errors.oversell}
           </span>
         )}
 
         {errors.quantity && (
-          <span role="alert" style={errorStyle}>
+          <span role="alert" className="text-sm text-destructive">
             Quantity above 0 is required
           </span>
         )}
 
-        <label htmlFor="performedBy" style={labelStyle}>
-          <span style={labelTextStyle}>Performed By</span>
-          <input
+        <div className="flex items-center gap-3">
+          <Label htmlFor="performedBy" className="min-w-[120px]">
+            Performed By
+          </Label>
+          <Input
             value={values.performedBy}
             type="text"
             name="performedBy"
             id="performedBy"
             aria-label="Performed By"
             onChange={onChange}
-            style={inputStyle}
+            className="flex-1"
           />
-        </label>
+        </div>
 
         {errors.performedBy && (
-          <span role="alert" style={errorStyle}>
+          <span role="alert" className="text-sm text-destructive">
             Performed by is required
           </span>
         )}
 
-        <label htmlFor="reason" style={labelStyle}>
-          <span style={labelTextStyle}>Reason</span>
-          <input
+        <div className="flex items-center gap-3">
+          <Label htmlFor="reason" className="min-w-[120px]">
+            Reason
+          </Label>
+          <Input
             value={values.reason}
             type="text"
             name="reason"
             id="reason"
             aria-label="Reason"
             onChange={onChange}
-            style={inputStyle}
+            className="flex-1"
           />
-        </label>
+        </div>
 
-        <label htmlFor="note" style={labelStyleColumn}>
-          <span style={labelTextStyle}>Note</span>
-          <textarea
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="note">Note</Label>
+          <Textarea
             value={values.note}
             name="note"
             id="note"
             aria-label="Note"
             onChange={onChange}
-            style={textareaStyle}
+            className="min-h-[80px] resize-none"
           />
-        </label>
+        </div>
       </fieldset>
 
-      <div style={actionsStyle}>
-        <button type="submit" aria-label="Confirm Movement" style={confirmButtonStyle}>
+      <div className="flex justify-center">
+        <Button type="submit" aria-label="Confirm Movement">
           Confirm Movement
-        </button>
+        </Button>
       </div>
 
       {errors.form && (
-        <span role="alert" style={errorStyle}>
+        <span role="alert" className="text-sm text-destructive">
           {errors.form}
         </span>
       )}
     </form>
   );
 }
-
-const formStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "12px",
-  padding: "16px",
-  background: "#fff",
-  borderRadius: 6,
-  border: "1px solid #e0e0e0",
-  maxWidth: 900,
-  margin: "0 auto",
-  boxSizing: "border-box",
-};
-
-const fieldsetStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "12px",
-  border: "1px solid #eee",
-  padding: "12px",
-  borderRadius: 6,
-  background: "#fafafa",
-};
-
-const movementFieldsetStyle = {
-  display: "flex",
-  flexDirection: "row",
-  gap: "12px",
-  alignItems: "center",
-  flexWrap: "wrap",
-  border: "none",
-  padding: 0,
-  margin: 0,
-};
-
-const legendStyle = {
-  marginBottom: 6,
-  fontWeight: 600,
-};
-
-const labelStyle = {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  gap: 12,
-};
-
-const labelStyleColumn = {
-  display: "flex",
-  flexDirection: "column",
-  gap: 8,
-  alignItems: "flex-start",
-};
-
-const labelTextStyle = {
-  minWidth: 120,
-  display: "inline-block",
-  fontWeight: 600,
-};
-
-const inputStyle = {
-  padding: "8px",
-  border: "1px solid #ddd",
-  borderRadius: 4,
-  fontFamily: "inherit",
-  flex: 1,
-  minWidth: 0,
-};
-
-const selectStyle = {
-  padding: "8px",
-  border: "1px solid #ddd",
-  borderRadius: 4,
-  fontFamily: "inherit",
-  background: "#fff",
-  flex: 1,
-  minWidth: 0,
-};
-
-const textareaStyle = {
-  padding: "8px",
-  border: "1px solid #ddd",
-  borderRadius: 4,
-  fontFamily: "inherit",
-  width: "100%",
-  minHeight: 80,
-  boxSizing: "border-box",
-  resize: "none ",
-};
-
-const radioLabelStyle = {
-  display: "flex",
-  gap: 6,
-  alignItems: "center",
-  fontSize: "0.95rem",
-};
-
-const actionsStyle = {
-  display: "flex",
-  justifyContent: "flex-end",
-};
-
-const confirmButtonStyle = {
-  display: "block",
-  margin: "auto",
-  padding: "10px 14px",
-  borderRadius: 6,
-  border: "1px solid #000",
-  background: "#e0e0e0",
-  cursor: "pointer",
-  fontWeight: 600,
-};
-
-const errorStyle = {
-  color: "#d32f2f",
-  fontSize: "0.85rem",
-};
