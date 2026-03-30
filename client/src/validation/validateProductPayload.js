@@ -1,8 +1,25 @@
 /**
- * Validates and normalizes a product payload.
+ * Validates and normalizes product input.
  *
  * @param {Object} values
- * @returns {{errors: Object} | {data: Object}}
+ * @param {string} [values.name]
+ * @param {string} [values.categoryId]
+ * @param {string} [values.skuOrBarcode]
+ * @param {string} [values.unit]
+ * @param {string|number} [values.price]
+ * @param {string|number} [values.reorderLevel]
+ *
+ * @returns {{
+ *   errors?: Object.<string, string>,
+ *   data?: {
+ *     name: string,
+ *     categoryId: string,
+ *     skuOrBarcode?: string,
+ *     unit: string,
+ *     price: number,
+ *     reorderLevel: number
+ *   }
+ * }}
  */
 export default function validateProductPayload(values) {
   const errors = {};

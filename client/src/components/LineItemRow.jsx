@@ -9,6 +9,19 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
+/**
+ * Renders a single editable sale line item.
+ *
+ * @param {Object} props
+ * @param {number} props.index
+ * @param {{ productId: string|number, quantity: string|number }} props.itemValues
+ * @param {Array<{ id: string|number, name: string }>} props.products
+ * @param {boolean} [props.submitted]
+ * @param {string} [props.error]
+ * @param {(name: "productId"|"quantity", value: string|number) => void} props.onChange
+ * @param {() => void} props.onRemove
+ * @returns {JSX.Element}
+ */
 export default function LineItemRow({
   index,
   itemValues,

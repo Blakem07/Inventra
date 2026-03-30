@@ -7,6 +7,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+/**
+ * Renders a table of sales records.
+ *
+ * @param {Object} props
+ * @param {Array<{
+ *   saleId: string|number,
+ *   occurredAt: string,
+ *   paymentMethod: string,
+ *   totalAmount: number|string,
+ *   performedBy: string
+ * }>} [props.rows]
+ * @returns {JSX.Element}
+ */
 export default function SalesTable(props) {
   const rows = props.rows || [];
 

@@ -11,6 +11,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+/**
+ * Renders a stock movement form.
+ *
+ * @param {Object} props
+ * @param {{
+ *   productId: string,
+ *   movementType: string,
+ *   quantity: string|number,
+ *   performedBy: string,
+ *   reason: string,
+ *   note: string
+ * }} props.values
+ * @param {Object.<string, string>} props.errors
+ * @param {Array<{ id: string|number, name: string }>} props.products
+ * @param {(event: { target: { name: string, value: string } }) => void} props.onChange
+ * @param {(event: React.FormEvent<HTMLFormElement>) => void} props.onSubmit
+ * @returns {JSX.Element}
+ */
 export function StockMovementForm({ values, errors, products, onChange, onSubmit }) {
   return (
     <form

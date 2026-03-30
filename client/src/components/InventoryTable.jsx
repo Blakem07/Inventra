@@ -10,6 +10,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+/**
+ * Renders a table of inventory products.
+ *
+ * @param {{
+ *   products: Array<{
+ *     id: string|number,
+ *     name: string,
+ *     skuOrBarcode?: string,
+ *     onHand: number,
+ *     price: number|string,
+ *     status?: string,
+ *     reorderLevel: number
+ *   }>
+ * }} props
+ * @returns {JSX.Element}
+ */
 export default function InventoryTable({ products }) {
   return (
     <div className="mt-5 w-full place-self-center rounded-md border border-border bg-background p-4">

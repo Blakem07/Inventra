@@ -1,3 +1,26 @@
+/**
+ * Validates and normalizes stock movement input.
+ *
+ * @param {Object} values
+ * @param {string} [values.productId]
+ * @param {string} [values.movementType]
+ * @param {string|number} [values.quantity]
+ * @param {string} [values.performedBy]
+ * @param {string} [values.reason]
+ * @param {string} [values.note]
+ *
+ * @returns {{
+ *   errors?: Object.<string, string>,
+ *   data?: {
+ *     productId: string,
+ *     movementType: "IN"|"OUT"|"ADJUST",
+ *     quantity: number,
+ *     performedBy: string,
+ *     reason: string|undefined,
+ *     note: string|undefined
+ *   }
+ * }}
+ */
 export default function validateStockMovementPayload(values) {
   const errors = {};
 

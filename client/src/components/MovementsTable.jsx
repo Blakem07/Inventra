@@ -7,6 +7,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+/**
+ * Renders a table of stock movement records.
+ *
+ * @param {{
+ *   rows?: Array<{
+ *     movementId: string|number,
+ *     occurredAt: string,
+ *     quantity: number,
+ *     performedBy: string,
+ *     product: { name: string }
+ *   }>
+ * }} props
+ * @returns {JSX.Element}
+ */
 export default function MovementsTable(props) {
   const rows = props.rows || [];
 
