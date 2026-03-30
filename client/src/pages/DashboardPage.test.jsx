@@ -187,7 +187,7 @@ describe("Dashboard Page Tests", () => {
       }),
     });
 
-    const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
+    const router = createMemoryRouter(routes, { initialEntries: ["/"] });
     render(<RouterProvider router={router} />);
 
     expect(await screen.findByText(/no recent activity/i)).toBeInTheDocument();
