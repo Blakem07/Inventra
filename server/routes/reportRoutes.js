@@ -153,7 +153,8 @@ router.get("/sales", async (req, res, next) => {
  * - Populates product_id to include product name in the report output.
  * - Returns report-shaped response with:
  *     data  -> movement rows
- *     meta  -> report context (from, to, count)
+ *     totals -> report totals
+ *     meta  -> report context (from, to)
  *
  * Each row represents one immutable stock movement event.
  */
@@ -210,7 +211,8 @@ router.get("/movements", async (req, res, next) => {
 
     res.status(200).json({
       data: resultMapped,
-      meta: { from: from, to: to, count: result.length },
+      totals: { count: result.length },
+      meta: { from: from, to: to },
     });
   } catch (err) {
     next(err);

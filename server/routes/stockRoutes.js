@@ -8,6 +8,8 @@ import { buildCreatedAtRange } from "../helpers/index.js";
 
 const router = Router();
 
+import { formatMovementToDB, formatMovementResponseForFE } from "./stockFormatter.js";
+
 /**
  * POST /stock/movements
  *
@@ -18,8 +20,8 @@ const router = Router();
  */
 router.post("/movements", validateBody(validateStockMovement), async (req, res, next) => {
   try {
-    const movement = await StockService.createMovement(req.body);
-    res.status(201).json(movement);
+    const movement = await StockService.createMovement(formatMovementToDB(req.body));
+    res.status(201).json(formatMovementResponseForFE(movement));
   } catch (err) {
     next(err);
   }
@@ -74,7 +76,7 @@ router.get("/movements", async (req, res, next) => {
     }
 
     const result = await StockMovement.find(filter).sort({ createdAt: -1 }).lean();
-    res.status(200).json(result);
+    res.status(200).json(formatMovementResponseForFE(result));
   } catch (err) {
     next(err);
   }

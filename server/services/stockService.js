@@ -51,7 +51,7 @@ export class StockService {
           await Product.updateOne(
             { _id: product._id },
             { $inc: { on_hand: quantity_change } },
-            { session }
+            { session },
           );
         }
 
@@ -61,12 +61,13 @@ export class StockService {
           const update = await Product.updateOne(
             { _id: product._id, on_hand: { $gte: input.quantity } },
             { $inc: { on_hand: quantity_change } },
-            { session }
+            { session },
           );
 
           if (update.matchedCount === 0) {
             const err = new Error("Insufficient stock");
             err.status = 422;
+            err.productId = input.product_id;
             throw err;
           }
         }
@@ -84,7 +85,7 @@ export class StockService {
           await Product.updateOne(
             { _id: product._id },
             { $set: { on_hand: newOnHand } },
-            { session }
+            { session },
           );
         }
 
@@ -100,7 +101,7 @@ export class StockService {
               note: input.note,
             },
           ],
-          { session }
+          { session },
         );
 
         return movement;
@@ -147,12 +148,13 @@ export class StockService {
     const update = await Product.updateOne(
       { _id: input.product_id, on_hand: { $gte: input.quantity } },
       { $inc: { on_hand: -input.quantity } },
-      { session: input.session }
+      { session: input.session },
     );
 
     if (update.matchedCount === 0) {
       const err = new Error("Insufficient stock");
       err.status = 422;
+      err.productId = input.product_id;
       throw err;
     }
 
@@ -169,7 +171,7 @@ export class StockService {
           note: input.note,
         },
       ],
-      { session: input.session }
+      { session: input.session },
     );
   }
 }

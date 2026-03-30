@@ -1,0 +1,130 @@
+// Raw data as it passes though the wrapper in tests
+export const testMovementsReport = {
+  data: [
+    {
+      movementId: "69adafc523e01bf5301d47b2",
+      occurredAt: "2026-03-08T17:20:05.012Z",
+      type: "OUT",
+      quantity: -1,
+      reason: "SALE",
+      product: {
+        productId: "6991b887404ed8cf6c6d0499",
+        name: "testProductForSalesFlow",
+      },
+      performedBy: "Blake",
+    },
+    {
+      movementId: "69adadf123e01bf5301d4793",
+      occurredAt: "2026-03-08T17:12:17.489Z",
+      type: "OUT",
+      quantity: -3,
+      reason: "SALE",
+      product: {
+        productId: "6991b887404ed8cf6c6d0499",
+        name: "testProductForSalesFlow",
+      },
+      performedBy: "Blake",
+    },
+    {
+      movementId: "69adabbb222090f7fa0c3252",
+      occurredAt: "2026-03-08T17:02:51.330Z",
+      type: "OUT",
+      quantity: -3,
+      reason: "SALE",
+      product: {
+        productId: "6991b887404ed8cf6c6d0499",
+        name: "testProductForSalesFlow",
+      },
+      performedBy: "Blake",
+    },
+    {
+      movementId: "69adaa7ecbb5416f7d603ba8",
+      occurredAt: "2026-03-08T16:57:33.951Z",
+      type: "OUT",
+      quantity: -3,
+      reason: "SALE",
+      product: {
+        productId: "6991b887404ed8cf6c6d0499",
+        name: "testProductForSalesFlow",
+      },
+      performedBy: "Blake",
+    },
+    {
+      movementId: "69adaa78175da78c479c133e",
+      occurredAt: "2026-03-08T16:57:28.111Z",
+      type: "OUT",
+      quantity: -3,
+      reason: "SALE",
+      product: {
+        productId: "6991b887404ed8cf6c6d0499",
+        name: "testProductForSalesFlow",
+      },
+      performedBy: "Blake",
+    },
+    {
+      movementId: "69adaa6d175da78c479c1334",
+      occurredAt: "2026-03-08T16:57:16.967Z",
+      type: "OUT",
+      quantity: -3,
+      reason: "SALE",
+      product: {
+        productId: "6991b887404ed8cf6c6d0499",
+        name: "testProductForSalesFlow",
+      },
+      performedBy: "Blake",
+    },
+    {
+      movementId: "69adaa6b175da78c479c132a",
+      occurredAt: "2026-03-08T16:57:14.919Z",
+      type: "OUT",
+      quantity: -3,
+      reason: "SALE",
+      product: {
+        productId: "6991b887404ed8cf6c6d0499",
+        name: "testProductForSalesFlow",
+      },
+      performedBy: "Blake",
+    },
+    {
+      movementId: "69adaa6589d5bf23688869e1",
+      occurredAt: "2026-03-08T16:57:09.518Z",
+      type: "OUT",
+      quantity: -3,
+      reason: "SALE",
+      product: {
+        productId: "6991b887404ed8cf6c6d0499",
+        name: "testProductForSalesFlow",
+      },
+      performedBy: "Blake",
+    },
+    {
+      movementId: "69adaa4e89d5bf23688869d7",
+      occurredAt: "2026-03-08T16:56:46.246Z",
+      type: "OUT",
+      quantity: -3,
+      reason: "SALE",
+      product: {
+        productId: "6991b887404ed8cf6c6d0499",
+        name: "testProductForSalesFlow",
+      },
+      performedBy: "Blake",
+    },
+    {
+      movementId: "69a6c045eb92d21484efab76",
+      occurredAt: "2026-03-03T11:04:37.215Z",
+      type: "OUT",
+      quantity: -3,
+      reason: "SALE",
+      product: {
+        productId: "6991b887404ed8cf6c6d0499",
+        name: "testProductForSalesFlow",
+      },
+      performedBy: "Blake",
+    },
+  ],
+  totals: { count: 25 },
+  meta: {
+    from: "2026-01-01",
+    to: "2027-01-21",
+  },
+};

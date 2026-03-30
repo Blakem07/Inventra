@@ -1,6 +1,8 @@
 import { Router } from "express";
 import Category from "../models/Category.js";
 
+import { formatCategory } from "./categoryFormatter.js";
+
 const router = Router();
 
 /**
@@ -13,7 +15,7 @@ const router = Router();
 router.get("/", async (req, res, next) => {
   try {
     const result = await Category.find();
-    res.status(200).json(result);
+    res.status(200).json(result.map(formatCategory));
   } catch (err) {
     next(err);
   }
@@ -32,7 +34,7 @@ router.post("/", async (req, res, next) => {
 
     const newCategory = await Category.create({ name });
 
-    res.status(201).json(newCategory);
+    res.status(201).json(formatCategory(newCategory));
   } catch (err) {
     next(err);
   }
