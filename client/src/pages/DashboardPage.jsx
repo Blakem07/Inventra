@@ -13,7 +13,7 @@ import { ErrorItem } from "../components/ErrorItem";
 export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(false);
-  const [dashboardSummary, setDashboardSummary] = useState();
+  const [dashboardSummary, setDashboardSummary] = useState(null);
 
   useEffect(() => {
     async function load() {
@@ -74,18 +74,6 @@ export default function DashboardPage() {
         description="Track low stock alerts, today’s sales performance, and recent activity in one place."
         testId="dashboard-page-heading"
       />
-
-      {loading && (
-        <span role="alert" data-testid="dashboard-page-loading">
-          Loading...
-        </span>
-      )}
-
-      {fetchError && (
-        <span role="alert" data-testid="dashboard-page-error">
-          Error: Fetching Dashboard Summary...
-        </span>
-      )}
 
       <div className="mb-4 flex gap-4">
         <section aria-labelledby="stock-alerts-heading" className="flex-1">
