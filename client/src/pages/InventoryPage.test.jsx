@@ -298,4 +298,21 @@ describe("Inventory Page Tests", () => {
 
     expect(await screen.findByTestId("inventory-page-error")).toBeInTheDocument();
   });
+
+  it("renders 'No data' when response is empty", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [],
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [],
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
+    render(<RouterProvider router={router} />);
+
+    expect(await screen.findByText(/no data/i)).toBeInTheDocument();
+  });
 });
