@@ -172,4 +172,24 @@ describe("Dashboard Page Tests", () => {
 
     expect(errorBanner).toBeInTheDocument();
   });
+
+  it("renders 'No recent activity' when response is empty", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        summaryDate: "2026-03-10",
+        lowStockCount: 0,
+        outOfStockCount: 0,
+        salesCountToday: 0,
+        totalSalesAmountToday: 0,
+        itemsSoldToday: 0,
+        recentActivity: [],
+      }),
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
+    render(<RouterProvider router={router} />);
+
+    expect(await screen.findByText(/no recent activity/i)).toBeInTheDocument();
+  });
 });
