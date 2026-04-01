@@ -18,4 +18,13 @@ describe("Demo Access Tests", () => {
     expect(res.status).toBe(401);
     expect(res.headers["set-cookie"]).toBeUndefined();
   });
+
+  it("should accept correct password", async () => {
+    const res = await request(app)
+      .post("/demo/access")
+      .send({ password: process.env.DEMO_PASSWORD });
+
+    expect(res.status).toBe(200);
+    expect(res.headers["set-cookie"]).toBeDefined();
+  });
 });
