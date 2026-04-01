@@ -11,7 +11,7 @@ describe("basic test", () => {
   });
 });
 
-describe("Demo Access Tests", () => {
+describe("Demo Tests", () => {
   it("POST /demo/access should reject wrong password", async () => {
     const res = await request(app).post("/demo/access").send({ password: "wrong-password" });
 
@@ -48,5 +48,24 @@ describe("Demo Access Tests", () => {
 
     expect(demoSessionRes.status).toBe(200);
     expect(demoSessionRes.body).toHaveProperty("allowed", true);
+  });
+
+  it("POST /demo/logout handles logout cookie clearing 200", async () => {
+    const demoAccessTokenRes = await request(app)
+      .post("/demo/access")
+      .send({ password: process.env.DEMO_PASSWORD });
+
+    expect(demoAccessTokenRes.status).toBe(200);
+
+    const cookie = demoAccessTokenRes.headers["set-cookie"];
+    console.log(cookie);
+    const demoSessionRes = await request(app).get("/demo/session").set("Cookie", [cookie]);
+
+    expect(demoSessionRes.status).toBe(200);
+    expect(demoSessionRes.body).toHaveProperty("allowed", true);
+
+    const demoLogoutRes = await request(app).post("/demo/logout");
+    expect(demoLogoutRes.status).toBe(200);
+    expect(demoLogoutRes.headers["set-cookie"]).toContain("Max-Age=0");
   });
 });
