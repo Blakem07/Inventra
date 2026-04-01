@@ -27,4 +27,11 @@ describe("Demo Access Tests", () => {
     expect(res.status).toBe(200);
     expect(res.headers["set-cookie"]).toBeDefined();
   });
+
+  it("GET /demo/session handles no demo token returning 401", async () => {
+    const res = await request(app).get("/demo/session");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("allowed", false);
+  });
 });
