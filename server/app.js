@@ -11,6 +11,7 @@ import dashboardRoutes from "./routes/dashboardRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import demoRoutes from "./routes/demoRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import cookieParser from "cookie-parser";
 
 /**
  * Builds and configures the Express application.
@@ -21,6 +22,8 @@ const app = express();
 app.use(cors({ origin: "http://localhost:5173", optionsSuccessStatus: 200 }));
 
 app.use(express.json());
+
+app.use(cookieParser());
 
 /**
  * Initializes required infrastructure before handling requests.
