@@ -12,14 +12,14 @@ describe("basic test", () => {
 });
 
 describe("Demo Access Tests", () => {
-  it("should reject wrong password", async () => {
+  it("POST /demo/access should reject wrong password", async () => {
     const res = await request(app).post("/demo/access").send({ password: "wrong-password" });
 
     expect(res.status).toBe(401);
     expect(res.headers["set-cookie"]).toBeUndefined();
   });
 
-  it("should accept correct password", async () => {
+  it("POST /demo/access should accept correct password", async () => {
     const res = await request(app)
       .post("/demo/access")
       .send({ password: process.env.DEMO_PASSWORD });
