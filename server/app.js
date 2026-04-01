@@ -9,6 +9,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
+import demoRoutes from "./routes/demoRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 /**
@@ -43,6 +44,7 @@ app.use("/categories", categoryRoutes);
 app.use("/products", productRoutes);
 app.use("/dashboard", dashboardRoutes);
 app.use("/reports", reportRoutes);
+app.use("/demo", demoRoutes);
 
 /**
  * Global error handler.
