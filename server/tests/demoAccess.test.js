@@ -10,3 +10,12 @@ describe("basic test", () => {
     expect(res.body).toHaveProperty("status", "ok");
   });
 });
+
+describe("Demo Access Tests", () => {
+  it("should reject wrong password", async () => {
+    const res = await request(app).post("/demo/access").send({ password: "wrong-password" });
+
+    expect(res.status).toBe(401);
+    expect(res.headers["set-cookie"]).toBeUndefined();
+  });
+});
