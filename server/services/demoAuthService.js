@@ -17,3 +17,11 @@ export function createDemoToken() {
 
   return token;
 }
+
+export function validateDemoToken(demoToken) {
+  let isValid = true;
+
+  if (!demoToken) isValid = false;
+
+  return isValid;
+}
