@@ -34,4 +34,19 @@ describe("Demo Access Tests", () => {
     expect(res.status).toBe(401);
     expect(res.body).toHaveProperty("allowed", false);
   });
+
+  it("GET /demo/session handles valid demo token returning 200", async () => {
+    const demoAccessTokenRes = await request(app)
+      .post("/demo/access")
+      .send({ password: process.env.DEMO_PASSWORD });
+
+    expect(demoAccessTokenRes.status).toBe(200);
+
+    const cookie = demoAccessTokenRes.headers["set-cookie"];
+
+    const demoSessionRes = await request(app).get("/demo/session").set("Cookie", [cookie]);
+
+    expect(demoSessionRes.status).toBe(200);
+    expect(demoSessionRes.body).toHaveProperty("allowed", true);
+  });
 });
