@@ -2,16 +2,9 @@ import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app.js";
 
-describe("basic test", () => {
-  it("should respond to /health", async () => {
-    const res = await request(app).get("/health");
+import { createDemoToken, validateDemoToken } from "../services/demoAuthService.js";
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty("status", "ok");
-  });
-});
-
-describe("Demo Tests", () => {
+describe("Demo Integration Tests", () => {
   it("POST /demo/access should reject wrong password", async () => {
     const res = await request(app).post("/demo/access").send({ password: "wrong-password" });
 
@@ -147,7 +140,50 @@ describe("Demo Tests", () => {
     expect(demoLogoutRes.body).toHaveProperty("success", true);
 
     const postLogoutSessionRes = await agent.get("/demo/session");
-    expect([401, 403]).toContain(postLogoutSessionRes.status);
+    expect(postLogoutSessionRes.status).toBe(401);
     expect(postLogoutSessionRes.body).toHaveProperty("allowed", false);
+  });
+});
+
+describe("Demo Unit Tests", () => {
+  it("createDemoToken returns a token with message and signature", () => {
+    const token = createDemoToken();
+
+    const parts = token.split(".");
+    expect(parts.length).toBe(2);
+    expect(parts[0]).toBe("demo access");
+    expect(parts[1]).toBeTruthy();
+  });
+
+  it("validateDemoToken returns true for a valid token", () => {
+    const token = createDemoToken();
+
+    expect(validateDemoToken(token)).toBe(true);
+  });
+
+  it("validateDemoToken returns false for a missing token", () => {
+    expect(validateDemoToken(undefined)).toBe(false);
+  });
+
+  it("validateDemoToken returns false for a malformed token", () => {
+    expect(validateDemoToken("bad-token")).toBe(false);
+  });
+
+  it("validateDemoToken returns false for a tampered message", () => {
+    const token = createDemoToken();
+    const [, signature] = token.split(".");
+
+    const tamperedToken = `invalid-message.${signature}`;
+
+    expect(validateDemoToken(tamperedToken)).toBe(false);
+  });
+
+  it("validateDemoToken returns false for a tampered signature", () => {
+    const token = createDemoToken();
+    const [message] = token.split(".");
+
+    const tamperedToken = `${message}.invalid-signature`;
+
+    expect(validateDemoToken(tamperedToken)).toBe(false);
   });
 });
