@@ -14,7 +14,10 @@ router.post("/access", async (req, res, next) => {
 
     const token = createDemoToken();
 
-    res.cookie("demoToken", token, { httpOnly: true });
+    res.cookie("demoToken", token, {
+      httpOnly: true,
+      path: "/demo",
+    });
 
     return res.status(200).json({ success: true });
   } catch (err) {
@@ -40,7 +43,10 @@ router.get("/session", async (req, res, next) => {
 
 router.post("/logout", async (req, res, next) => {
   try {
-    res.clearCookie("demoToken", { httpOnly: true });
+    res.clearCookie("demoToken", {
+      httpOnly: true,
+      path: "/demo",
+    });
 
     return res.status(200).json({ success: true });
   } catch (err) {

@@ -65,6 +65,7 @@ describe("Demo Tests", () => {
 
     const demoLogoutRes = await agent.post("/demo/logout");
     expect(demoLogoutRes.status).toBe(200);
+    expect(demoLogoutRes.body).toHaveProperty("success", true);
 
     const postLogoutSessionRes = await agent.get("/demo/session");
     expect([401, 403]).toContain(postLogoutSessionRes.status);
