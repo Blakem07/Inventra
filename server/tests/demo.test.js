@@ -134,5 +134,6 @@ describe("Demo Tests", () => {
 
     const postLogoutSessionRes = await agent.get("/demo/session");
     expect([401, 403]).toContain(postLogoutSessionRes.status);
+    expect(postLogoutSessionRes.body).toHaveProperty("allowed", false);
   });
 });
