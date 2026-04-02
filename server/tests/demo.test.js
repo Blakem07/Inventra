@@ -18,7 +18,7 @@ describe("Demo Tests", () => {
     expect(res.status).toBe(401);
     expect(res.headers["set-cookie"]).toBeUndefined();
   });
-  
+
   it("POST /demo/access without password should reject with 401", async () => {
     const res = await request(app).post("/demo/access").send({});
 
@@ -42,6 +42,13 @@ describe("Demo Tests", () => {
 
   it("GET /demo/session handles no demo token returning 401", async () => {
     const res = await request(app).get("/demo/session");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("allowed", false);
+  });
+
+  it("GET /demo/session handles invalid demo token returning 401", async () => {
+    const res = await request(app).get("/demo/session").set("Cookie", ["demoToken=bad-token"]);
 
     expect(res.status).toBe(401);
     expect(res.body).toHaveProperty("allowed", false);
