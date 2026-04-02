@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { createDemoToken, validateDemoToken } from "../services/demoAuthService.js";
+import { createDemoToken, validateDemoToken } from "../auth/demoAuth.js";
 
 const router = Router();
 
