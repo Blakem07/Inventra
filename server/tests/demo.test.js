@@ -40,6 +40,20 @@ describe("Demo Tests", () => {
     expect(res.headers["set-cookie"]).toBeDefined();
   });
 
+  it("POST /demo/access sets demoToken cookie with correct attributes", async () => {
+    const res = await request(app)
+      .post("/demo/access")
+      .send({ password: process.env.DEMO_PASSWORD });
+
+    expect(res.status).toBe(200);
+
+    const setCookie = res.headers["set-cookie"][0];
+
+    expect(setCookie).toContain("demoToken=");
+    expect(setCookie).toContain("HttpOnly");
+    expect(setCookie).toContain("Path=/demo");
+  });
+
   it("GET /demo/session handles no demo token returning 401", async () => {
     const res = await request(app).get("/demo/session");
 
