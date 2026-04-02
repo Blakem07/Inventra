@@ -50,22 +50,23 @@ describe("Demo Tests", () => {
     expect(demoSessionRes.body).toHaveProperty("allowed", true);
   });
 
-  it("POST /demo/logout handles logout cookie clearing 200", async () => {
-    const demoAccessTokenRes = await request(app)
+  it("POST /demo/logout clears the demo session cookie and invalidates the session", async () => {
+    const agent = request.agent(app);
+
+    const demoAccessTokenRes = await agent
       .post("/demo/access")
       .send({ password: process.env.DEMO_PASSWORD });
 
     expect(demoAccessTokenRes.status).toBe(200);
 
-    const cookie = demoAccessTokenRes.headers["set-cookie"];
-    console.log(cookie);
-    const demoSessionRes = await request(app).get("/demo/session").set("Cookie", [cookie]);
-
+    const demoSessionRes = await agent.get("/demo/session");
     expect(demoSessionRes.status).toBe(200);
     expect(demoSessionRes.body).toHaveProperty("allowed", true);
 
-    const demoLogoutRes = await request(app).post("/demo/logout");
+    const demoLogoutRes = await agent.post("/demo/logout");
     expect(demoLogoutRes.status).toBe(200);
-    expect(demoLogoutRes.headers["set-cookie"]).toContain("Max-Age=0");
+
+    const postLogoutSessionRes = await agent.get("/demo/session");
+    expect([401, 403]).toContain(postLogoutSessionRes.status);
   });
 });
