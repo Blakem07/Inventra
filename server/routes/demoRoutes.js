@@ -1,33 +1,9 @@
 import { Router } from "express";
 
 import { createDemoToken, validateDemoToken } from "../auth/demoAuth.js";
+import { COOKIE_NAME, getCookieOptions, getClearCookieOptions } from "../auth/demoCookie.js";
 
 const router = Router();
-
-const COOKIE_NAME = "demoToken";
-
-function getCookieOptions() {
-  const isProduction = process.env.NODE_ENV === "production";
-
-  return {
-    httpOnly: true,
-    sameSite: isProduction ? "none" : "lax",
-    secure: isProduction,
-    maxAge: 1000 * 60 * 60 * 8, // 8 hours
-    path: "/demo",
-  };
-}
-
-function getClearCookieOptions() {
-  const isProduction = process.env.NODE_ENV === "production";
-
-  return {
-    httpOnly: true,
-    sameSite: isProduction ? "none" : "lax",
-    secure: isProduction,
-    path: "/demo",
-  };
-}
 
 router.post("/access", async (req, res, next) => {
   try {
