@@ -19,9 +19,10 @@ export function createDemoToken() {
 }
 
 export function validateDemoToken(demoToken) {
-  let isValid = true;
+  if (!demoToken) return false;
 
-  if (!demoToken) isValid = false;
+  const parts = demoToken.split(".");
+  if (parts.length !== 2) return false;
 
-  return isValid;
+  return true;
 }
