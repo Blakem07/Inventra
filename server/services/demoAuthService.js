@@ -24,5 +24,8 @@ export function validateDemoToken(demoToken) {
   const parts = demoToken.split(".");
   if (parts.length !== 2) return false;
 
+  const [message, signature] = parts;
+  if (message != "demo access") return false;
+
   return true;
 }
