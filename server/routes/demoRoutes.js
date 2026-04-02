@@ -38,4 +38,14 @@ router.get("/session", async (req, res, next) => {
   }
 });
 
+router.post("/logout", async (req, res, next) => {
+  try {
+    res.clearCookie("demoToken", { httpOnly: true });
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;
