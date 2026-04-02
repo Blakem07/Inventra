@@ -18,6 +18,18 @@ describe("Demo Tests", () => {
     expect(res.status).toBe(401);
     expect(res.headers["set-cookie"]).toBeUndefined();
   });
+  
+  it("POST /demo/access without password should reject with 401", async () => {
+    const res = await request(app).post("/demo/access").send({});
+
+    expect(res.status).toBe(401);
+  });
+
+  it("POST /demo/access with empty password should reject with 401", async () => {
+    const res = await request(app).post("/demo/access").send({ password: "" });
+
+    expect(res.status).toBe(401);
+  });
 
   it("POST /demo/access should accept correct password", async () => {
     const res = await request(app)
