@@ -4,6 +4,31 @@ import { createDemoToken, validateDemoToken } from "../services/demoAuthService.
 
 const router = Router();
 
+const COOKIE_NAME = "demoToken";
+
+function getCookieOptions() {
+  const isProduction = process.env.NODE_ENV === "production";
+
+  return {
+    httpOnly: true,
+    sameSite: isProduction ? "none" : "lax",
+    secure: isProduction,
+    maxAge: 1000 * 60 * 60 * 8, // 8 hours
+    path: "/demo",
+  };
+}
+
+function getClearCookieOptions() {
+  const isProduction = process.env.NODE_ENV === "production";
+
+  return {
+    httpOnly: true,
+    sameSite: isProduction ? "none" : "lax",
+    secure: isProduction,
+    path: "/demo",
+  };
+}
+
 router.post("/access", async (req, res, next) => {
   try {
     const { password } = req.body;
@@ -14,10 +39,7 @@ router.post("/access", async (req, res, next) => {
 
     const token = createDemoToken();
 
-    res.cookie("demoToken", token, {
-      httpOnly: true,
-      path: "/demo",
-    });
+    res.cookie(COOKIE_NAME, token, getCookieOptions());
 
     return res.status(200).json({ success: true });
   } catch (err) {
@@ -43,10 +65,7 @@ router.get("/session", async (req, res, next) => {
 
 router.post("/logout", async (req, res, next) => {
   try {
-    res.clearCookie("demoToken", {
-      httpOnly: true,
-      path: "/demo",
-    });
+    res.clearCookie(COOKIE_NAME, getClearCookieOptions());
 
     return res.status(200).json({ success: true });
   } catch (err) {
