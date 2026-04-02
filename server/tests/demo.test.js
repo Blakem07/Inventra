@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app.js";
 
-import { createDemoToken, validateDemoToken } from "../services/demoAuthService.js";
+import { createDemoToken, validateDemoToken } from "../auth/demoAuth.js";
 
 describe("Demo Integration Tests", () => {
   it("POST /demo/access should reject wrong password", async () => {
