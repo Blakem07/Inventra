@@ -54,6 +54,30 @@ describe("Demo Tests", () => {
     expect(res.body).toHaveProperty("allowed", false);
   });
 
+  it("GET /demo/session handles invalid demo token message returning 401", async () => {
+    const demoAccessTokenRes = await request(app)
+      .post("/demo/access")
+      .send({ password: process.env.DEMO_PASSWORD });
+
+    expect(demoAccessTokenRes.status).toBe(200);
+
+    const cookie = demoAccessTokenRes.headers["set-cookie"];
+    const raw = cookie[0];
+    const cookiePair = raw.split(";")[0];
+    const value = cookiePair.split("=").slice(1).join("=");
+
+    const [message, signature] = value.split(".");
+
+    const invalidMessageCookie = "invalid-message" + "." + signature;
+
+    const res = await request(app)
+      .get("/demo/session")
+      .set("Cookie", [`demoToken=${invalidMessageCookie}`]);
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("allowed", false);
+  });
+
   it("GET /demo/session handles valid demo token returning 200", async () => {
     const demoAccessTokenRes = await request(app)
       .post("/demo/access")
