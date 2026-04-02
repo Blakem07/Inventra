@@ -27,5 +27,9 @@ export function validateDemoToken(demoToken) {
   const [message, signature] = parts;
   if (message != "demo access") return false;
 
+  const hmac = crypto.createHmac("sha256", process.env.DEMO_COOKIE_SECRET);
+  const validSignature = hmac.update(message).digest("hex");
+  if (signature != validSignature) return false;
+
   return true;
 }
