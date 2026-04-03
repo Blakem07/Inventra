@@ -1,4 +1,4 @@
-import { validateDemoToken } from "../auth/demoAuth";
+import { validateDemoToken } from "../auth/demoAuth.js";
 
 export function requireDemoAccess(req, res, next) {
   const { demoToken } = req.cookies;

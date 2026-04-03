@@ -44,7 +44,7 @@ describe("Demo Integration Tests", () => {
 
     expect(setCookie).toContain("demoToken=");
     expect(setCookie).toContain("HttpOnly");
-    expect(setCookie).toContain("Path=/demo");
+    expect(setCookie).toContain("Path=/");
   });
 
   it("GET /demo/session handles no demo token returning 401", async () => {

@@ -8,7 +8,7 @@ export function getCookieOptions() {
     sameSite: isProduction ? "none" : "lax",
     secure: isProduction,
     maxAge: 1000 * 60 * 60 * 8, // 8 hours
-    path: "/demo",
+    path: "/",
   };
 }
 
@@ -19,6 +19,6 @@ export function getClearCookieOptions() {
     httpOnly: true,
     sameSite: isProduction ? "none" : "lax",
     secure: isProduction,
-    path: "/demo",
+    path: "/",
   };
 }
