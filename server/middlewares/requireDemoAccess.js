@@ -8,4 +8,6 @@ export function requireDemoAccess(req, res, next) {
   if (!isValid) {
     return res.status(401).json({ error: "Demo access required" });
   }
+
+  return res.status(200).json({ ok: true });
 }
