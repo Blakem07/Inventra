@@ -64,4 +64,18 @@ describe("Verify Frontend Origin Tests", () => {
     expect(differentOriginRes.status).toBe(403);
     expect(differentOriginRes.body).toEqual({ error: "Invalid origin" });
   });
+
+  it("allows write requests in production mode from correct origin", async () => {
+    vi.stubEnv("FRONTEND_URL", "http://localhost:5173");
+    vi.stubEnv("NODE_ENV", "production");
+
+    const app = setupApp();
+
+    const correctOriginRes = await request(app)
+      .post("/test/write")
+      .set("Origin", "http://localhost:5173");
+
+    expect(correctOriginRes.status).toBe(200);
+    expect(correctOriginRes.body).toEqual({ ok: true });
+  });
 });
