@@ -12,4 +12,14 @@ describe("Demo Access Page Tests", () => {
     await expect(screen.findByTestId("demo-access-page")).resolves.toBeInTheDocument();
     expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
   });
+
+  it("renders form elements", async () => {
+    const router = createMemoryRouter(routes, { initialEntries: ["/demo/access"] });
+    render(<RouterProvider router={router} />);
+
+    await screen.findByText(/demo/i);
+
+    expect(await screen.findByLabelText(/password/i)).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /enter/i })).toBeInTheDocument();
+  });
 });
