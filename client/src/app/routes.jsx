@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 
 import AppShell from "../components/layout/AppShell";
 
+import DemoAccessPage from "../pages/DemoAccessPage";
+
 import DashboardPage from "../pages/DashboardPage";
 import StockMovementCreatePage from "../pages/StockMovementCreatePage";
 import SaleCreatePage from "../pages/SaleCreatePage";
@@ -18,6 +20,8 @@ export const routes = [
     path: "/",
     element: <AppShell />,
     children: [
+      { path: "/demo/access", element: <DemoAccessPage /> },
+
       { index: true, element: <DashboardPage /> },
       { path: "/stock/new", element: <StockMovementCreatePage /> },
       { path: "/sales/new", element: <SaleCreatePage /> },
