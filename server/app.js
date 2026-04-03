@@ -13,6 +13,7 @@ import demoRoutes from "./routes/demoRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
 import { requireDemoAccess } from "./middlewares/requireDemoAccess.js";
+import { verifyFrontendOrigin } from "./middlewares/verifyFrontendOrigin.js";
 
 /**
  * Builds and configures the Express application.
@@ -42,12 +43,13 @@ app.get("/health", (req, res) => {
  * HTTP routes.
  * Must be registered before the global error handler.
  */
-app.use("/stock", requireDemoAccess, stockRoutes);
-app.use("/sales", requireDemoAccess, saleRoutes);
-app.use("/categories", requireDemoAccess, categoryRoutes);
-app.use("/products", requireDemoAccess, productRoutes);
-app.use("/dashboard", requireDemoAccess, dashboardRoutes);
-app.use("/reports", requireDemoAccess, reportRoutes);
+app.use("/stock", verifyFrontendOrigin, requireDemoAccess, stockRoutes);
+app.use("/sales", verifyFrontendOrigin, requireDemoAccess, saleRoutes);
+app.use("/categories", verifyFrontendOrigin, requireDemoAccess, categoryRoutes);
+app.use("/products", verifyFrontendOrigin, requireDemoAccess, productRoutes);
+app.use("/dashboard", verifyFrontendOrigin, requireDemoAccess, dashboardRoutes);
+app.use("/reports", verifyFrontendOrigin, requireDemoAccess, reportRoutes);
+
 app.use("/demo", demoRoutes);
 
 /**
