@@ -16,6 +16,7 @@ import ReportsPage from "../pages/ReportsPage";
 import SaleEditPage from "../pages/SaleEditPage";
 
 export const routes = [
+  {},
   {
     path: "/",
     element: <AppShell />,
