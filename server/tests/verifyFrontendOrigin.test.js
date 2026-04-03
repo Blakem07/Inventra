@@ -5,7 +5,7 @@ import express from "express";
 
 import "dotenv/config";
 
-import { verifyFrontendOrigin } from "../middlewares/verifyFrontendOrigin";
+import { verifyFrontendOrigin } from "../middlewares/verifyFrontendOrigin.js";
 
 function setupApp() {
   const app = express();
@@ -24,10 +24,20 @@ function setupApp() {
   return app;
 }
 
-describe("Verify Frontend Origin Test", () => {
+describe("Verify Frontend Origin Tests", () => {
   afterEach(() => {
     vi.unstubAllEnvs();
   });
 
-  it("...", () => {});
+  it("allows write requests in development mode", async () => {
+    vi.stubEnv("FRONTEND_URL", "http://localhost:5173");
+    vi.stubEnv("NODE_ENV", "development");
+
+    const app = setupApp();
+
+    const differentOrigin = await request(app).post("/test/write").set("Origin", "http://evil");
+
+    expect(differentOrigin.status).toBe(200);
+    expect(differentOrigin.body).toEqual({ ok: true });
+  });
 });
