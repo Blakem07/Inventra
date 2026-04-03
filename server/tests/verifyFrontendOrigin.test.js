@@ -41,9 +41,9 @@ describe("Verify Frontend Origin Tests", () => {
     expect(differentOrigin.body).toEqual({ ok: true });
   });
 
-  it("allows read requests in production mode wihtout origin validation", async () => {
+  it("allows read requests in production mode without origin validation", async () => {
     vi.stubEnv("FRONTEND_URL", "http://localhost:5173");
-    vi.stubEnv("NODE_ENV", "productiont");
+    vi.stubEnv("NODE_ENV", "production");
 
     const app = setupApp();
 
@@ -51,5 +51,17 @@ describe("Verify Frontend Origin Tests", () => {
 
     expect(differentOrigin.status).toBe(200);
     expect(differentOrigin.body).toEqual({ ok: true });
+  });
+
+  it("rejects write requests in production mode wrong origin", async () => {
+    vi.stubEnv("FRONTEND_URL", "http://localhost:5173");
+    vi.stubEnv("NODE_ENV", "production");
+
+    const app = setupApp();
+
+    const differentOrigin = await request(app).post("/test/write").set("Origin", "http://evil");
+
+    expect(differentOrigin.status).toBe(403);
+    expect(differentOrigin.body).toEqual({ error: "Invalid origin" });
   });
 });
