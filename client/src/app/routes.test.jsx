@@ -22,6 +22,13 @@ vi.mock("../api/products", () => ({
 }));
 
 describe("Routes Tests", () => {
+  it("renders Demo Access page via deep link", () => {
+    const router = createMemoryRouter(routes, { initialEntries: ["/demo/access"] });
+    render(<RouterProvider router={router} />);
+
+    expect(screen.getByTestId("demo-access-page")).toBeInTheDocument();
+  });
+
   it("renders Dashboard page via deep link", () => {
     const router = createMemoryRouter(routes, { initialEntries: ["/"] });
     render(<RouterProvider router={router} />);
