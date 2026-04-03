@@ -40,4 +40,16 @@ describe("Verify Frontend Origin Tests", () => {
     expect(differentOrigin.status).toBe(200);
     expect(differentOrigin.body).toEqual({ ok: true });
   });
+
+  it("allows read requests in production mode wihtout origin validation", async () => {
+    vi.stubEnv("FRONTEND_URL", "http://localhost:5173");
+    vi.stubEnv("NODE_ENV", "productiont");
+
+    const app = setupApp();
+
+    const differentOrigin = await request(app).get("/test/read").set("Origin", "http://evil");
+
+    expect(differentOrigin.status).toBe(200);
+    expect(differentOrigin.body).toEqual({ ok: true });
+  });
 });
