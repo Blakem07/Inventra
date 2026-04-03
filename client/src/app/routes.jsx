@@ -16,13 +16,11 @@ import ReportsPage from "../pages/ReportsPage";
 import SaleEditPage from "../pages/SaleEditPage";
 
 export const routes = [
-  {},
+  { path: "/demo/access", element: <DemoAccessPage /> },
   {
     path: "/",
     element: <AppShell />,
     children: [
-      { path: "/demo/access", element: <DemoAccessPage /> },
-
       { index: true, element: <DashboardPage /> },
       { path: "/stock/new", element: <StockMovementCreatePage /> },
       { path: "/sales/new", element: <SaleCreatePage /> },
