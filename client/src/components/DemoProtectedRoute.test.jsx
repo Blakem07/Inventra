@@ -70,4 +70,22 @@ describe("Demo Protected Route Tests", () => {
 
     expect(await screen.findByTestId("demo-access-page")).toBeInTheDocument();
   });
+
+  it("sends cookies with session request", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ allowed: true }),
+    });
+
+    renderWithRouter("/");
+
+    await screen.findByTestId("protected-page");
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        credentials: "include",
+      }),
+    );
+  });
 });
