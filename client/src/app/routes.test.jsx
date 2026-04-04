@@ -86,12 +86,4 @@ describe("Routes Tests", () => {
 
     expect(screen.getByTestId("reports-page")).toBeInTheDocument();
   });
-
-  it("renders Sales Edit Page via deep link", () => {
-    const router = createMemoryRouter(routes, { initialEntries: ["/sales/123/edit"] });
-
-    render(<RouterProvider router={router} />);
-
-    expect(screen.getByTestId("sale-edit-page")).toBeInTheDocument();
-  });
 });

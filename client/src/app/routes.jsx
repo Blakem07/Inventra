@@ -13,7 +13,6 @@ import ProductCreatePage from "../pages/ProductCreatePage";
 import ProductEditPage from "../pages/ProductEditPage";
 
 import ReportsPage from "../pages/ReportsPage";
-import SaleEditPage from "../pages/SaleEditPage";
 
 export const routes = [
   { path: "/demo/access", element: <DemoAccessPage /> },
@@ -30,7 +29,6 @@ export const routes = [
       { path: "/inventory/:id/edit", element: <ProductEditPage /> },
 
       { path: "/reports", element: <ReportsPage /> },
-      { path: "/sales/:id/edit", element: <SaleEditPage /> },
     ],
   },
 ];
