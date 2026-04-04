@@ -6,3 +6,7 @@ export async function authenticateDemo(password) {
     body: JSON.stringify({ password }),
   });
 }
+
+export async function checkDemoSession() {
+  return await client(`/demo/session`);
+}
