@@ -16,7 +16,7 @@ function renderWithRouter(initialPath = "/") {
         ),
       },
       {
-        path: "/demo-access",
+        path: "/demo/access",
         element: <div data-testid="demo-access-page">Demo Access</div>,
       },
     ],

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-
 import { checkDemoSession } from "@/api/demo";
+import { Navigate } from "react-router-dom";
 
 export default function DemoProtectedRoute({ children }) {
   // null = checking, true = allowed, false = denied
@@ -11,7 +11,8 @@ export default function DemoProtectedRoute({ children }) {
       try {
         const res = await checkDemoSession();
 
-        if (res.allowed == true) setIsAuthenticated(true);
+        if (res.allowed == true) return setIsAuthenticated(true);
+        if (res.allowed == false) return setIsAuthenticated(false);
       } catch (error) {}
     }
     load();
@@ -19,6 +20,10 @@ export default function DemoProtectedRoute({ children }) {
 
   if (isAuthenticated) {
     return children;
+  }
+
+  if (isAuthenticated === false) {
+    return <Navigate to="/demo/access" />;
   }
 
   return (
