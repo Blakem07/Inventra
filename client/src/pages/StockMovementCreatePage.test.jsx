@@ -136,6 +136,7 @@ describe("Stock Movement Create Page Tests", () => {
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({
               productId: products[0].id,
               movementType: "IN",
