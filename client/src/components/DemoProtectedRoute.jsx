@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { checkDemoSession } from "@/api/demo";
 
 export default function DemoProtectedRoute({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // null = checking, true = allowed, false = denied
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
     async function load() {
