@@ -32,8 +32,11 @@ describe("Demo Protected Route Tests", () => {
     global.fetch = vi.fn();
   });
 
-  it("shows loading initially", () => {
+  it("shows loading initially", async () => {
+    fetch.mockImplementationOnce(() => new Promise(() => {}));
+
     renderWithRouter("/");
+
     expect(screen.getByText(/checking demo access/i)).toBeInTheDocument();
   });
 
