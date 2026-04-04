@@ -22,7 +22,7 @@ router.post("/access", async (req, res, next) => {
 
     res.cookie(COOKIE_NAME, token, getCookieOptions());
 
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ authenticated: true });
   } catch (err) {
     next(err);
   }

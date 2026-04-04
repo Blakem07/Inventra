@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { authenticateDemo } from "../api/demo.js";
+import { useNavigate } from "react-router-dom";
 
 export default function DemoAccessPage() {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   function onChange(e) {
     setPassword(e.target.value);
@@ -16,14 +18,17 @@ export default function DemoAccessPage() {
   async function onSubmit(e) {
     e.preventDefault();
 
-    const res = await authenticateDemo(password);
+    try {
+      const res = await authenticateDemo(password);
+      console.log(res);
 
-    if (res.error) {
-      setErrorMessage(res.error.message);
-      return;
+      if (res.authenticated) {
+        setErrorMessage("");
+        navigate("/");
+      }
+    } catch (err) {
+      setErrorMessage(err.message);
     }
-
-    setErrorMessage("");
   }
 
   return (
