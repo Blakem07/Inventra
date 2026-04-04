@@ -35,6 +35,7 @@ export async function client(path, options) {
     const err = new Error(body?.error?.message || "Request failed");
 
     err.status = response.status;
+    err.code = body?.error?.code;
     err.productId = body?.error?.productId;
 
     throw err;
