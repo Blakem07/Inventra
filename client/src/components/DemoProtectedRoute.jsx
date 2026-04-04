@@ -13,7 +13,9 @@ export default function DemoProtectedRoute({ children }) {
 
         if (res.allowed == true) return setIsAuthenticated(true);
         if (res.allowed == false) return setIsAuthenticated(false);
-      } catch (error) {}
+      } catch (error) {
+        setIsAuthenticated(false);
+      }
     }
     load();
   }, []);
