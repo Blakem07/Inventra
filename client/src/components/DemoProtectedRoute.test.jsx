@@ -58,4 +58,16 @@ describe("Demo Protected Route Tests", () => {
 
     expect(await screen.findByTestId("demo-access-page")).toBeInTheDocument();
   });
+
+  it("redirects when error is thrown", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({ message: "Internal Server Error" }),
+    });
+
+    renderWithRouter("/");
+
+    expect(await screen.findByTestId("demo-access-page")).toBeInTheDocument();
+  });
 });
