@@ -20,7 +20,6 @@ export default function DemoAccessPage() {
 
     try {
       const res = await authenticateDemo(password);
-      console.log(res);
 
       if (res.authenticated) {
         setErrorMessage("");

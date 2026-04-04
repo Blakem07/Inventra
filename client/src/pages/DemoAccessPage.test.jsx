@@ -48,7 +48,7 @@ describe("Demo Access Page Tests", () => {
     expect(await screen.findByText(/invalid credentials/i)).toBeInTheDocument();
   });
 
-  it("successfully logs in user on correct password", async () => {
+  it("grants access on correct demo password", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
