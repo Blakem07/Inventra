@@ -47,4 +47,15 @@ describe("Demo Protected Route Tests", () => {
 
     expect(await screen.findByTestId("protected-page")).toBeInTheDocument();
   });
+
+  it("redirects when denied", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ allowed: false }),
+    });
+
+    renderWithRouter("/");
+
+    expect(await screen.findByTestId("demo-access-page")).toBeInTheDocument();
+  });
 });
