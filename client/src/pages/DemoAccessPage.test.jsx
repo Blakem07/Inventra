@@ -47,4 +47,22 @@ describe("Demo Access Page Tests", () => {
 
     expect(await screen.findByText(/invalid credentials/i)).toBeInTheDocument();
   });
+
+  it("successfully logs in user on correct password", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        authenticated: true,
+      }),
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/demo/access"] });
+    render(<RouterProvider router={router} />);
+
+    await userEvent.type(await screen.findByLabelText(/password/i), "correct-password");
+    await userEvent.click(screen.getByRole("button", { name: /enter/i }));
+
+    expect(await screen.findByTestId("dashboard-page")).toBeInTheDocument();
+  });
 });
