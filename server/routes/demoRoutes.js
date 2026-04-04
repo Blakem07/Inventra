@@ -10,7 +10,12 @@ router.post("/access", async (req, res, next) => {
     const { password } = req.body;
 
     if (password !== process.env.DEMO_PASSWORD) {
-      return res.status(401).json({ message: "Invalid password" });
+      return res.status(401).json({
+        error: {
+          code: "DEMO_INVALID_CREDENTIALS",
+          message: "Invalid credentials",
+        },
+      });
     }
 
     const token = createDemoToken();
