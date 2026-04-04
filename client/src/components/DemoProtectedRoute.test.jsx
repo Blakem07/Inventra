@@ -36,4 +36,15 @@ describe("Demo Protected Route Tests", () => {
     renderWithRouter("/");
     expect(screen.getByText(/checking demo access/i)).toBeInTheDocument();
   });
+
+  it("renders children when allowed", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ allowed: true }),
+    });
+
+    renderWithRouter("/");
+
+    expect(await screen.findByTestId("protected-page")).toBeInTheDocument();
+  });
 });
