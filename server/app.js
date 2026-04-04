@@ -21,7 +21,13 @@ import { verifyFrontendOrigin } from "./middlewares/verifyFrontendOrigin.js";
  */
 const app = express();
 
-app.use(cors({ origin: "http://localhost:5173", optionsSuccessStatus: 200 }));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+    optionsSuccessStatus: 200,
+  }),
+);
 
 app.use(express.json());
 
