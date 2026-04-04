@@ -2,22 +2,53 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { authenticateDemo } from "../api/demo.js";
 
 export default function DemoAccessPage() {
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  function onChange(e) {
+    setPassword(e.target.value);
+  }
+
+  async function onSubmit(e) {
+    e.preventDefault();
+
+    const res = await authenticateDemo(password);
+
+    if (res.error) {
+      setErrorMessage(res.error.message);
+      return;
+    }
+
+    setErrorMessage("");
+  }
+
   return (
-    <div data-testid="demo-access-page" className="h-screen flex items-center justify-center ">
+    <div data-testid="demo-access-page" className="h-screen flex items-center justify-center">
       <Card className="w-full max-w-md p-5">
         <CardHeader>
           <CardTitle className="text-xl">Inventra Demo Access</CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" />
-          </div>
+        <CardContent>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" value={password} onChange={onChange} />
+              {errorMessage && (
+                <span data-testid="error-message" className="text-sm text-red-600">
+                  {errorMessage}
+                </span>
+              )}
+            </div>
 
-          <Button className="w-full">Enter</Button>
+            <Button type="submit" className="w-full">
+              Enter
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>
