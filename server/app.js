@@ -34,11 +34,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 /**
- * Initializes required infrastructure before handling requests.
- */
-await connectDB();
-
-/**
  * Health check endpoint.
  */
 app.get("/health", (req, res) => {

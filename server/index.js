@@ -2,8 +2,10 @@ import app from "./app.js";
 
 /**
  * Application entry point.
- * Owns the HTTP server lifecycle.
+ * Owns infrastructure and HTTP server lifecycle.
  */
+await connectDB();
+
 app.listen(process.env.PORT, () => {
   console.log("Server running");
 });
