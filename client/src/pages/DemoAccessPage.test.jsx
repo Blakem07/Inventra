@@ -4,6 +4,10 @@ import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { routes } from "../app/routes";
 
+vi.mock("@/components/DemoProtectedRoute", () => ({
+  default: ({ children }) => children,
+}));
+
 describe("Demo Access Page Tests", () => {
   beforeEach(() => {
     global.fetch = vi.fn();

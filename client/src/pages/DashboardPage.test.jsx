@@ -7,6 +7,10 @@ import { routes } from "../app/routes";
 import { testDashboardSummary } from "../tests/testDashboardSummary";
 import { testSalesReport } from "../tests/testSalesReport";
 
+vi.mock("@/components/DemoProtectedRoute", () => ({
+  default: ({ children }) => children,
+}));
+
 describe("Dashboard Page Tests", () => {
   let dashboardSummary;
   let salesReport;

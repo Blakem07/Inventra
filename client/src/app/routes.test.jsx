@@ -62,7 +62,7 @@ describe("Public Routes Tests", () => {
   });
 });
 
-describe.only("Allowed Protected Deep Links", () => {
+describe("Allowed Protected Deep Links", () => {
   beforeEach(() => {
     global.fetch = vi.fn();
 

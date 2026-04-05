@@ -8,6 +8,10 @@ import { userEvent } from "@testing-library/user-event";
 import ProductCreatePage from "./ProductCreatePage";
 import { testCategories } from "../tests/testCategories";
 
+vi.mock("@/components/DemoProtectedRoute", () => ({
+  default: ({ children }) => children,
+}));
+
 describe("Product Create Page Tests", () => {
   let categories;
   let validPayload;

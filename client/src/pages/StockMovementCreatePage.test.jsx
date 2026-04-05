@@ -6,6 +6,10 @@ import { routes } from "../app/routes";
 
 import { testProducts } from "../tests/testProducts";
 
+vi.mock("@/components/DemoProtectedRoute", () => ({
+  default: ({ children }) => children,
+}));
+
 describe("Stock Movement Create Page Tests", () => {
   let products;
 
