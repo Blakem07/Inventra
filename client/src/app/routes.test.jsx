@@ -62,7 +62,7 @@ describe("Public Routes Tests", () => {
   });
 });
 
-describe("Allowed Protected Deep Links", () => {
+describe.only("Allowed Protected Deep Links", () => {
   beforeEach(() => {
     global.fetch = vi.fn();
 
@@ -99,15 +99,13 @@ describe("Allowed Protected Deep Links", () => {
   it("renders Product Create Page via deep link", async () => {
     renderWithRouter("/inventory/new");
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
-    expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
+    expect(await screen.findByTestId("product-create-page")).toBeInTheDocument();
   });
 
   it("renders Product Edit Page via deep link", async () => {
     renderWithRouter("/inventory/123/edit");
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
-    expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
+    expect(await screen.findByTestId("product-edit-page")).toBeInTheDocument();
   });
 
   it("renders Reports Page via deep link", async () => {

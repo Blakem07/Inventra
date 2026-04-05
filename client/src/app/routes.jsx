@@ -14,11 +14,17 @@ import ProductEditPage from "../pages/ProductEditPage";
 
 import ReportsPage from "../pages/ReportsPage";
 
+import DemoProtectedRoute from "@/components/DemoProtectedRoute";
+
 export const routes = [
   { path: "/demo/access", element: <DemoAccessPage /> },
   {
     path: "/",
-    element: <AppShell />,
+    element: (
+      <DemoProtectedRoute>
+        <AppShell />
+      </DemoProtectedRoute>
+    ),
     children: [
       { index: true, element: <DashboardPage /> },
       { path: "/stock/new", element: <StockMovementCreatePage /> },
