@@ -1,7 +1,6 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { connectDB } from "./db.js";
 import "./models/index.js";
 import stockRoutes from "./routes/stockRoutes.js";
 import saleRoutes from "./routes/saleRoutes.js";
@@ -9,7 +8,11 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
+import demoRoutes from "./routes/demoRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import cookieParser from "cookie-parser";
+import { requireDemoAccess } from "./middlewares/requireDemoAccess.js";
+import { verifyFrontendOrigin } from "./middlewares/verifyFrontendOrigin.js";
 
 /**
  * Builds and configures the Express application.
@@ -17,14 +20,17 @@ import { errorHandler } from "./middlewares/errorHandler.js";
  */
 const app = express();
 
-app.use(cors({ origin: "http://localhost:5173", optionsSuccessStatus: 200 }));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+    optionsSuccessStatus: 200,
+  }),
+);
 
 app.use(express.json());
 
-/**
- * Initializes required infrastructure before handling requests.
- */
-await connectDB();
+app.use(cookieParser());
 
 /**
  * Health check endpoint.
@@ -37,12 +43,14 @@ app.get("/health", (req, res) => {
  * HTTP routes.
  * Must be registered before the global error handler.
  */
-app.use("/stock", stockRoutes);
-app.use("/sales", saleRoutes);
-app.use("/categories", categoryRoutes);
-app.use("/products", productRoutes);
-app.use("/dashboard", dashboardRoutes);
-app.use("/reports", reportRoutes);
+app.use("/stock", verifyFrontendOrigin, requireDemoAccess, stockRoutes);
+app.use("/sales", verifyFrontendOrigin, requireDemoAccess, saleRoutes);
+app.use("/categories", verifyFrontendOrigin, requireDemoAccess, categoryRoutes);
+app.use("/products", verifyFrontendOrigin, requireDemoAccess, productRoutes);
+app.use("/dashboard", verifyFrontendOrigin, requireDemoAccess, dashboardRoutes);
+app.use("/reports", verifyFrontendOrigin, requireDemoAccess, reportRoutes);
+
+app.use("/demo", demoRoutes);
 
 /**
  * Global error handler.

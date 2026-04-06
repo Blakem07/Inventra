@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitForElementToBeRemoved } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routes } from "./routes";
@@ -21,70 +21,96 @@ vi.mock("../api/products", () => ({
   archiveProduct: vi.fn(async () => ({})),
 }));
 
-describe("Routes Tests", () => {
-  it("renders Dashboard page via deep link", () => {
-    const router = createMemoryRouter(routes, { initialEntries: ["/"] });
-    render(<RouterProvider router={router} />);
-
-    expect(screen.getByTestId("dashboard-page")).toBeInTheDocument();
+function renderWithRouter(initialPath = "/") {
+  const router = createMemoryRouter(routes, {
+    initialEntries: [initialPath],
   });
 
-  it("renders Stock Movement Create Page via deep link", () => {
-    const router = createMemoryRouter(routes, { initialEntries: ["/stock/new"] });
-    render(<RouterProvider router={router} />);
+  render(<RouterProvider router={router} />);
+}
 
-    expect(screen.getByTestId("stock-movement-create-page")).toBeInTheDocument();
+describe("protected deep links", () => {
+  beforeEach(() => {
+    global.fetch = vi.fn();
+
+    fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ allowed: false }),
+    });
   });
 
-  it("renders Sale Create Page via deep link", () => {
-    const router = createMemoryRouter(routes, { initialEntries: ["/sales/new"] });
-    render(<RouterProvider router={router} />);
+  it.each([
+    ["/"],
+    ["/stock/new"],
+    ["/sales/new"],
+    ["/inventory"],
+    ["/inventory/new"],
+    ["/inventory/123/edit"],
+    ["/reports"],
+  ])("redirects %s to demo access when session is invalid", async (path) => {
+    renderWithRouter(path);
 
-    expect(screen.getByTestId("sale-create-page")).toBeInTheDocument();
+    expect(await screen.findByTestId("demo-access-page")).toBeInTheDocument();
+  });
+});
+
+describe("Public Routes Tests", () => {
+  it("renders Demo Access page via deep link", () => {
+    renderWithRouter("/demo/access");
+
+    expect(screen.getByTestId("demo-access-page")).toBeInTheDocument();
+  });
+});
+
+describe("Allowed Protected Deep Links", () => {
+  beforeEach(() => {
+    global.fetch = vi.fn();
+
+    fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ allowed: true }),
+    });
   });
 
-  it("renders Inventory Page via deep link", () => {
-    const router = createMemoryRouter(routes, { initialEntries: ["/inventory"] });
-    render(<RouterProvider router={router} />);
+  it("renders Dashboard page via deep link", async () => {
+    renderWithRouter("/");
 
-    expect(screen.getByTestId("inventory-page")).toBeInTheDocument();
+    expect(await screen.findByTestId("dashboard-page")).toBeInTheDocument();
+  });
+
+  it("renders Stock Movement Create Page via deep link", async () => {
+    renderWithRouter("/stock/new");
+
+    expect(await screen.findByTestId("stock-movement-create-page")).toBeInTheDocument();
+  });
+
+  it("renders Sale Create Page via deep link", async () => {
+    renderWithRouter("/sales/new");
+
+    expect(await screen.findByTestId("sale-create-page")).toBeInTheDocument();
+  });
+
+  it("renders Inventory Page via deep link", async () => {
+    renderWithRouter("/inventory");
+
+    expect(await screen.findByTestId("inventory-page")).toBeInTheDocument();
   });
 
   it("renders Product Create Page via deep link", async () => {
-    const router = createMemoryRouter(routes, {
-      initialEntries: ["/inventory/new"],
-    });
+    renderWithRouter("/inventory/new");
 
-    render(<RouterProvider router={router} />);
-
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
-
-    expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
+    expect(await screen.findByTestId("product-create-page")).toBeInTheDocument();
   });
 
   it("renders Product Edit Page via deep link", async () => {
-    const router = createMemoryRouter(routes, { initialEntries: ["/inventory/123/edit"] });
+    renderWithRouter("/inventory/123/edit");
 
-    render(<RouterProvider router={router} />);
-
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
-
-    expect(screen.getByTestId("product-edit-page")).toBeInTheDocument();
+    expect(await screen.findByTestId("product-edit-page")).toBeInTheDocument();
   });
 
-  it("renders Reports Page via deep link", () => {
-    const router = createMemoryRouter(routes, { initialEntries: ["/reports"] });
+  it("renders Reports Page via deep link", async () => {
+    renderWithRouter("/reports");
 
-    render(<RouterProvider router={router} />);
-
-    expect(screen.getByTestId("reports-page")).toBeInTheDocument();
-  });
-
-  it("renders Sales Edit Page via deep link", () => {
-    const router = createMemoryRouter(routes, { initialEntries: ["/sales/123/edit"] });
-
-    render(<RouterProvider router={router} />);
-
-    expect(screen.getByTestId("sale-edit-page")).toBeInTheDocument();
+    expect(await screen.findByTestId("reports-page")).toBeInTheDocument();
   });
 });

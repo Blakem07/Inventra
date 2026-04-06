@@ -2,17 +2,9 @@
 
 Base URL:
 
-    http://localhost:${PORT}
-
----
-
-## System
-
-### GET `/health` (200)
-
-Response:
-
-    { "status": "ok" }
+```
+http://localhost:${PORT}
+```
 
 ---
 
@@ -22,7 +14,9 @@ Response:
 
 Body:
 
-    { "name": "General" }
+```
+{ "name": "General" }
+```
 
 Errors:
 
@@ -35,14 +29,16 @@ Errors:
 
 Response:
 
-    [
-      {
-        "_id": "...",
-        "name": "General",
-        "createdAt": "...",
-        "updatedAt": "..."
-      }
-    ]
+```
+[
+  {
+    "_id": "...",
+    "name": "General",
+    "createdAt": "...",
+    "updatedAt": "..."
+  }
+]
+```
 
 Notes:
 
@@ -56,16 +52,18 @@ Notes:
 
 Body:
 
-    {
-      "name": "Test Item",
-      "skuOrBarcode": "TEST-001",
-      "categoryId": "696a1c7eb14dd0a32a725710",
-      "unit": "pcs",
-      "price": 10,
-      "reorderLevel": 5,
-      "isActive": true,
-      "onHand": 0
-    }
+```
+{
+  "name": "Test Item",
+  "skuOrBarcode": "TEST-001",
+  "categoryId": "696a1c7eb14dd0a32a725710",
+  "unit": "pcs",
+  "price": 10,
+  "reorderLevel": 5,
+  "isActive": true,
+  "onHand": 0
+}
+```
 
 Errors:
 
@@ -125,15 +123,17 @@ Errors:
 
 Body:
 
-    {
-      "productId": "696a1ce6b14dd0a32a725713",
-      "movementType": "IN",
-      "quantity": 10,
-      "occurredAt": "2026-02-13T10:06:31.420Z",
-      "performedBy": "Staff A",
-      "reason": "Initial stock",
-      "note": "optional"
-    }
+```
+{
+  "productId": "696a1ce6b14dd0a32a725713",
+  "movementType": "IN",
+  "quantity": 10,
+  "occurredAt": "2026-02-13T10:06:31.420Z",
+  "performedBy": "Staff A",
+  "reason": "Initial stock",
+  "note": "optional"
+}
+```
 
 Rules:
 
@@ -158,22 +158,26 @@ Query parameters:
 
 Body:
 
+```
+{
+  "occurredAt": "2026-02-13T10:06:31.420Z",
+  "paymentMethod": "Cash",
+  "performedBy": "Staff A",
+  "note": "test sale",
+  "items": [
     {
-      "occurredAt": "2026-02-13T10:06:31.420Z",
-      "paymentMethod": "Cash",
-      "performedBy": "Staff A",
-      "note": "test sale",
-      "items": [
-        {
-          "productId": "696a1ce6b14dd0a32a725713",
-          "quantity": 3
-        }
-      ]
+      "productId": "696a1ce6b14dd0a32a725713",
+      "quantity": 3
     }
+  ]
+}
+```
 
 Response:
 
-    { "saleId": "...", "totalAmount": 300 }
+```
+{ "saleId": "...", "totalAmount": 300 }
+```
 
 Errors:
 
@@ -198,15 +202,17 @@ Query parameters:
 
 Response:
 
-    {
-      "summaryDate": "2026-02-13",
-      "lowStockCount": 1,
-      "outOfStockCount": 0,
-      "salesCountToday": 1,
-      "totalSalesAmountToday": 300,
-      "itemsSoldToday": 3,
-      "recentActivity": []
-    }
+```
+{
+  "summaryDate": "2026-02-13",
+  "lowStockCount": 1,
+  "outOfStockCount": 0,
+  "salesCountToday": 1,
+  "totalSalesAmountToday": 300,
+  "itemsSoldToday": 3,
+  "recentActivity": []
+}
+```
 
 ---
 
@@ -224,3 +230,49 @@ Response:
 ### GET `/reports/movements?from&to&productId`
 
 - Source: `stock_movements`
+
+---
+
+## Demo Access
+
+### POST `/demo/access` (200)
+
+Body:
+
+```
+{ "password": "..." }
+```
+
+- Sets signed cookie (`demoToken`)
+
+Errors:
+
+- 401 Invalid password
+
+---
+
+### GET `/demo/session` (200)
+
+Response:
+
+```
+{ "active": true }
+```
+
+---
+
+### POST `/demo/logout` (200)
+
+- Clears demo session cookie
+
+---
+
+## System
+
+### GET `/health` (200)
+
+Response:
+
+```
+{ "status": "ok" }
+```

@@ -7,6 +7,10 @@ import { routes } from "../app/routes";
 import { testProducts } from "../tests/testProducts";
 import { testCategories } from "../tests/testCategories";
 
+vi.mock("@/components/DemoProtectedRoute", () => ({
+  default: ({ children }) => children,
+}));
+
 describe("Product Edit Page Tests", () => {
   let products;
   let categories;

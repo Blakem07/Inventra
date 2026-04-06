@@ -59,3 +59,21 @@ All operations commit together or none commit.
 - Sale `occurred_at` stored as UTC instant.
 - Business-day bucketing computed using `BUSINESS_TIMEZONE`.
 - Resulting `summary_date` formatted as `YYYY-MM-DD`.
+
+---
+
+## Demo Access Layer
+
+The system includes a lightweight demo access layer implemented as a backend-enforced session gate.
+
+- Access is controlled via a signed cookie (`demoToken`)
+- No user accounts, JWT, or role system are used
+- Session validity is verified on each request via middleware
+- All business routes are protected by `requireDemoAccess`
+- Public routes exist under `/demo` for access, session check, and logout
+
+Design properties:
+
+- Stateless verification using HMAC-signed token
+- Backend is the single source of truth for access control
+- Frontend only reflects session state, does not enforce security

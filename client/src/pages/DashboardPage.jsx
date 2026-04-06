@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import PageHeader from "@/components/PageHeader";
 import QuickActions from "../components/QuickActions";
 import getDashboardSummary from "../api/dashboard";
+import RecentActivityList from "@/components/RecentActivityList";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PlusIcon, ReceiptIcon, BarChart3Icon } from "lucide-react";
@@ -163,20 +164,8 @@ export default function DashboardPage() {
             </h2>
           </CardHeader>
 
-          <CardContent>
-            <ul className="m-0 flex list-none flex-col gap-2 p-0">
-              {dashboardSummary?.recentActivity?.length === 0 ? (
-                <li className="border-b border-border py-1.5 text-sm">No recent activity</li>
-              ) : (
-                dashboardSummary?.recentActivity?.map((activity) => (
-                  <li key={activity.id} className="border-b border-border py-1.5 text-sm">
-                    <strong>{activity.movementType === "IN" ? "Added Stock:" : "Sold:"}</strong>{" "}
-                    {activity.product?.name ?? "Unknown Product"} (
-                    {Math.abs(activity?.quantityChange)})
-                  </li>
-                ))
-              )}
-            </ul>
+          <CardContent className="p-0">
+            <RecentActivityList activities={dashboardSummary?.recentActivity} />
           </CardContent>
         </Card>
       </section>

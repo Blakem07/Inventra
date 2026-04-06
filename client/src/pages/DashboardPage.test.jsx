@@ -7,6 +7,10 @@ import { routes } from "../app/routes";
 import { testDashboardSummary } from "../tests/testDashboardSummary";
 import { testSalesReport } from "../tests/testSalesReport";
 
+vi.mock("@/components/DemoProtectedRoute", () => ({
+  default: ({ children }) => children,
+}));
+
 describe("Dashboard Page Tests", () => {
   let dashboardSummary;
   let salesReport;
@@ -130,7 +134,7 @@ describe("Dashboard Page Tests", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows recent activity with fetched data", async () => {
+  it("shows recent activity list with correct length", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => dashboardSummary,
@@ -144,19 +148,82 @@ describe("Dashboard Page Tests", () => {
     });
 
     const section = recentActivityHeading.closest("section");
-
     const items = within(section).getAllByRole("listitem");
 
     expect(items).toHaveLength(dashboardSummary.recentActivity.length);
+  });
+
+  it("renders recent activity labels and quantities from movement type", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => dashboardSummary,
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/"] });
+    render(<RouterProvider router={router} />);
+
+    const recentActivityHeading = await screen.findByRole("heading", {
+      name: /recent activity/i,
+    });
+
+    const section = recentActivityHeading.closest("section");
+    const items = within(section).getAllByRole("listitem");
 
     dashboardSummary.recentActivity.forEach((activity, index) => {
-      const expectedText =
+      const expectedSubtitle =
         activity.movementType === "IN"
-          ? `Added Stock: ${activity.product.name} (${Math.abs(activity.quantityChange)})`
-          : `Sold: ${activity.product.name} (${Math.abs(activity.quantityChange)})`;
+          ? "Stock In"
+          : activity.movementType === "OUT"
+            ? "Sale"
+            : activity.movementType === "ADJUST"
+              ? activity.reason || "Adjustment"
+              : "Stock Activity";
 
-      expect(items[index]).toHaveTextContent(expectedText);
+      const expectedQuantity =
+        activity.movementType === "ADJUST"
+          ? String(activity.quantityChange)
+          : activity.movementType === "IN"
+            ? `IN ${Math.abs(activity.quantityChange)}`
+            : activity.movementType === "OUT"
+              ? `SOLD ${Math.abs(activity.quantityChange)}`
+              : String(Math.abs(activity.quantityChange));
+
+      expect(items[index]).toHaveTextContent(activity.product.name);
+      expect(items[index]).toHaveTextContent(expectedSubtitle);
+      expect(items[index]).toHaveTextContent(expectedQuantity);
     });
+  });
+
+  it("appends reason to recent activity when present", async () => {
+    const summaryWithReason = {
+      ...dashboardSummary,
+      recentActivity: [
+        {
+          id: "adjust-1",
+          movementType: "ADJUST",
+          quantityChange: -10,
+          reason: "Opened pack for tingi",
+          product: { name: "Nescafe Classic Sachet 2g" },
+        },
+      ],
+    };
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => summaryWithReason,
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/"] });
+    render(<RouterProvider router={router} />);
+
+    const recentActivityHeading = await screen.findByRole("heading", {
+      name: /recent activity/i,
+    });
+
+    const section = recentActivityHeading.closest("section");
+    const item = within(section).getByRole("listitem");
+
+    expect(item).toHaveTextContent("Opened pack for tingi");
   });
 
   it("shows error banner on fetch failure", async () => {

@@ -7,6 +7,101 @@
   },
   "item": [
     {
+      "name": "Demo Access Flow",
+      "item": [
+        {
+          "name": "POST /demo/access 200",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"password\": \"{{demoPassword}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/demo/access",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "access"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /demo/session 200",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/demo/session",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "session"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /demo/logout 200",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/demo/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /demo/access 200 (Re-establish session)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"password\": \"{{demoPassword}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/demo/access",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "access"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "System",
       "item": [
         {
@@ -496,7 +591,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"product_id\": \"{{testMovementProductId}}\",\r\n  \"movement_type\": \"IN\",\r\n  \"quantity\": 25,\r\n  \"performed_by\": \"Blake\",\r\n  \"reason\": \"Testing IN stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
+              "raw": "{\r\n  \"productId\": \"{{testMovementProductId}}\",\r\n  \"movementType\": \"IN\",\r\n  \"quantity\": 25,\r\n  \"performedBy\": \"Blake\",\r\n  \"reason\": \"Testing IN stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -523,7 +618,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"product_id\": \"{{testMovementProductId}}\",\r\n  \"movement_type\": \"OUT\",\r\n  \"quantity\": 25,\r\n  \"performed_by\": \"Blake\",\r\n  \"reason\": \"Testing OUT stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
+              "raw": "{\r\n  \"productId\": \"{{testMovementProductId}}\",\r\n  \"movementType\": \"OUT\",\r\n  \"quantity\": 25,\r\n  \"performedBy\": \"Blake\",\r\n  \"reason\": \"Testing OUT stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -550,7 +645,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"product_id\": \"{{testMovementProductId}}\",\r\n  \"movement_type\": \"ADJUST\",\r\n  \"quantity\": 100,\r\n  \"performed_by\": \"Blake\",\r\n  \"reason\": \"Testing ADJUST stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
+              "raw": "{\r\n  \"productId\": \"{{testMovementProductId}}\",\r\n  \"movementType\": \"ADJUST\",\r\n  \"quantity\": 100,\r\n  \"performedBy\": \"Blake\",\r\n  \"reason\": \"Testing ADJUST stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -577,7 +672,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"product_id\": \"{{testMovementProductId}}\",\r\n  \"movement_type\": \"OUT\",\r\n  \"quantity\": 100000,\r\n  \"performed_by\": \"Blake\",\r\n  \"reason\": \"Testing IN stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
+              "raw": "{\r\n  \"productId\": \"{{testMovementProductId}}\",\r\n  \"movementType\": \"OUT\",\r\n  \"quantity\": 100000,\r\n  \"performedBy\": \"Blake\",\r\n  \"reason\": \"Testing IN stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -604,7 +699,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"product_id\": \"{{invalidProductId}}\",\r\n  \"movement_type\": \"OUT\",\r\n  \"quantity\": 100000,\r\n  \"performed_by\": \"Blake\",\r\n  \"reason\": \"Testing IN stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
+              "raw": "{\r\n  \"productId\": \"{{invalidProductId}}\",\r\n  \"movementType\": \"OUT\",\r\n  \"quantity\": 100000,\r\n  \"performedBy\": \"Blake\",\r\n  \"reason\": \"Testing IN stock movement\",\r\n  \"note\": \"This is just a test.\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -631,7 +726,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"product_id\": \"{{validProductId}}\",\r\n  \"movement_type\": \"BAD\",\r\n  \"quantity\": 10,\r\n  \"performed_by\": \"Blake\"\r\n}",
+              "raw": "{\r\n  \"productId\": \"{{validProductId}}\",\r\n  \"movementType\": \"BAD\",\r\n  \"quantity\": 10,\r\n  \"performedBy\": \"Blake\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -688,7 +783,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"payment_method\": \"Cash\",\r\n  \"performed_by\": \"Blake\",\r\n  \"note\": \"Test Sale Made on a testProductForSalesFlow\",\r\n  \"items\": [\r\n    { \"product_id\": \"{{testSalesProductId}}\", \"quantity\": 3 }\r\n  ]\r\n}",
+              "raw": "{\r\n  \"paymentMethod\": \"Cash\",\r\n  \"performedBy\": \"Blake\",\r\n  \"note\": \"Test Sale Made on a testProductForSalesFlow\",\r\n  \"items\": [\r\n    { \"productId\": \"{{testSalesProductId}}\", \"quantity\": 3 }\r\n  ]\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -714,7 +809,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"payment_method\": \"Cash\",\r\n  \"performed_by\": \"Blake\",\r\n  \"note\": \"Test Sale oversell on a testProductForSalesFlow\",\r\n  \"items\": [\r\n    { \"product_id\": \"{{testSalesProductId}}\", \"quantity\": 100000 }\r\n  ]\r\n}",
+              "raw": "{\r\n  \"paymentMethod\": \"Cash\",\r\n  \"performedBy\": \"Blake\",\r\n  \"note\": \"Test Sale oversell on a testProductForSalesFlow\",\r\n  \"items\": [\r\n    { \"productId\": \"{{testSalesProductId}}\", \"quantity\": 100000 }\r\n  ]\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -740,7 +835,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"payment_method\": \"Cash\",\r\n  \"performed_by\": \"Blake\",\r\n  \"note\": \"Test Sale Made on a testProductForSalesFlow\",\r\n  \"items\": [\r\n    { \"product_id\": \"{{nonExistientProductId}}\", \"quantity\": 3 }\r\n  ]\r\n}",
+              "raw": "{\r\n  \"paymentMethod\": \"Cash\",\r\n  \"performedBy\": \"Blake\",\r\n  \"note\": \"Test Sale Made on a testProductForSalesFlow\",\r\n  \"items\": [\r\n    { \"productId\": \"{{nonExistientProductId}}\", \"quantity\": 3 }\r\n  ]\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -766,7 +861,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"payment_method\": \"Cash\",\r\n  \"performed_by\": \"Blake\",\r\n  \"note\": \"Test Sale Made on a testProductForSalesFlow\",\r\n  \"items\": [\r\n    { \"product_id\": \"{{invalidProductId}}\", \"quantity\": 3 }\r\n  ]\r\n}",
+              "raw": "{\r\n  \"paymentMethod\": \"Cash\",\r\n  \"performedBy\": \"Blake\",\r\n  \"note\": \"Test Sale Made on a testProductForSalesFlow\",\r\n  \"items\": [\r\n    { \"productId\": \"{{invalidProductId}}\", \"quantity\": 3 }\r\n  ]\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -983,6 +1078,10 @@
     {
       "key": "baseUrl",
       "value": "http://localhost:3000"
+    },
+    {
+      "key": "demoPassword",
+      "value": ""
     }
   ]
 }

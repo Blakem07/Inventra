@@ -28,13 +28,17 @@ export async function client(path, options) {
     throw new Error("VITE_API_BASE_URL is not defined");
   }
 
-  const response = await fetch(baseURL + path, options);
+  const response = await fetch(baseURL + path, {
+    credentials: "include",
+    ...options,
+  });
   const body = await response.json();
 
   if (!response.ok) {
     const err = new Error(body?.error?.message || "Request failed");
 
     err.status = response.status;
+    err.code = body?.error?.code;
     err.productId = body?.error?.productId;
 
     throw err;

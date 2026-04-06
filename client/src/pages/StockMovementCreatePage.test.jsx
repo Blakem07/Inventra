@@ -6,6 +6,10 @@ import { routes } from "../app/routes";
 
 import { testProducts } from "../tests/testProducts";
 
+vi.mock("@/components/DemoProtectedRoute", () => ({
+  default: ({ children }) => children,
+}));
+
 describe("Stock Movement Create Page Tests", () => {
   let products;
 
@@ -136,6 +140,7 @@ describe("Stock Movement Create Page Tests", () => {
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({
               productId: products[0].id,
               movementType: "IN",
