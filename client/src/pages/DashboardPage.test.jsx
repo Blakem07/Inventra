@@ -134,7 +134,7 @@ describe("Dashboard Page Tests", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows recent activity with fetched data", async () => {
+  it("shows recent activity list with correct length", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => dashboardSummary,
@@ -148,19 +148,79 @@ describe("Dashboard Page Tests", () => {
     });
 
     const section = recentActivityHeading.closest("section");
-
     const items = within(section).getAllByRole("listitem");
 
     expect(items).toHaveLength(dashboardSummary.recentActivity.length);
+  });
+
+  it("renders recent activity labels and quantities from movement type", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => dashboardSummary,
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/"] });
+    render(<RouterProvider router={router} />);
+
+    const recentActivityHeading = await screen.findByRole("heading", {
+      name: /recent activity/i,
+    });
+
+    const section = recentActivityHeading.closest("section");
+    const items = within(section).getAllByRole("listitem");
 
     dashboardSummary.recentActivity.forEach((activity, index) => {
-      const expectedText =
+      const label =
         activity.movementType === "IN"
-          ? `Added Stock: ${activity.product.name} (${Math.abs(activity.quantityChange)})`
-          : `Sold: ${activity.product.name} (${Math.abs(activity.quantityChange)})`;
+          ? "Added Stock:"
+          : activity.movementType === "OUT"
+            ? "Sold:"
+            : activity.movementType === "ADJUST"
+              ? "Adjusted Stock:"
+              : "Stock Activity:";
 
-      expect(items[index]).toHaveTextContent(expectedText);
+      const quantity =
+        activity.movementType === "ADJUST"
+          ? activity.quantityChange
+          : Math.abs(activity.quantityChange);
+
+      expect(items[index]).toHaveTextContent(`${label} ${activity.product.name} (${quantity})`);
     });
+  });
+
+  it("appends reason to recent activity when present", async () => {
+    const summaryWithReason = {
+      ...dashboardSummary,
+      recentActivity: [
+        {
+          id: "adjust-1",
+          movementType: "ADJUST",
+          quantityChange: -10,
+          reason: "Opened pack for tingi",
+          product: { name: "Nescafe Classic Sachet 2g" },
+        },
+      ],
+    };
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => summaryWithReason,
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/"] });
+    render(<RouterProvider router={router} />);
+
+    const recentActivityHeading = await screen.findByRole("heading", {
+      name: /recent activity/i,
+    });
+
+    const section = recentActivityHeading.closest("section");
+
+    expect(
+      within(section).getByText(
+        "Adjusted Stock: Nescafe Classic Sachet 2g (-10) • Opened pack for tingi",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("shows error banner on fetch failure", async () => {
