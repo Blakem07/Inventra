@@ -170,21 +170,27 @@ describe("Dashboard Page Tests", () => {
     const items = within(section).getAllByRole("listitem");
 
     dashboardSummary.recentActivity.forEach((activity, index) => {
-      const label =
+      const expectedSubtitle =
         activity.movementType === "IN"
-          ? "Added Stock:"
+          ? "Stock In"
           : activity.movementType === "OUT"
-            ? "Sold:"
+            ? "Sale"
             : activity.movementType === "ADJUST"
-              ? "Adjusted Stock:"
-              : "Stock Activity:";
+              ? activity.reason || "Adjustment"
+              : "Stock Activity";
 
-      const quantity =
+      const expectedQuantity =
         activity.movementType === "ADJUST"
-          ? activity.quantityChange
-          : Math.abs(activity.quantityChange);
+          ? String(activity.quantityChange)
+          : activity.movementType === "IN"
+            ? `IN ${Math.abs(activity.quantityChange)}`
+            : activity.movementType === "OUT"
+              ? `SOLD ${Math.abs(activity.quantityChange)}`
+              : String(Math.abs(activity.quantityChange));
 
-      expect(items[index]).toHaveTextContent(`${label} ${activity.product.name} (${quantity})`);
+      expect(items[index]).toHaveTextContent(activity.product.name);
+      expect(items[index]).toHaveTextContent(expectedSubtitle);
+      expect(items[index]).toHaveTextContent(expectedQuantity);
     });
   });
 
@@ -217,7 +223,7 @@ describe("Dashboard Page Tests", () => {
     const section = recentActivityHeading.closest("section");
     const item = within(section).getByRole("listitem");
 
-    expect(item).toHaveTextContent("• Opened pack for tingi");
+    expect(item).toHaveTextContent("Opened pack for tingi");
   });
 
   it("shows error banner on fetch failure", async () => {
