@@ -12,6 +12,7 @@ Inventra provides a transaction-safe backend and a deterministic, test-driven fr
 - Backend: Node.js, Express, MongoDB Atlas
 - Architecture: REST-based client–server separation
 - Design goal: transaction safety, predictable state, and scalable data model
+- Demo access layer: cookie-based session gate enforced by backend
 
 ---
 
@@ -22,6 +23,8 @@ Inventra provides a transaction-safe backend and a deterministic, test-driven fr
 - MongoDB Atlas
 - Mongoose ODM
 - ES Modules
+- Cookie-based session (demo access layer)
+- CORS with credentialed requests
 
 ---
 
@@ -34,6 +37,7 @@ Inventra provides a transaction-safe backend and a deterministic, test-driven fr
 - Vitest + Testing Library (TDD)
 - Tailwind CSS
 - shadcn/ui
+- Route-level access gating via backend session check
 
 ---
 
@@ -56,6 +60,7 @@ Inventra provides a transaction-safe backend and a deterministic, test-driven fr
     /validation
 
 /server
+  /auth
   /config
   /docs
   /helpers
@@ -63,6 +68,7 @@ Inventra provides a transaction-safe backend and a deterministic, test-driven fr
   /models
   /postman
   /routes
+  /scripts
   /services
   /utils
   /validators
@@ -80,15 +86,19 @@ Inventra provides a transaction-safe backend and a deterministic, test-driven fr
 
 ### Install
 
-cd server  
+cd server
 npm install
 
 ### Environment Variables
 
 Create a `.env` file inside `server/`:
 
-PORT=3000  
+PORT=3000
 MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>/<db>?retryWrites=true&w=majority
+DEMO_PASSWORD=yourpassword
+DEMO_COOKIE_SECRET=your-secret
+FRONTEND_URL=[http://localhost:5173](http://localhost:5173)
+NODE_ENV=development
 
 ### Start Server
 
@@ -106,7 +116,7 @@ Response:
 
 ## Frontend Setup
 
-cd client  
+cd client
 npm install
 
 ### Development
@@ -134,6 +144,24 @@ VITE_API_BASE_URL=http://localhost:3000
 - Dashboard summaries
 - Reports (sales and movements with filters)
 - Archive workflow
+
+---
+
+## Demo Access
+
+The application uses a lightweight demo access layer instead of full authentication.
+
+- Access is controlled by the backend using a signed cookie (`demoToken`)
+- No user accounts or JWT system are used
+- Frontend checks session state via `/demo/session`
+- Protected routes are gated until session validation completes
+- All business API routes are enforced server-side
+
+Public routes:
+
+- POST `/demo/access`
+- GET `/demo/session`
+- POST `/demo/logout`
 
 ---
 
@@ -171,6 +199,31 @@ Backend:
 
 ---
 
+## Demo Data
+
+The system uses a shared demo dataset for evaluation and demonstration.
+
+- Data is synthetic and non-sensitive
+- All users interact with the same dataset
+- State may change during usage
+
+### Resetting Demo Data
+
+A manual seed script is provided:
+
+```
+node server/scripts/seedDemo.js
+```
+
+This will:
+
+- clear existing data
+- insert a fixed baseline dataset
+
+Intended for use before demonstrations or evaluations.
+
+---
+
 ## Client Routes
 
 | Route               | Description           |
@@ -203,6 +256,10 @@ Server:
 
 - PORT
 - MONGODB_URI
+- DEMO_PASSWORD
+- DEMO_COOKIE_SECRET
+- FRONTEND_URL
+- NODE_ENV
 
 Client:
 
@@ -212,18 +269,19 @@ Client:
 
 ## Documentation
 
-See the `/server/docs` directory for:
+See the /server/docs directory for:
 
-- `architecture.md` – System invariants and guarantees
-- `api.md` – Complete API reference
-- `testing.md` – Backend validation sequence
+architecture.md – System invariants and guarantees
+api.md – Complete API reference
+testing.md – Backend validation sequence
+demo-access.md – Demo session flow and access control
 
 ---
 
 ## Status
 
-Backend v1: complete  
-Frontend v1: complete
+Backend v1: complete (with demo access layer)
+Frontend v1: complete (with protected routing)
 
 System supports:
 
