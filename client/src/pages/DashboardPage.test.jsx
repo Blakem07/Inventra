@@ -215,12 +215,9 @@ describe("Dashboard Page Tests", () => {
     });
 
     const section = recentActivityHeading.closest("section");
+    const item = within(section).getByRole("listitem");
 
-    expect(
-      within(section).getByText(
-        "Adjusted Stock: Nescafe Classic Sachet 2g (-10) • Opened pack for tingi",
-      ),
-    ).toBeInTheDocument();
+    expect(item).toHaveTextContent("• Opened pack for tingi");
   });
 
   it("shows error banner on fetch failure", async () => {

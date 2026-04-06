@@ -168,13 +168,28 @@ export default function DashboardPage() {
               {dashboardSummary?.recentActivity?.length === 0 ? (
                 <li className="border-b border-border py-1.5 text-sm">No recent activity</li>
               ) : (
-                dashboardSummary?.recentActivity?.map((activity) => (
-                  <li key={activity.id} className="border-b border-border py-1.5 text-sm">
-                    <strong>{activity.movementType === "IN" ? "Added Stock:" : "Sold:"}</strong>{" "}
-                    {activity.product?.name ?? "Unknown Product"} (
-                    {Math.abs(activity?.quantityChange)})
-                  </li>
-                ))
+                dashboardSummary?.recentActivity?.map((activity) => {
+                  const movementLabel =
+                    activity.movementType === "IN"
+                      ? "Added Stock:"
+                      : activity.movementType === "OUT"
+                        ? "Sold:"
+                        : activity.movementType === "ADJUST"
+                          ? "Adjusted Stock:"
+                          : "Stock Activity:";
+
+                  const quantityDisplay =
+                    activity.movementType === "ADJUST"
+                      ? activity.quantityChange
+                      : Math.abs(activity.quantityChange);
+
+                  return (
+                    <li key={activity.id} className="border-b border-border py-1.5 text-sm">
+                      <strong>{movementLabel}</strong> {activity.product?.name ?? "Unknown Product"}{" "}
+                      ({quantityDisplay}){activity.reason ? ` • ${activity.reason}` : ""}
+                    </li>
+                  );
+                })
               )}
             </ul>
           </CardContent>
