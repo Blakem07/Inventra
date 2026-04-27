@@ -45,6 +45,7 @@ Inventra provides a transaction-safe backend and a deterministic, test-driven fr
 
 ```
 /client
+  /config
   /public
   /src
     /api

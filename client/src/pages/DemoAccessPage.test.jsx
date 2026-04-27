@@ -69,4 +69,25 @@ describe("Demo Access Page Tests", () => {
 
     expect(await screen.findByTestId("dashboard-page")).toBeInTheDocument();
   });
+
+  it("trims surrounding whitespace before submitting password", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ authenticated: true }),
+    });
+
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/demo/access"],
+    });
+
+    render(<RouterProvider router={router} />);
+
+    await userEvent.type(await screen.findByLabelText(/password/i), "   correct-password   ");
+
+    await userEvent.click(screen.getByRole("button", { name: /enter/i }));
+
+    const body = JSON.parse(fetch.mock.calls[0][1].body);
+
+    expect(body.password).toBe("correct-password");
+  });
 });

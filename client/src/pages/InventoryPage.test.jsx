@@ -25,7 +25,7 @@ describe("Inventory Page Tests", () => {
     global.fetch = vi.fn();
   });
 
-  it("navigates to product create when Add Item is clicked", async () => {
+  it("navigates to product create when create product is clicked", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => products,
@@ -52,7 +52,7 @@ describe("Inventory Page Tests", () => {
       </MemoryRouter>,
     );
 
-    const addItem = await screen.findByRole("link", { name: /add item/i });
+    const addItem = await screen.findByRole("link", { name: /create product/i });
     expect(addItem).toBeInTheDocument();
 
     await userEvent.click(addItem);
@@ -62,6 +62,30 @@ describe("Inventory Page Tests", () => {
 
     expect(await screen.findByRole("option", { name: categories[0].name })).toBeInTheDocument();
     expect(screen.getByTestId("product-create-page")).toBeInTheDocument();
+  });
+
+  it("navigates to stock movement page when restock product is clicked", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products,
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => categories,
+    });
+
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/inventory"],
+    });
+
+    render(<RouterProvider router={router} />);
+
+    const restockProduct = await screen.findByRole("link", { name: /restock product/i });
+    expect(restockProduct).toBeInTheDocument();
+
+    await userEvent.click(restockProduct);
+    expect(screen.getByTestId("stock-movement-create-page")).toBeInTheDocument();
   });
 
   it("renders a row for each Product", async () => {

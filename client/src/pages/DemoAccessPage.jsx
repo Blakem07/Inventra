@@ -18,8 +18,10 @@ export default function DemoAccessPage() {
   async function onSubmit(e) {
     e.preventDefault();
 
+    const trimmedPassword = password.trim();
+
     try {
-      const res = await authenticateDemo(password);
+      const res = await authenticateDemo(trimmedPassword);
 
       if (res.authenticated) {
         setErrorMessage("");

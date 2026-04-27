@@ -15,7 +15,7 @@ import {
  * @param {Object} props
  * @param {number} props.index
  * @param {{ productId: string|number, quantity: string|number }} props.itemValues
- * @param {Array<{ id: string|number, name: string }>} props.products
+ * @param {Array<{ id: string|number, name: string, onHand?: number }>} props.products
  * @param {boolean} [props.submitted]
  * @param {string} [props.error]
  * @param {(name: "productId"|"quantity", value: string|number) => void} props.onChange
@@ -31,6 +31,15 @@ export default function LineItemRow({
   onChange,
   onRemove,
 }) {
+  const selectedProduct = products.find(
+    (product) => String(product.id) === String(itemValues.productId),
+  );
+
+  const availableStock = selectedProduct?.onHand;
+  const hasSelectedProduct = Boolean(itemValues.productId);
+  const hasAvailableStock =
+    hasSelectedProduct && availableStock !== undefined && availableStock !== null;
+
   function handleChange(event) {
     const { name, value } = event.target;
     onChange(name, value);
@@ -41,25 +50,25 @@ export default function LineItemRow({
   }
 
   return (
-    <fieldset
-      aria-label="sale item"
-      className="flex  justify-between gap-4 rounded-md border bg-muted/20 p-4"
-    >
-      <div className="flex flex-1 items-start gap-4">
-        <div className="flex min-w-0 flex-[2] flex-col gap-1.5">
-          <Label htmlFor="productId" className="min-w-[120px]">
+    <fieldset aria-label="sale item" className="rounded-md border bg-muted/20 p-4">
+      <div className="grid grid-cols-[minmax(0,1fr)_140px_auto] items-start gap-4">
+        <div className="flex min-w-0 flex-col items-start gap-1.5 text-left">
+          <Label htmlFor={`productId-${index}`} className="text-left">
             Product
           </Label>
 
-          <Select value={itemValues.productId} onValueChange={(value) => handleSelectChange(value)}>
-            <SelectTrigger id="productId" aria-label="Product" className="flex-1">
-              <SelectValue placeholder="Select a product">
-                {products.find((p) => String(p.id) === String(itemValues.productId))?.name}
-              </SelectValue>
+          <Select value={String(itemValues.productId ?? "")} onValueChange={handleSelectChange}>
+            <SelectTrigger
+              id={`productId-${index}`}
+              aria-label="Product"
+              className="w-full justify-start text-left"
+            >
+              <SelectValue placeholder="Select a product">{selectedProduct?.name}</SelectValue>
             </SelectTrigger>
 
-            <SelectContent>
+            <SelectContent align="start">
               <SelectItem value="">-- Select a product --</SelectItem>
+
               {products.map((product) => (
                 <SelectItem key={product.id} value={String(product.id)}>
                   {product.name}
@@ -68,41 +77,60 @@ export default function LineItemRow({
             </SelectContent>
           </Select>
 
+          {hasAvailableStock && (
+            <p className="text-left text-xs leading-5 text-muted-foreground">
+              {`Available: ${availableStock}`}
+            </p>
+          )}
+
           {submitted && !itemValues.productId && (
-            <span role="alert" className="mt-1 text-xs text-destructive self-start">
+            <p role="alert" className="text-left text-xs leading-5 text-destructive">
               Product is required
-            </span>
+            </p>
           )}
 
           {error && (
-            <span role="alert" className="text-xs text-destructive">
+            <p role="alert" className="text-left text-xs leading-5 text-destructive">
               {error}
-            </span>
+            </p>
           )}
         </div>
 
-        <div className="flex w-[140px] flex-col gap-1.5">
-          <Label htmlFor={`quantity-${index}`}>Quantity</Label>
+        <div className="flex w-[140px] flex-col items-start gap-1.5 text-left">
+          <Label htmlFor={`quantity-${index}`} className="text-left">
+            Quantity
+          </Label>
+
           <Input
             id={`quantity-${index}`}
             type="number"
             name="quantity"
             min="1"
+            max={hasAvailableStock ? availableStock : undefined}
             step="1"
             value={itemValues.quantity}
             onChange={handleChange}
+            className="text-left"
           />
 
           {Number(itemValues.quantity) < 1 && (
-            <span className="text-xs text-destructive">Quantity above 0 is required</span>
+            <p role="alert" className="text-left text-xs leading-5 text-destructive">
+              Quantity above 0 is required
+            </p>
+          )}
+
+          {hasAvailableStock && Number(itemValues.quantity) > Number(availableStock) && (
+            <p role="alert" className="text-left text-xs leading-5 text-destructive">
+              Insufficient stock
+            </p>
           )}
         </div>
-      </div>
 
-      <div className="flex shrink-0 items-end">
-        <Button type="button" variant="destructive" onClick={onRemove}>
-          Delete
-        </Button>
+        <div className="flex items-end justify-start pt-[22px]">
+          <Button type="button" variant="destructive" onClick={onRemove}>
+            Delete
+          </Button>
+        </div>
       </div>
     </fieldset>
   );

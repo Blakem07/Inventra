@@ -37,7 +37,19 @@ export class StockService {
           throw err;
         }
 
-        if (input.quantity <= 0 || !Number.isFinite(input.quantity)) {
+        if (!Number.isFinite(input.quantity)) {
+          const err = new Error("Quantity must be a finite number");
+          err.status = 400;
+          throw err;
+        }
+
+        if (input.movement_type === "ADJUST" && input.quantity < 0) {
+          const err = new Error("Quantity must be >= 0 for ADJUST");
+          err.status = 400;
+          throw err;
+        }
+
+        if (input.movement_type !== "ADJUST" && input.quantity <= 0) {
           const err = new Error("Quantity must be > 0");
           err.status = 400;
           throw err;
@@ -46,7 +58,7 @@ export class StockService {
         let quantity_change = 0;
 
         if (input.movement_type === "IN") {
-          quantity_change = +input.quantity;
+          quantity_change = input.quantity;
 
           await Product.updateOne(
             { _id: product._id },
@@ -74,11 +86,6 @@ export class StockService {
 
         if (input.movement_type === "ADJUST") {
           const newOnHand = input.quantity;
-          if (newOnHand < 0) {
-            const err = new Error("on_hand cannot be negative");
-            err.status = 400;
-            throw err;
-          }
 
           quantity_change = newOnHand - product.on_hand;
 
@@ -144,7 +151,6 @@ export class StockService {
       throw err;
     }
 
-    // Conditional decrement prevents negative stock under concurrency
     const update = await Product.updateOne(
       { _id: input.product_id, on_hand: { $gte: input.quantity } },
       { $inc: { on_hand: -input.quantity } },

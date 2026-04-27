@@ -4,6 +4,7 @@ import PageHeader from "@/components/PageHeader";
 import QuickActions from "../components/QuickActions";
 import getDashboardSummary from "../api/dashboard";
 import RecentActivityList from "@/components/RecentActivityList";
+import StockAlertBanner from "@/components/StockAlertBanner";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PlusIcon, ReceiptIcon, BarChart3Icon } from "lucide-react";
@@ -45,7 +46,7 @@ export default function DashboardPage() {
         <PageHeader
           badge="Overview"
           title="Dashboard"
-          description="Track low stock alerts, today’s sales performance, and recent activity in one place."
+          description="Track inventory status, today’s sales performance, and recent activity in one place."
           testId="dashboard-page-heading"
         />
         <LoadingItem testId="dashboard-page-loading" />
@@ -59,7 +60,7 @@ export default function DashboardPage() {
         <PageHeader
           badge="Overview"
           title="Dashboard"
-          description="Track low stock alerts, today’s sales performance, and recent activity in one place."
+          description="Track inventory status, today’s sales performance, and recent activity in one place."
           testId="dashboard-page-heading"
         />
         <ErrorItem testId="dashboard-page-error" />
@@ -67,31 +68,39 @@ export default function DashboardPage() {
     );
   }
 
+  const lowStockCount = dashboardSummary?.lowStockCount ?? 0;
+  const outOfStockCount = dashboardSummary?.outOfStockCount ?? 0;
+  const hasStockAlert = lowStockCount > 0 || outOfStockCount > 0;
+
   return (
     <div data-testid="dashboard-page" className="space-y-4">
       <PageHeader
         badge="Overview"
         title="Dashboard"
-        description="Track low stock alerts, today’s sales performance, and recent activity in one place."
+        description="Track inventory status, today’s sales performance, and recent activity in one place."
         testId="dashboard-page-heading"
       />
 
+      <StockAlertBanner lowStockCount={lowStockCount} outOfStockCount={outOfStockCount} />
+
       <div className="mb-4 flex gap-4">
-        <section aria-labelledby="stock-alerts-heading" className="flex-1">
-          <Card className="h-full shadow-md">
+        <section aria-labelledby="inventory-status-heading" className="flex-1">
+          <Card
+            className={hasStockAlert ? "h-full border-amber-500/40 shadow-md" : "h-full shadow-md"}
+          >
             <CardHeader>
               <h2
-                id="stock-alerts-heading"
-                data-testid="stock-alerts-heading"
+                id="inventory-status-heading"
+                data-testid="inventory-status-heading"
                 className="text-2xl font-semibold leading-none tracking-tight"
               >
-                Stock Alerts
+                Inventory Status
               </h2>
             </CardHeader>
 
             <CardContent>
-              <p>Low Stock Items: {dashboardSummary?.lowStockCount}</p>
-              <p>Out Of Stock Items: {dashboardSummary?.outOfStockCount}</p>
+              <p>Low Stock: {lowStockCount}</p>
+              <p>Out Of Stock: {outOfStockCount}</p>
             </CardContent>
           </Card>
         </section>
@@ -109,13 +118,14 @@ export default function DashboardPage() {
             </CardHeader>
 
             <CardContent>
-              <p>Sales Today: {dashboardSummary?.salesCountToday}</p>
-              <p>Items Sold Today: {dashboardSummary?.itemsSoldToday}</p>
-              <p>Total Sales Amount: ₱{dashboardSummary?.totalSalesAmountToday}</p>
+              <p>Sales Today: {dashboardSummary?.salesCountToday ?? 0}</p>
+              <p>Items Sold Today: {dashboardSummary?.itemsSoldToday ?? 0}</p>
+              <p>Total Sales Amount: ₱{dashboardSummary?.totalSalesAmountToday ?? 0}</p>
             </CardContent>
           </Card>
         </section>
       </div>
+
       <section aria-labelledby="quick-action-heading" className="mb-4">
         <Card className="shadow-md">
           <CardHeader>
@@ -132,7 +142,7 @@ export default function DashboardPage() {
             <QuickActions
               actions={[
                 {
-                  label: "Add Stock",
+                  label: "Restock Product",
                   path: "stock/new",
                   icon: PlusIcon,
                 },
@@ -165,7 +175,7 @@ export default function DashboardPage() {
           </CardHeader>
 
           <CardContent className="p-0">
-            <RecentActivityList activities={dashboardSummary?.recentActivity} />
+            <RecentActivityList activities={dashboardSummary?.recentActivity ?? []} />
           </CardContent>
         </Card>
       </section>

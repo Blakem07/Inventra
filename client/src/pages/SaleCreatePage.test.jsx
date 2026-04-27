@@ -361,6 +361,31 @@ describe("Sales Create Page Tests", () => {
     expect(screen.getByRole("button", { name: /confirm sale/i })).toBeInTheDocument();
   });
 
+  it("shows available stock under the selected product", async () => {
+    products[0].onHand = 12;
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products,
+    });
+
+    const router = createMemoryRouter(routes, {
+      initialEntries: ["/sales/new"],
+    });
+
+    render(<RouterProvider router={router} />);
+
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+
+    const row = (await screen.findAllByRole("group", { name: /sale item/i }))[0];
+    const productSelect = within(row).getByRole("combobox", { name: /product/i });
+
+    await userEvent.click(productSelect);
+    await userEvent.click(await screen.findByRole("option", { name: products[0].name }));
+
+    expect(within(row).getByText(/available:\s*12/i)).toBeInTheDocument();
+  });
+
   it("shows inline error when quantity must be above 0", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,

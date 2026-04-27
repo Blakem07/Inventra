@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { PlusIcon } from "lucide-react";
+import { PackagePlus } from "lucide-react";
 
 import PageHeader from "@/components/PageHeader";
 import QuickActions from "../components/QuickActions";
@@ -140,8 +141,13 @@ export default function InventoryPage() {
               <QuickActions
                 actions={[
                   {
-                    label: "Add Item",
+                    label: "Create Product",
                     path: "new",
+                    icon: PackagePlus,
+                  },
+                  {
+                    label: "Restock Product",
+                    path: "../stock/new",
                     icon: PlusIcon,
                   },
                 ]}
