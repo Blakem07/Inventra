@@ -22,7 +22,7 @@ describe("Dashboard Page Tests", () => {
     global.fetch = vi.fn();
   });
 
-  it("navigates to Stock Movement Create Page when add stock is clicked", async () => {
+  it("navigates to Stock Movement Create Page when restock product is clicked", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => dashboardSummary,
@@ -33,7 +33,7 @@ describe("Dashboard Page Tests", () => {
 
     await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
 
-    const addStock = screen.getByRole("link", { name: /add stock/i });
+    const addStock = screen.getByRole("link", { name: /restock product/i });
     expect(addStock).toBeInTheDocument();
 
     await userEvent.click(addStock);
@@ -82,7 +82,7 @@ describe("Dashboard Page Tests", () => {
     expect(screen.getByTestId("reports-page")).toBeInTheDocument();
   });
 
-  it("shows stock alerts with fetched data", async () => {
+  it("shows inventory status with fetched data", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => dashboardSummary,
@@ -92,17 +92,15 @@ describe("Dashboard Page Tests", () => {
     render(<RouterProvider router={router} />);
 
     const stockAlertsSection = await screen.findByRole("region", {
-      name: /stock alerts/i,
+      name: /inventory status/i,
     });
 
     expect(
-      within(stockAlertsSection).getByText(`Low Stock Items: ${dashboardSummary.lowStockCount}`),
+      within(stockAlertsSection).getByText(`Low Stock: ${dashboardSummary.lowStockCount}`),
     ).toBeInTheDocument();
 
     expect(
-      within(stockAlertsSection).getByText(
-        `Out Of Stock Items: ${dashboardSummary.outOfStockCount}`,
-      ),
+      within(stockAlertsSection).getByText(`Out Of Stock: ${dashboardSummary.outOfStockCount}`),
     ).toBeInTheDocument();
   });
 
@@ -258,5 +256,91 @@ describe("Dashboard Page Tests", () => {
     render(<RouterProvider router={router} />);
 
     expect(await screen.findByText(/no recent activity/i)).toBeInTheDocument();
+  });
+
+  it("does not show stock alert banner when there are no stock issues", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        ...dashboardSummary,
+        lowStockCount: 0,
+        outOfStockCount: 0,
+      }),
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/"] });
+    render(<RouterProvider router={router} />);
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId("dashboard-page-loading"));
+
+    expect(screen.queryByTestId("stock-alert-banner")).not.toBeInTheDocument();
+  });
+
+  it("shows low stock banner text without out of stock text when only low stock exists", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        ...dashboardSummary,
+        lowStockCount: 3,
+        outOfStockCount: 0,
+      }),
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/"] });
+    render(<RouterProvider router={router} />);
+
+    const banner = await screen.findByTestId("stock-alert-banner");
+
+    expect(banner).toHaveTextContent("Stock needs attention");
+    expect(banner).toHaveTextContent("3 items are low on stock");
+    expect(banner).not.toHaveTextContent("out of stock");
+
+    const lowText = within(banner).getByText("low on stock");
+
+    expect(lowText.tagName).toBe("STRONG");
+    expect(lowText).toHaveClass("italic");
+  });
+
+  it("shows out of stock banner text without low stock text when only out of stock exists", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        ...dashboardSummary,
+        lowStockCount: 0,
+        outOfStockCount: 2,
+      }),
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/"] });
+    render(<RouterProvider router={router} />);
+
+    const banner = await screen.findByTestId("stock-alert-banner");
+
+    expect(banner).toHaveTextContent("Stock needs attention");
+    expect(banner).toHaveTextContent("2 items are out of stock");
+    expect(banner).not.toHaveTextContent("low on stock");
+
+    const outText = within(banner).getByText("out of stock");
+
+    expect(outText.tagName).toBe("STRONG");
+    expect(outText).toHaveClass("italic");
+  });
+
+  it("uses singular wording in the stock alert banner", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        ...dashboardSummary,
+        lowStockCount: 1,
+        outOfStockCount: 1,
+      }),
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/"] });
+    render(<RouterProvider router={router} />);
+
+    const banner = await screen.findByTestId("stock-alert-banner");
+
+    expect(banner).toHaveTextContent("1 item is low on stock | 1 item is out of stock");
   });
 });

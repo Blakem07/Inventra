@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toBusinessDateKey } from "../utils/formatBusinessDate";
 
 /**
  * Renders a table of stock movement records.
@@ -48,7 +49,7 @@ export default function MovementsTable(props) {
               return (
                 <TableRow key={row.movementId}>
                   <TableCell className="text-left align-top">
-                    {row.occurredAt.slice(0, 10)}
+                    {toBusinessDateKey(row.occurredAt)}
                   </TableCell>
                   <TableCell className="text-left align-top">{row.product.name}</TableCell>
                   <TableCell className="text-left align-top">{row.quantity}</TableCell>

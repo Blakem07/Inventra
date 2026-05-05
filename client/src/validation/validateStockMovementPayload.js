@@ -26,24 +26,34 @@ export default function validateStockMovementPayload(values) {
 
   const productId = values?.productId?.trim();
   const movementType = values?.movementType?.trim().toUpperCase();
-  const quantity = Number(values?.quantity);
+  const quantityValue = values?.quantity;
+  const quantity = Number(quantityValue);
   const performedBy = values?.performedBy?.trim();
   const reason = values?.reason?.trim();
   const note = values?.note?.trim();
+
+  const isValidMovementType = ["IN", "OUT", "ADJUST"].includes(movementType);
+  const isAdjustMovement = movementType === "ADJUST";
 
   if (!productId) {
     errors.productId = "Product is required";
   }
 
-  if (!movementType || !["IN", "OUT", "ADJUST"].includes(movementType)) {
+  if (!movementType || !isValidMovementType) {
     errors.movementType = "Movement type must be IN, OUT, or ADJUST";
   }
 
-  if (!Number.isFinite(quantity) || quantity < 1) {
-    errors.quantity = "Quantity at 1 or more required";
+  if (quantityValue === "" || quantityValue === null || quantityValue === undefined) {
+    errors.quantity = "Quantity is required";
+  } else if (!Number.isFinite(quantity)) {
+    errors.quantity = "Quantity must be a number";
+  } else if (isAdjustMovement && quantity < 0) {
+    errors.quantity = "Quantity must be 0 or above";
+  } else if (!isAdjustMovement && quantity < 1) {
+    errors.quantity = "Quantity above 0 is required";
   }
 
-  if (!performedBy || performedBy === "") {
+  if (!performedBy) {
     errors.performedBy = "Performed by is required";
   }
 

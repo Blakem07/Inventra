@@ -3,6 +3,8 @@ import { render, screen, waitFor, waitForElementToBeRemoved, within } from "@tes
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { routes } from "../app/routes";
+import { getDateRange } from "../utils/getDateRange";
+import { toBusinessDateKey } from "../utils/formatBusinessDate";
 
 import { testSalesReport } from "../tests/testSalesReport";
 import { testMovementsReport } from "../tests/testMovementsReport";
@@ -124,12 +126,14 @@ describe("Reports Page Tests", () => {
     const firstRow = rows[1];
     const secondRow = rows[2];
 
-    expect(within(firstRow).getByText(firstSale.occurredAt.slice(0, 10))).toBeInTheDocument();
+    expect(within(firstRow).getByText(toBusinessDateKey(firstSale.occurredAt))).toBeInTheDocument();
     expect(within(firstRow).getByText(firstSale.paymentMethod)).toBeInTheDocument();
     expect(within(firstRow).getByText(String(firstSale.totalAmount))).toBeInTheDocument();
     expect(within(firstRow).getByText(firstSale.performedBy)).toBeInTheDocument();
 
-    expect(within(secondRow).getByText(secondSale.occurredAt.slice(0, 10))).toBeInTheDocument();
+    expect(
+      within(secondRow).getByText(toBusinessDateKey(secondSale.occurredAt)),
+    ).toBeInTheDocument();
     expect(within(secondRow).getByText(secondSale.paymentMethod)).toBeInTheDocument();
     expect(within(secondRow).getByText(String(secondSale.totalAmount))).toBeInTheDocument();
     expect(within(secondRow).getByText(secondSale.performedBy)).toBeInTheDocument();
@@ -219,12 +223,16 @@ describe("Reports Page Tests", () => {
     const firstRow = rows[1];
     const secondRow = rows[2];
 
-    expect(within(firstRow).getByText(firstMovement.occurredAt.slice(0, 10))).toBeInTheDocument();
+    expect(
+      within(firstRow).getByText(toBusinessDateKey(firstMovement.occurredAt)),
+    ).toBeInTheDocument();
     expect(within(firstRow).getByText(firstMovement.product.name)).toBeInTheDocument();
     expect(within(firstRow).getByText(String(firstMovement.quantity))).toBeInTheDocument();
     expect(within(firstRow).getByText(firstMovement.performedBy)).toBeInTheDocument();
 
-    expect(within(secondRow).getByText(secondMovement.occurredAt.slice(0, 10))).toBeInTheDocument();
+    expect(
+      within(secondRow).getByText(toBusinessDateKey(secondMovement.occurredAt)),
+    ).toBeInTheDocument();
     expect(within(secondRow).getByText(secondMovement.product.name)).toBeInTheDocument();
     expect(within(secondRow).getByText(String(secondMovement.quantity))).toBeInTheDocument();
     expect(within(secondRow).getByText(secondMovement.performedBy)).toBeInTheDocument();
@@ -261,19 +269,16 @@ describe("Reports Page Tests", () => {
     await userEvent.click(await screen.findByRole("option", { name: /today/i }));
 
     await waitFor(() => {
-      const calls = global.fetch.mock.calls;
-      let found = false;
+      const today = getDateRange("today");
 
-      const today = new Date();
-      const todayString = today.toISOString().slice(0, 10);
+      const found = global.fetch.mock.calls.some(([url]) => {
+        const value = String(url);
 
-      calls.forEach((call) => {
-        if (
-          call[0].includes("/reports/sales") &&
-          call[0].includes(`from=${todayString}&to=${todayString}`)
-        ) {
-          found = true;
-        }
+        return (
+          value.includes("/reports/sales") &&
+          value.includes(`from=${today.from}`) &&
+          value.includes(`to=${today.to}`)
+        );
       });
 
       expect(found).toBe(true);
@@ -313,19 +318,16 @@ describe("Reports Page Tests", () => {
     await userEvent.click(await screen.findByRole("option", { name: /today/i }));
 
     await waitFor(() => {
-      const calls = global.fetch.mock.calls;
-      let found = false;
+      const today = getDateRange("today");
 
-      const today = new Date();
-      const todayString = today.toISOString().slice(0, 10);
+      const found = global.fetch.mock.calls.some(([url]) => {
+        const value = String(url);
 
-      calls.forEach((call) => {
-        if (
-          call[0].includes("/reports/movements") &&
-          call[0].includes(`from=${todayString}&to=${todayString}`)
-        ) {
-          found = true;
-        }
+        return (
+          value.includes("/reports/movements") &&
+          value.includes(`from=${today.from}`) &&
+          value.includes(`to=${today.to}`)
+        );
       });
 
       expect(found).toBe(true);

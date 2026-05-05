@@ -2,7 +2,7 @@ import { Router } from "express";
 import Product from "../models/Product.js";
 import Sale from "../models/Sale.js";
 import StockMovement from "../models/StockMovement.js";
-import { buildCreatedAtRange } from "../helpers/index.js";
+import { buildBusinessDateRange } from "../helpers/index.js";
 import mongoose from "mongoose";
 
 const router = Router();
@@ -98,7 +98,7 @@ router.get("/sales", async (req, res, next) => {
     const filter = {};
 
     if (from != undefined && to != undefined) {
-      const built = buildCreatedAtRange({ from, to });
+      const built = buildBusinessDateRange({ from, to });
 
       if (built.error) {
         return res
@@ -177,7 +177,7 @@ router.get("/movements", async (req, res, next) => {
     }
 
     if (from != undefined && to != undefined) {
-      const built = buildCreatedAtRange({ from, to });
+      const built = buildBusinessDateRange({ from, to });
 
       if (built.error) {
         return res

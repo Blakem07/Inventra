@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import Product from "../models/Product.js";
 import Category from "../models/Category.js";
 
-// 
+//
 import { formatProduct } from "./productFormatter.js";
 
 // Defines a whitelist of fields the endpoint will accept
@@ -239,7 +239,8 @@ router.get("/:id", async (req, res, next) => {
 router.put("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
-    const categoryId = req.body.categoryId;
+    const body = req.body ?? {};
+    const categoryId = body.categoryId;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res
@@ -247,25 +248,25 @@ router.put("/:id", async (req, res, next) => {
         .json({ error: { status: 400, message: "The ID provided is invalid." } });
     }
 
-    if ("categoryId" in req.body && !mongoose.Types.ObjectId.isValid(categoryId)) {
+    if ("categoryId" in body && !mongoose.Types.ObjectId.isValid(categoryId)) {
       return res
         .status(400)
         .json({ error: { status: 400, message: "The new category ID provided is invalid." } });
     }
 
-    if ("on_hand" in req.body || "onHand" in req.body) {
+    if ("on_hand" in body || "onHand" in body) {
       return res
         .status(400)
         .json({ error: { status: 400, message: "On hand modifications not allowed." } });
     }
 
-    if (hasOnlyAllowedKeys(req.body) === false) {
+    if (hasOnlyAllowedKeys(body) === false) {
       return res
         .status(400)
         .json({ error: { status: 400, message: "Unknown key found within the request body." } });
     }
 
-    const update = buildProductUpdate(req.body);
+    const update = buildProductUpdate(body);
 
     if (isEmpty(update) === true) {
       return res.status(400).json({
@@ -283,10 +284,9 @@ router.put("/:id", async (req, res, next) => {
     );
 
     if (updatedResult === null) {
-      res.status(404).json({
+      return res.status(404).json({
         error: { status: 404, message: "A product with the the given ID was NOT found." },
       });
-      return;
     }
 
     res.status(200).json(formatProduct(updatedResult));

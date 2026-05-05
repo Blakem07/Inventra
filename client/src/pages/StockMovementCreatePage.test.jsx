@@ -159,6 +159,69 @@ describe("Stock Movement Create Page Tests", () => {
     });
   });
 
+  it("allows quantity 0 when movement type is adjust", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => products,
+    });
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+    });
+
+    const router = createMemoryRouter(routes, { initialEntries: ["/stock/new"] });
+    render(<RouterProvider router={router} />);
+
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+
+    const trigger = screen.getByRole("combobox", { name: /product/i });
+    await userEvent.click(trigger);
+
+    const productOption = await screen.findByRole("option", { name: products[0].name });
+    await userEvent.click(productOption);
+
+    const movementTypeAdjust = screen.getByRole("radio", { name: /adjust/i });
+    await userEvent.click(movementTypeAdjust);
+
+    const quantityInput = screen.getByRole("spinbutton", { name: /quantity/i });
+    await userEvent.clear(quantityInput);
+    await userEvent.type(quantityInput, "0");
+
+    const performedByText = screen.getByRole("textbox", { name: /performed by/i });
+    await userEvent.type(performedByText, "Staff A");
+
+    const save = screen.getByRole("button", { name: /confirm movement/i });
+    await userEvent.click(save);
+
+    await waitFor(() => {
+      const found = global.fetch.mock.calls.some((call) => {
+        if (!call[0].includes("/stock/movements")) return false;
+
+        expect(call[1]).toEqual({
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            productId: products[0].id,
+            movementType: "ADJUST",
+            quantity: 0,
+            performedBy: "Staff A",
+            reason: "",
+            note: "",
+          }),
+        });
+
+        return true;
+      });
+
+      expect(found).toBe(true);
+    });
+
+    expect(screen.queryByText(/quantity above 0 is required/i)).not.toBeInTheDocument();
+  });
+
   it("navigates back to dashboard on submit success", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,

@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toBusinessDateKey } from "../utils/formatBusinessDate";
 
 /**
  * Renders a table of sales records.
@@ -47,7 +48,7 @@ export default function SalesTable(props) {
               return (
                 <TableRow key={row.saleId}>
                   <TableCell className="text-left align-top">
-                    {row.occurredAt.slice(0, 10)}
+                    {toBusinessDateKey(row.occurredAt)}
                   </TableCell>
                   <TableCell className="text-left align-top">{row.paymentMethod}</TableCell>
                   <TableCell className="text-left align-top">{row.totalAmount}</TableCell>

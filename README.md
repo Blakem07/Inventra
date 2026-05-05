@@ -43,8 +43,9 @@ Inventra provides a transaction-safe backend and a deterministic, test-driven fr
 
 ## Project Structure
 
-```
+```txt
 /client
+  /config
   /public
   /src
     /api
@@ -72,7 +73,6 @@ Inventra provides a transaction-safe backend and a deterministic, test-driven fr
   /services
   /utils
   /validators
-  /docs
 ```
 
 ---
@@ -86,52 +86,99 @@ Inventra provides a transaction-safe backend and a deterministic, test-driven fr
 
 ### Install
 
+```txt
 cd server
 npm install
+```
 
 ### Environment Variables
 
 Create a `.env` file inside `server/`:
 
+```txt
 PORT=3000
 MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>/<db>?retryWrites=true&w=majority
 DEMO_PASSWORD=yourpassword
 DEMO_COOKIE_SECRET=your-secret
-FRONTEND_URL=[http://localhost:5173](http://localhost:5173)
+FRONTEND_URL=http://localhost:5173
 NODE_ENV=development
+```
 
 ### Start Server
 
+```txt
 node index.js
+```
 
 ### Health Check
 
-GET `/health`
+```txt
+GET /health
+```
 
 Response:
 
+```json
 { "status": "ok" }
+```
+
+### Backend Tests
+
+```txt
+npm run test
+```
+
+The backend test suite currently focuses on the demo access layer and related route protection behaviour.
+
+---
+
+## Postman Collection
+
+The backend Postman collection is stored at:
+
+```txt
+/server/postman/Inventra.postman_collection.json
+```
+
+Before running it, start the backend and set these collection variables in Postman:
+
+```txt
+baseUrl=http://localhost:3000
+demoPassword=<same value as DEMO_PASSWORD>
+```
+
+The collection creates timestamped setup data, so it does not rely on fixed seed IDs.
 
 ---
 
 ## Frontend Setup
 
+### Install
+
+```txt
 cd client
 npm install
+```
 
 ### Development
 
+```txt
 npm run dev
+```
 
 ### Testing
 
+```txt
 npm run test
+```
 
 ### Environment Variables
 
 Create a `.env` file inside `client/`:
 
+```txt
 VITE_API_BASE_URL=http://localhost:3000
+```
 
 ---
 
@@ -181,7 +228,7 @@ Public routes:
 - All requests use JSON
 - Non-2xx responses normalized in `api/client.js`
 - Frontend uses camelCase
-- Backend compatibility handled via adapters
+- Backend maps API camelCase fields to MongoDB snake_case fields where needed
 
 ---
 
@@ -195,7 +242,11 @@ Frontend:
 
 Backend:
 
-- Postman validation (see `/docs/testing.md`)
+- Postman validation collection is stored at `/server/postman/Inventra.postman_collection.json`
+- Supporting validation notes are in `/server/docs/testing.md`
+- Use `baseUrl=http://localhost:3000`
+- Set the collection variable `demoPassword` to the value used for `DEMO_PASSWORD`
+- Start the backend before running the collection
 
 ---
 
@@ -211,7 +262,7 @@ The system uses a shared demo dataset for evaluation and demonstration.
 
 A manual seed script is provided:
 
-```
+```txt
 node server/scripts/seedDemo.js
 ```
 
@@ -228,6 +279,7 @@ Intended for use before demonstrations or evaluations.
 
 | Route               | Description           |
 | ------------------- | --------------------- |
+| /demo/access        | Demo access gate      |
 | /                   | Dashboard             |
 | /inventory          | Inventory list        |
 | /inventory/new      | Create product        |
@@ -240,12 +292,12 @@ Intended for use before demonstrations or evaluations.
 
 ## Inventory Status Rules
 
-If status exists → use it
+If status exists, use it.
 
 Else compute:
 
-- OUT: onHand === 0
-- LOW: onHand > 0 && onHand <= reorderLevel
+- OUT: `onHand === 0`
+- LOW: `onHand > 0 && onHand <= reorderLevel`
 - OK: otherwise
 
 ---
@@ -269,19 +321,20 @@ Client:
 
 ## Documentation
 
-See the /server/docs directory for:
+See `/server/docs` for:
 
-architecture.md – System invariants and guarantees
-api.md – Complete API reference
-testing.md – Backend validation sequence
-demo-access.md – Demo session flow and access control
+- `architecture.md` - System invariants and guarantees
+- `api.md` - Complete API reference
+- `testing.md` - Backend validation sequence
+- `demo-access.md` - Demo session flow and access control
 
 ---
 
 ## Status
 
-Backend v1: complete (with demo access layer)
-Frontend v1: complete (with protected routing)
+Backend v1: complete with demo access layer.
+
+Frontend v1: complete with protected routing.
 
 System supports:
 
