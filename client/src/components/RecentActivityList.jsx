@@ -24,7 +24,7 @@ function RecentActivityList({ activities }) {
   return (
     <ul className="flex flex-col">
       {activities.map((activity) => {
-        const label = activity.product?.name || "Unknown Product";
+        const label = activity.product?.name?.trim() || "Unknown Product";
         const qty = activity.quantityChange;
         let subtitle = "Stock Activity";
         let badge = qty;
@@ -53,9 +53,9 @@ function RecentActivityList({ activities }) {
             key={activity.id}
             className="flex items-center justify-between border-b px-3 py-2 text-sm last:border-0"
           >
-            <div className="flex flex-col">
+            <div className="flex flex-col items-start text-left">
               <span className="font-medium text-foreground">{label}</span>
-              <span className="text-left text-xs text-muted-foreground">{subtitle}</span>
+              <span className="text-xs text-muted-foreground">{subtitle}</span>
             </div>
 
             <div className={`rounded-full border px-3 py-1 text-xs font-semibold ${badgeClass}`}>
