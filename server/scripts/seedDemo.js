@@ -10,8 +10,6 @@ import { fileURLToPath } from "url";
 // - Initializes stock via IN and ADJUST movements
 // - Creates sample sales with corresponding sale items
 // - Mirrors each sale with OUT stock movements to maintain inventory consistency
-// - Runs all write operations inside a transaction for atomicity
-// - Intended for local/demo environments only (non-production)
 
 import Category from "../models/Category.js";
 import Product from "../models/Product.js";
@@ -38,8 +36,28 @@ if (!DEMO_DB_URI) {
 
 const SYSTEM_USER = "demo-seed";
 
-function buildDate(dateString) {
-  return new Date(dateString);
+/**
+ * Builds recent demo timestamps using UTC.
+ *
+ * This keeps seed data visible in dashboard and report filters without tying
+ * the seed script to the developer's local timezone or a future business timezone.
+ *
+ * MongoDB stores Date values as UTC instants, so this produces predictable
+ * timestamps that sort correctly against records created live with new Date().
+ *
+ * @param {number} daysAgo - How many calendar days before today.
+ *   0 means today, 1 means yesterday, 6 means six days ago.
+ * @param {number} hours - UTC hour for the generated timestamp.
+ * @param {number} minutes - UTC minute for the generated timestamp.
+ * @returns {Date}
+ */
+function buildRecentDate(daysAgo, hours = 10, minutes = 0) {
+  const date = new Date();
+
+  date.setUTCDate(date.getUTCDate() - daysAgo);
+  date.setUTCHours(hours, minutes, 0, 0);
+
+  return date;
 }
 
 async function connect() {
@@ -62,6 +80,19 @@ async function seedBaseline() {
 
   try {
     await session.withTransaction(async () => {
+      // Spread demo activity across recent days so report filters show useful data:
+      // - stock load: six days ago
+      // - adjustments: five days ago
+      // - sales: two days ago, yesterday, and today
+      const initialStockDate = buildRecentDate(6, 8, 0);
+      const adjustmentDate1 = buildRecentDate(5, 9, 15);
+      const adjustmentDate2 = buildRecentDate(5, 9, 20);
+      const adjustmentDate3 = buildRecentDate(5, 9, 25);
+      const adjustmentDate4 = buildRecentDate(5, 9, 30);
+      const saleDate1 = buildRecentDate(2, 10, 5);
+      const saleDate2 = buildRecentDate(1, 18, 40);
+      const saleDate3 = buildRecentDate(0, 7, 55);
+
       const categories = await Category.insertMany(
         [
           { name: "Beverages" },
@@ -147,7 +178,7 @@ async function seedBaseline() {
       await StockMovement.insertMany(
         [
           {
-            occurred_at: buildDate("2026-04-01T08:00:00+08:00"),
+            occurred_at: initialStockDate,
             product_id: productMap["DEMO-COKE-290"]._id,
             movement_type: "IN",
             quantity_change: 60,
@@ -156,7 +187,7 @@ async function seedBaseline() {
             note: "Baseline inventory seed",
           },
           {
-            occurred_at: buildDate("2026-04-01T08:00:00+08:00"),
+            occurred_at: initialStockDate,
             product_id: productMap["DEMO-PANCIT-ORI"]._id,
             movement_type: "IN",
             quantity_change: 80,
@@ -165,7 +196,7 @@ async function seedBaseline() {
             note: "Baseline inventory seed",
           },
           {
-            occurred_at: buildDate("2026-04-01T08:00:00+08:00"),
+            occurred_at: initialStockDate,
             product_id: productMap["DEMO-555-SARDINES"]._id,
             movement_type: "IN",
             quantity_change: 36,
@@ -174,7 +205,7 @@ async function seedBaseline() {
             note: "Baseline inventory seed",
           },
           {
-            occurred_at: buildDate("2026-04-01T08:00:00+08:00"),
+            occurred_at: initialStockDate,
             product_id: productMap["DEMO-SAFEGUARD-135"]._id,
             movement_type: "IN",
             quantity_change: 24,
@@ -183,7 +214,7 @@ async function seedBaseline() {
             note: "Baseline inventory seed",
           },
           {
-            occurred_at: buildDate("2026-04-01T08:00:00+08:00"),
+            occurred_at: initialStockDate,
             product_id: productMap["DEMO-NESCAFE-2G"]._id,
             movement_type: "IN",
             quantity_change: 200,
@@ -192,7 +223,7 @@ async function seedBaseline() {
             note: "Baseline inventory seed",
           },
           {
-            occurred_at: buildDate("2026-04-01T08:00:00+08:00"),
+            occurred_at: initialStockDate,
             product_id: productMap["DEMO-BEARBRAND-33"]._id,
             movement_type: "IN",
             quantity_change: 90,
@@ -201,7 +232,7 @@ async function seedBaseline() {
             note: "Baseline inventory seed",
           },
           {
-            occurred_at: buildDate("2026-04-02T09:15:00+08:00"),
+            occurred_at: adjustmentDate1,
             product_id: productMap["DEMO-COKE-290"]._id,
             movement_type: "ADJUST",
             quantity_change: -1,
@@ -210,7 +241,7 @@ async function seedBaseline() {
             note: "Bottle dented",
           },
           {
-            occurred_at: buildDate("2026-04-02T09:20:00+08:00"),
+            occurred_at: adjustmentDate2,
             product_id: productMap["DEMO-555-SARDINES"]._id,
             movement_type: "ADJUST",
             quantity_change: -1,
@@ -219,7 +250,7 @@ async function seedBaseline() {
             note: "Dent found during shelf check",
           },
           {
-            occurred_at: buildDate("2026-04-02T09:25:00+08:00"),
+            occurred_at: adjustmentDate3,
             product_id: productMap["DEMO-SAFEGUARD-135"]._id,
             movement_type: "ADJUST",
             quantity_change: -1,
@@ -228,7 +259,7 @@ async function seedBaseline() {
             note: "Count correction",
           },
           {
-            occurred_at: buildDate("2026-04-02T09:30:00+08:00"),
+            occurred_at: adjustmentDate4,
             product_id: productMap["DEMO-NESCAFE-2G"]._id,
             movement_type: "ADJUST",
             quantity_change: -10,
@@ -243,21 +274,21 @@ async function seedBaseline() {
       const sales = await Sale.insertMany(
         [
           {
-            occurred_at: buildDate("2026-04-03T10:05:00+08:00"),
+            occurred_at: saleDate1,
             payment_method: "Cash",
             total_amount: 66,
             note: "Morning walk-in customer",
             performed_by: SYSTEM_USER,
           },
           {
-            occurred_at: buildDate("2026-04-04T18:40:00+08:00"),
+            occurred_at: saleDate2,
             payment_method: "GCash",
             total_amount: 87,
             note: "Evening neighborhood purchase",
             performed_by: SYSTEM_USER,
           },
           {
-            occurred_at: buildDate("2026-04-05T07:55:00+08:00"),
+            occurred_at: saleDate3,
             payment_method: "Cash",
             total_amount: 24,
             note: "Quick breakfast items",
@@ -435,7 +466,7 @@ async function seedBaseline() {
       );
     });
 
-    console.log("Inserted fixed demo baseline data");
+    console.log("Inserted demo baseline data");
   } finally {
     await session.endSession();
   }
