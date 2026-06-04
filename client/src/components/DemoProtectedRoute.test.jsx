@@ -37,7 +37,7 @@ describe("Demo Protected Route Tests", () => {
 
     renderWithRouter("/");
 
-    expect(screen.getByText(/checking demo access/i)).toBeInTheDocument();
+    expect(screen.getByText(/tarting demo environment/i)).toBeInTheDocument();
   });
 
   it("renders children when allowed", async () => {

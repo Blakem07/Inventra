@@ -1,60 +1,54 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { authenticateDemo } from "../api/demo.js";
 import { useNavigate } from "react-router-dom";
 
+const DEMO_PASSWORD = "demo";
+
 export default function DemoAccessPage() {
-  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  function onChange(e) {
-    setPassword(e.target.value);
-  }
-
-  async function onSubmit(e) {
-    e.preventDefault();
-
-    const trimmedPassword = password.trim();
+  async function onEnterDemo() {
+    setIsSubmitting(true);
+    setErrorMessage("");
 
     try {
-      const res = await authenticateDemo(trimmedPassword);
+      const res = await authenticateDemo(DEMO_PASSWORD);
 
       if (res.authenticated) {
-        setErrorMessage("");
         navigate("/");
+        return;
       }
+
+      setErrorMessage("Demo access failed. Please try again.");
     } catch (err) {
-      setErrorMessage(err.message);
+      setErrorMessage(err.message || "Demo access failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   return (
-    <div data-testid="demo-access-page" className="h-screen flex items-center justify-center">
+    <div data-testid="demo-access-page" className="h-screen flex items-center justify-center px-4">
       <Card className="w-full max-w-md p-5">
         <CardHeader>
-          <CardTitle className="text-xl">Inventra Demo Access</CardTitle>
+          <CardTitle className="text-xl">Inventra Demo</CardTitle>
+          <CardDescription>Controlled demo environment with seeded sample data.</CardDescription>
         </CardHeader>
 
-        <CardContent>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" value={password} onChange={onChange} />
-              {errorMessage && (
-                <span data-testid="error-message" className="text-sm text-red-600">
-                  {errorMessage}
-                </span>
-              )}
-            </div>
+        <CardContent className="space-y-4">
+          {errorMessage && (
+            <p data-testid="error-message" className="text-sm text-red-600">
+              {errorMessage}
+            </p>
+          )}
 
-            <Button type="submit" className="w-full">
-              Enter
-            </Button>
-          </form>
+          <Button type="button" onClick={onEnterDemo} disabled={isSubmitting} className="w-full">
+            {isSubmitting ? "Entering..." : "Enter"}
+          </Button>
         </CardContent>
       </Card>
     </div>
