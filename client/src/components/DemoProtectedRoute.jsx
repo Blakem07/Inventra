@@ -30,11 +30,16 @@ export default function DemoProtectedRoute({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <Card className="w-[300px]">
-        <CardContent className="flex flex-col items-center justify-center p-6 space-y-4">
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <Card className="w-full max-w-sm">
+        <CardContent className="flex flex-col items-center justify-center p-6 space-y-4 text-center">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">Checking demo access...</p>
+          <div className="space-y-1">
+            <p className="text-sm font-medium">Starting demo environment</p>
+            <p className="text-xs text-muted-foreground">
+              This may take a moment while the server wakes up.
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
