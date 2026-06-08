@@ -4,7 +4,28 @@ Full-stack inventory and sales management system for small to mid-scale retail o
 
 Inventra provides a transaction-safe backend and a deterministic, test-driven frontend for managing products, stock, sales, and reporting. Designed for scalability toward multi-store and SaaS deployment.
 
----
+## Demo
+
+Live demo: https://inventra-rust.vercel.app
+
+## Screenshots
+
+| Dashboard                                                                             | Inventory                                                                             | Reports                                                                           |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| <img src="./docs/screenshots/dashboard.png" alt="Dashboard screenshot" width="400" /> | <img src="./docs/screenshots/inventory.png" alt="Inventory screenshot" width="400" /> | <img src="./docs/screenshots/reports.png" alt="Reports screenshot" width="400" /> |
+
+## What this demonstrates
+
+- Full-stack MERN application structure
+- REST API design with Node.js and Express
+- MongoDB Atlas and Mongoose data modelling
+- Transaction-safe sales and stock movement handling
+- Protected demo access flow using signed cookies
+- Test-driven frontend behaviour with Vitest and Testing Library
+
+## Architecture
+
+<img src="./docs/architecture/inventra-architecture-diagram.png" alt="Inventra architecture diagram" width="600" />
 
 ## System Overview
 
@@ -13,8 +34,6 @@ Inventra provides a transaction-safe backend and a deterministic, test-driven fr
 - Architecture: REST-based client–server separation
 - Design goal: transaction safety, predictable state, and scalable data model
 - Demo access layer: cookie-based session gate enforced by backend
-
----
 
 ## Backend Stack
 
@@ -59,6 +78,10 @@ Inventra provides a transaction-safe backend and a deterministic, test-driven fr
     /tests
     /utils
     /validation
+
+/docs
+  /architecture
+  /screenshots
 
 /server
   /auth
